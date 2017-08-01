@@ -86,10 +86,12 @@
                 android:id="@+id/tv_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="soft:09 01 \n27-06-17 08:55:10"
                 android:layout_below="@+id/btn_reset_controller"
-                android:layout_toEndOf="@+id/tv_reset"
-                android:layout_toRightOf="@+id/tv_reset"
-                android:text="soft:09 01 \n27-06-17 08:55:10" />
+                android:layout_toRightOf="@+id/tv_version_title"
+                android:layout_toEndOf="@+id/tv_version_title"
+                android:layout_marginLeft="17dp"
+                android:layout_marginStart="17dp" />
 
             <ImageButton
                 android:id="@+id/ib_sync_status"
@@ -117,21 +119,21 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tv_status"
                 android:layout_marginTop="10dp"
-                android:layout_toEndOf="@+id/tv_reset"
-                android:layout_toRightOf="@id/tv_version_title"
+
+                android:layout_toRightOf="@+id/tv_version_title"
+                android:layout_toEndOf="@+id/tv_version_title"
+                android:layout_marginLeft="17dp"
+                android:layout_marginStart="17dp"
                 android:text="+VERSION:hc01.comV2.1" />
 
             <ImageButton
                 android:id="@+id/ib_sync_version"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:layout_alignBottom="@+id/tv_version"
-                android:layout_marginLeft="20dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="10dp"
-                android:layout_toEndOf="@+id/tv_version"
-                android:layout_toRightOf="@+id/tv_version"
-                android:background="@drawable/sync" />
+                android:background="@drawable/sync"
+                android:layout_above="@+id/btn_set_date"
+                android:layout_alignLeft="@+id/btn_set_date"
+                android:layout_alignStart="@+id/btn_set_date" />
 
             <TextView
                 android:id="@+id/tv_date_title"
@@ -148,8 +150,10 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tv_version"
                 android:layout_marginTop="10dp"
-                android:layout_toEndOf="@+id/tv_reset"
-                android:layout_toRightOf="@id/tv_version_title"
+                android:layout_toRightOf="@+id/tv_version_title"
+                android:layout_toEndOf="@+id/tv_version_title"
+                android:layout_marginLeft="17dp"
+                android:layout_marginStart="17dp"
                 android:text="27-06-17 08:55:10" />
 
             <Button
@@ -161,34 +165,57 @@
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true" />
 
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cv_schedule"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        card_view:cardCornerRadius="4dp"
+        android:layout_marginTop="14dp"
+        android:layout_below="@+id/card_view"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp">
+
             <TextView
                 android:id="@+id/tv_schedule_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/tv_date_title"
-                android:layout_marginLeft="10dp"
                 android:layout_marginTop="10dp"
-                android:text="Рассписание" />
+                android:text="Рассписание"
+                android:layout_marginLeft="3dp"
+                android:textSize="18sp"/>
 
-            <EditText
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/et_schedule"
-                android:text="schedule_file.pdf"
+                android:id="@+id/btn_generate_schedule"
+                android:text="Сгенерировать"
+                android:drawableLeft="@drawable/tools"
+                android:layout_marginTop="10dp"
+                android:drawablePadding="15dp"
                 android:textSize="15sp"
-                android:layout_marginLeft="5dp"
-                android:layout_below="@id/tv_schedule_title"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                />
-            <Button
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:id="@+id/btn_remove_schedule"
-                android:layout_toRightOf="@+id/et_schedule"
-                android:layout_toEndOf="@+id/et_schedule"
-                android:background="@drawable/delete"
-                android:layout_alignTop="@+id/et_schedule" />
+                android:layout_below="@+id/tv_schedule_title" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/btn_new_schedule"
+                android:text="Загрузить"
+                android:drawableLeft="@drawable/pdf"
+                android:layout_marginTop="10dp"
+                android:drawablePadding="15dp"
+                android:textSize="15sp"
+                android:layout_below="@+id/btn_generate_schedule" />
+
 
 
         </RelativeLayout>

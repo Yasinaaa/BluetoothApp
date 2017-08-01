@@ -62,7 +62,7 @@ public class ChooseDeviceActivity extends AppCompatActivity {
     private void init(){
 
         //TODO: get list from bluetooth devices
-        mDeviceList = Arrays.asList("Device 1", "jjhgDevice 2", "hhDevice 3", "yyDevice 4", "Dhevice 5", "Dehvice 6");
+        mDeviceList = Arrays.asList("Runline", "Device 2", "Device 3", "Device 4", "Device 5", "Device 6");
         mDeviceAdapter = new DeviceAdapter(mDeviceList);
         mRvDevicesList.setAdapter(mDeviceAdapter);
 
