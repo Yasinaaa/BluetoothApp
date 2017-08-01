@@ -1,6 +1,7 @@
 package ru.android.bluetooth.view;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.MenuItemCompat;
@@ -135,6 +136,8 @@ public class ChooseDeviceActivity extends AppCompatActivity {
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 Toast.makeText(getBaseContext(), "Pressed OK", Toast.LENGTH_SHORT).show();
+                                //TODO: save login and password
+                                startMainView();
                             }
                         })
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -145,6 +148,12 @@ public class ChooseDeviceActivity extends AppCompatActivity {
                 passwordDialogBuilder.show();
             }
         });
+    }
+
+    private void startMainView(){
+        Intent intent = new Intent(ChooseDeviceActivity.this, MainActivity.class);
+        //intent.putExtra("key", value);
+        startActivity(intent);
     }
 
 

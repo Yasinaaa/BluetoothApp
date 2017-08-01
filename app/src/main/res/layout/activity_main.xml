@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="10dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_device_title"
+        android:gravity="center"
+        android:text="Runtime"
+        android:textSize="30sp"/>
+
+    <Switch
+        android:id="@+id/switch_on_off_device"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textOn="On"
+        android:textOff="Off"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:showText="true"/>
+
+    <ToggleButton
+        android:id="@+id/switch_mode_device"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textOn="Ручной режим"
+        android:textOff="Авто режим"
+        android:showText="true"
+        android:layout_below="@+id/tv_device_title"
+        android:layout_centerHorizontal="true" />
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_view"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        card_view:cardCornerRadius="4dp"
+        android:layout_marginTop="13dp"
+        android:layout_below="@+id/switch_mode_device">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp">
+
+            <TextView
+                android:id="@+id/tv_reset"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/btn_reset_controller"
+                android:layout_alignBottom="@+id/btn_reset_controller"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginLeft="11dp"
+                android:layout_marginStart="11dp"
+                android:text="Сброс контроллера" />
+
+            <Button
+                android:id="@+id/btn_reset_controller"
+                android:layout_width="60dp"
+                android:layout_height="40dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:text="OK" />
+
+            <TextView
+                android:id="@+id/tv_status_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/tv_reset"
+                android:layout_alignStart="@+id/tv_reset"
+                android:layout_below="@id/tv_reset"
+                android:layout_marginTop="10dp"
+                android:text="Статус" />
+
+            <TextView
+                android:id="@+id/tv_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/btn_reset_controller"
+                android:layout_toEndOf="@+id/tv_reset"
+                android:layout_toRightOf="@+id/tv_reset"
+                android:text="soft:09 01 \n27-06-17 08:55:10" />
+
+            <ImageButton
+                android:id="@+id/ib_sync_status"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignLeft="@+id/btn_reset_controller"
+                android:layout_alignStart="@+id/btn_reset_controller"
+                android:layout_below="@+id/btn_reset_controller"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/sync" />
+
+
+            <TextView
+                android:id="@+id/tv_version_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_status"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:text="Версия" />
+
+            <TextView
+                android:id="@+id/tv_version"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_status"
+                android:layout_marginTop="10dp"
+                android:layout_toEndOf="@+id/tv_reset"
+                android:layout_toRightOf="@id/tv_version_title"
+                android:text="+VERSION:hc01.comV2.1" />
+
+            <ImageButton
+                android:id="@+id/ib_sync_version"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignBottom="@+id/tv_version"
+                android:layout_marginLeft="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_toEndOf="@+id/tv_version"
+                android:layout_toRightOf="@+id/tv_version"
+                android:background="@drawable/sync" />
+
+            <TextView
+                android:id="@+id/tv_date_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_version_title"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:text="Дата" />
+
+            <TextView
+                android:id="@+id/tv_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_version"
+                android:layout_marginTop="10dp"
+                android:layout_toEndOf="@+id/tv_reset"
+                android:layout_toRightOf="@id/tv_version_title"
+                android:text="27-06-17\n08:55:10" />
+
+            <Button
+                android:id="@+id/btn_set_date"
+                android:layout_width="60dp"
+                android:layout_height="40dp"
+                android:text="SET"
+                android:layout_below="@+id/tv_version"
+                android:layout_alignRight="@+id/btn_reset_controller"
+                android:layout_alignEnd="@+id/ib_sync_version" />
+        </RelativeLayout>
+
+
+    </android.support.v7.widget.CardView>
+
+</RelativeLayout>
