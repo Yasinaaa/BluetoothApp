@@ -8,7 +8,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="ru.android.bluetooth.ChooseDeviceActivity">
+    tools:context="ru.android.bluetooth.view.ChooseDeviceActivity">
 
     <ProgressBar
         android:id="@+id/login_progress"
@@ -30,29 +30,29 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/tv_choose_device"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/tv_choose_device"
                 android:text="@string/choose_device"
                 android:textSize="25sp" />
 
             <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_devices"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/rv_devices"
                 android:layout_below="@id/tv_choose_device"
                 android:layout_marginTop="10dp">
             </android.support.v7.widget.RecyclerView>
 
             <Button
+                android:id="@+id/btn_connect"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/btn_connect"
-                android:layout_below="@id/rv_devices"
                 android:layout_alignParentBottom="true"
-                android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
-                android:text="@string/connect"/>
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/rv_devices"
+                android:text="@string/connect" />
 
         </RelativeLayout>
 

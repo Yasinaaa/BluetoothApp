@@ -16,5 +16,6 @@
 
 
     <string name="choose_device">Выберите устройство</string>
-    <string name="connect">Присоединиться</string>
+    <string name="connect">Cоединиться</string>
+    <string name="action_search">Search</string>
 </resources>
