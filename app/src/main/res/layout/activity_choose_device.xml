@@ -52,6 +52,9 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_below="@id/rv_devices"
+                android:background="@drawable/btn_corner"
+                android:padding="@dimen/btn_padding"
+                android:textColor="@android:color/white"
                 android:text="@string/connect" />
 
         </RelativeLayout>

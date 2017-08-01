@@ -2,8 +2,7 @@ package ru.android.bluetooth.root;
 
 import javax.inject.Singleton;
 
-import dagger.Component;
-import ru.android.bluetooth.view.ChooseDeviceActivity2;
+import ru.android.bluetooth.view.ChooseDeviceActivity;
 
 /**
  * Created by itisioslab on 01.08.17.
@@ -13,6 +12,6 @@ import ru.android.bluetooth.view.ChooseDeviceActivity2;
 //@Component(modules = {ApplicationModule.class, ApiModuleForFetva.class})
 public interface ApplicationComponent {
 
-    void inject(ChooseDeviceActivity2 target);
+    void inject(ChooseDeviceActivity target);
 
 }
