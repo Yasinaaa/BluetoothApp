@@ -1,12 +1,17 @@
 package ru.android.bluetooth.view;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.ToggleButton;
@@ -14,15 +19,13 @@ import android.widget.ToggleButton;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.android.bluetooth.R;
+import ru.android.bluetooth.utils.ActivityHelper;
 
 /**
  * Created by itisioslab on 01.08.17.
  */
 
 public class MainActivity extends AppCompatActivity {
-
-    private final String ON = "on";
-    private final String OFF = "off";
 
     @BindView(R.id.tv_device_title)
     TextView mTvDeviceTitle;
@@ -68,6 +71,10 @@ public class MainActivity extends AppCompatActivity {
     TextView mTvNewSchedule;
     @BindView(R.id.tb_mode_device)
     ToggleButton mTbSwitchModeDevice;
+    @BindView(R.id.rl)
+    RelativeLayout mRl;
+
+    private RelativeLayout.LayoutParams mRlLayoutParams;
 
 
     @Override
@@ -75,21 +82,73 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        ((App) getApplication()).getComponent().inject(this);
+        //((App) getApplication()).getComponent().inject(this);
         ButterKnife.bind(this);
         init();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     private void init(){
+
+        mRlLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        setMode();
+
         mTbSwitchModeDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(mTbSwitchModeDevice.getText().equals(ON)){
-
-                }else {
-
-                }
+               setMode();
             }
         });
+
+        mTvEditSchedule.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ActivityHelper.startActivity(MainActivity.this, CalendarActivity.class);
+            }
+        });
+    }
+
+    private void setMode(){
+        if(mTbSwitchModeDevice.getText().equals(getResources().getString(R.string.manual_mode))){
+            setModeVisiblity(View.INVISIBLE);
+            mRlLayoutParams.addRule(RelativeLayout.BELOW, R.id.cv_controller_functions);
+        }else {
+            setModeVisiblity(View.VISIBLE);
+            mRlLayoutParams.addRule(RelativeLayout.BELOW, R.id.cv_on_off_info);
+        }
+        mRlLayoutParams.setMargins(0,10,0,0);
+        mCvSchedule.setLayoutParams(mRlLayoutParams);
+    }
+
+    private void setModeVisiblity(int visiblity){
+        mCvControllerFunctions.setVisibility(visiblity == View.VISIBLE ? View.INVISIBLE : View.VISIBLE);
+        mCvOnOffInfo.setVisibility(visiblity);
+
+        if(visiblity == View.INVISIBLE){
+            setScheduleModeVisiblity(View.GONE);
+        }else {
+            setScheduleModeVisiblity(View.VISIBLE);
+        }
+
+    }
+
+    private void setScheduleModeVisiblity(int visiblity){
+        mEtSchedule.setVisibility(visiblity);
+        mBtnRemoveSchedule.setVisibility(visiblity);
+        mTvEditSchedule.setVisibility(visiblity);
+    }
+
+    // arguing for it
+    private int setOppositeVisiblity(int visiblity){
+        return visiblity == View.VISIBLE ? View.INVISIBLE : View.VISIBLE;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        onBackPressed();
+        return true;
     }
 }

@@ -31,7 +31,7 @@
         android:id="@+id/tb_mode_device"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textOn="Ручной режим"
+        android:textOn="@string/manual_mode"
         android:textOff="Авто режим"
         android:showText="true"
         android:layout_below="@+id/tv_device_title"

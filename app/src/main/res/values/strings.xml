@@ -21,4 +21,7 @@
     <string name="input_password">Введите пароль</string>
     <string name="title_activity_login">Sign in</string>
     <string name="password">Пароль</string>
+    <string name="manual_mode">Ручной режим</string>
+    <string name="auto_mode">Авто режим</string>
+    <string name="power">Мощность</string>
 </resources>

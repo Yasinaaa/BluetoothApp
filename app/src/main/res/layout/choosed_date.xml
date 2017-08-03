@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="10dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_sunrise"
+        android:text="03:54"
+        android:gravity="center"
+        android:textSize="50sp"
+        android:layout_above="@+id/tv_sunrise_title"
+       />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_sunrise_title"
+        android:text="восход"
+        android:gravity="center"
+        android:textSize="30sp"
+        android:layout_above="@+id/tv_sunset"
+        />
+
+    <ImageButton
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:id="@+id/ib_change_sunrise_time"
+        android:background="@drawable/alarm"
+        android:layout_alignTop="@+id/tv_sunrise"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_sunset"
+        android:text="19:50"
+        android:gravity="center_horizontal"
+        android:textSize="50sp"
+        android:layout_above="@+id/tv_sunset_title"
+        android:layout_marginTop="20dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_sunset_title"
+        android:text="закат"
+        android:gravity="center_horizontal"
+        android:textSize="30sp"
+        android:layout_centerVertical="true"/>
+
+    <ImageButton
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:id="@+id/ib_change_sunset_time"
+        android:background="@drawable/alarm"
+        android:layout_alignTop="@+id/tv_sunset"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/til_power"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_sunset_title"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+        <EditText
+            android:id="@+id/et_power"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/power"
+            android:imeActionLabel="@string/power"
+            android:imeOptions="actionUnspecified"
+            android:inputType="number"
+            android:maxLines="1" />
+       <!-- <NumberPicker
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:hint="@string/power"
+            android:imeActionLabel="@string/power"
+            android:layout_gravity="center"
+            android:id="@+id/np"></NumberPicker>-->
+
+    </android.support.design.widget.TextInputLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_sunrise_min"
+        android:layout_below="@+id/til_power"
+        android:text="Восход мин.: 480"
+        android:textSize="20sp"
+        android:layout_marginTop="10dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_sunset_min"
+        android:layout_below="@+id/tv_sunrise_min"
+        android:text="Закат мин.: 907"
+        android:textSize="20sp"
+        android:layout_marginTop="10dp"/>
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/fab_save_one_day_schedule"
+        android:src="@android:drawable/ic_menu_save"
+        android:padding="20dp"/>
+
+</RelativeLayout>
