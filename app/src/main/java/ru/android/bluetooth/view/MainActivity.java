@@ -1,10 +1,13 @@
 package ru.android.bluetooth.view;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import butterknife.BindView;
@@ -66,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.tv_edit_schedule)
     TextView mTvEditSchedule;
     @BindView(R.id.tv_generate_schedule)
-    TextView mTvGenerateschedule;
+    TextView mTvGenerateSchedule;
     @BindView(R.id.tv_new_schedule)
     TextView mTvNewSchedule;
     @BindView(R.id.tb_mode_device)
@@ -108,6 +112,8 @@ public class MainActivity extends AppCompatActivity {
                 ActivityHelper.startActivity(MainActivity.this, CalendarActivity.class);
             }
         });
+
+        setGenerationType();
     }
 
     private void setMode(){
@@ -150,5 +156,48 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         onBackPressed();
         return true;
+    }
+
+    private void setGenerationType(){
+        final Activity activity = this;
+        mTvGenerateSchedule.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LayoutInflater inflater = activity.getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.dialog_choose_generation_schedule_type, null);
+                TextView handGeneration = dialogView.findViewById(R.id.tv_generate_schedule_hand);
+                handGeneration.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                    }
+                });
+                TextView sunRiseSetGeneration = dialogView.findViewById(R.id.tv_generate_schedule_sunrise_set);
+                sunRiseSetGeneration.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                    }
+                });
+
+                AlertDialog.Builder passwordDialogBuilder = new AlertDialog.Builder(activity)
+                        .setTitle(getString(R.string.input_password))
+                        .setView(dialogView)
+
+                        /*.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                Toast.makeText(getBaseContext(), "Pressed OK", Toast.LENGTH_SHORT).show();
+                                //TODO: save login and password
+                                ActivityHelper.startActivity(MainActivity.this, MainActivity.class);
+                            }
+                        })*/
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                Toast.makeText(getBaseContext(), "Cancel", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                passwordDialogBuilder.show();
+            }
+        });
     }
 }

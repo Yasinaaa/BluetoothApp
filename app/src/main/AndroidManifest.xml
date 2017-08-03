@@ -28,6 +28,8 @@
         </activity>
         <activity android:name=".view.ChangeOneDayScheduleActivity">
         </activity>
+        <activity android:name=".view.GenerateSunRiseSetActivity">
+        </activity>
     </application>
 
 </manifest>

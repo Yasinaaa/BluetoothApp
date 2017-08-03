@@ -9,7 +9,10 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.CalendarView;
+import android.widget.FrameLayout;
 import android.widget.Toast;
+
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,7 +31,7 @@ public class CalendarActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.calendar);
+        setContentView(R.layout.activity_calendar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //((App) getApplication()).getComponent().inject(this);
@@ -37,6 +40,30 @@ public class CalendarActivity extends AppCompatActivity {
     }
 
     private void init(){
+        final FrameLayout frameLayout = (FrameLayout) findViewById(R.id.frame_layout);
+        frameLayout.getBackground().setAlpha(0);
+        final FloatingActionsMenu fabMenu = (FloatingActionsMenu) findViewById(R.id.fab_menu);
+        fabMenu.setOnFloatingActionsMenuUpdateListener(new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
+            @Override
+            public void onMenuExpanded() {
+                frameLayout.getBackground().setAlpha(240);
+                frameLayout.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        fabMenu.collapse();
+
+                        return true;
+                    }
+                });
+            }
+
+            @Override
+            public void onMenuCollapsed() {
+                frameLayout.getBackground().setAlpha(0);
+                frameLayout.setOnTouchListener(null);
+                ActivityHelper.startActivity(CalendarActivity.this, GenerateSunRiseSetActivity.class);
+            }
+        });
         mCalendarViewSchedule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -61,6 +88,15 @@ public class CalendarActivity extends AppCompatActivity {
                 return false;
             }
         });
+        /*
+        calendarView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener(){
+            @Override
+            public void onGlobalLayout()
+            {
+            //your code here
+            }
+        });
+         */
     }
 
     @Override
