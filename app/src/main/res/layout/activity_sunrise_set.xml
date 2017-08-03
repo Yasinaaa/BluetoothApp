@@ -28,7 +28,7 @@
     <ImageButton
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:id="@+id/ib_change_sunrise_time"
+        android:id="@+id/ib_change_start_time"
         android:background="@drawable/alarm"
         android:layout_alignTop="@+id/tv_sunrise"
         android:layout_alignParentRight="true"
@@ -56,7 +56,7 @@
     <ImageButton
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:id="@+id/ib_change_sunset_time"
+        android:id="@+id/ib_change_finish_time"
         android:background="@drawable/alarm"
         android:layout_alignTop="@+id/tv_sunset"
         android:layout_alignParentRight="true"
