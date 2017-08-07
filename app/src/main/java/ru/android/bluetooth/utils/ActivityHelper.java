@@ -2,10 +2,6 @@ package ru.android.bluetooth.utils;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Bundle;
-
-import ru.android.bluetooth.view.ChooseDeviceActivity;
-import ru.android.bluetooth.view.MainActivity;
 
 /**
  * Created by itisioslab on 03.08.17.

@@ -1,13 +1,21 @@
-package ru.android.bluetooth.view;
+package ru.android.bluetooth.main;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothHeadset;
+import android.bluetooth.BluetoothProfile;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,10 +30,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import java.io.UnsupportedEncodingException;
+import java.util.Set;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.android.bluetooth.R;
 import ru.android.bluetooth.utils.ActivityHelper;
+import ru.android.bluetooth.view.CalendarActivity;
+
 
 /**
  * Created by itisioslab on 01.08.17.
@@ -82,7 +94,10 @@ public class MainActivity extends AppCompatActivity {
 
     private RelativeLayout.LayoutParams mRlLayoutParams;
 
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         init();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
     }
 
     private void init(){
@@ -186,14 +202,6 @@ public class MainActivity extends AppCompatActivity {
                 AlertDialog.Builder passwordDialogBuilder = new AlertDialog.Builder(activity)
                         .setTitle(getString(R.string.input_password))
                         .setView(dialogView)
-
-                        /*.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                Toast.makeText(getBaseContext(), "Pressed OK", Toast.LENGTH_SHORT).show();
-                                //TODO: save login and password
-                                ActivityHelper.startActivity(MainActivity.this, MainActivity.class);
-                            }
-                        })*/
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 Toast.makeText(getBaseContext(), "Cancel", Toast.LENGTH_SHORT).show();
@@ -219,4 +227,5 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
 }

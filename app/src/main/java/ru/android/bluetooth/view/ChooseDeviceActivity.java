@@ -1,38 +1,70 @@
 package ru.android.bluetooth.view;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import org.apache.commons.io.IOUtils;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import ru.android.bluetooth.Manifest;
 import ru.android.bluetooth.R;
 import ru.android.bluetooth.adapter.DeviceAdapter;
+import ru.android.bluetooth.bluetooth.BluetoothModule;
+import ru.android.bluetooth.main.MainActivity;
+import ru.android.bluetooth.main.MainMvp;
 import ru.android.bluetooth.utils.ActivityHelper;
 
 /**
  * Created by itisioslab on 01.08.17.
  */
 
-public class ChooseDeviceActivity extends AppCompatActivity {
+public class ChooseDeviceActivity extends AppCompatActivity implements MainMvp.View{
 
     @BindView(R.id.rv_devices)
     RecyclerView mRvDevicesList;
@@ -40,7 +72,8 @@ public class ChooseDeviceActivity extends AppCompatActivity {
     Button mBtnConnect;
 
     private DeviceAdapter mDeviceAdapter;
-    private List<String> mDeviceList;
+    private List<String> mDeviceList = new ArrayList<String>();
+    private BluetoothModule mBluetoothModule;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,13 +82,23 @@ public class ChooseDeviceActivity extends AppCompatActivity {
 
 //        ((App) getApplication()).getComponent().inject(this);
         ButterKnife.bind(this);
+        mBluetoothModule = BluetoothModule.createBluetoohModule(this, this);
         init();
     }
 
+
+
+   /* private void writeMessage(String text){
+        if (mConnectedThread != null) {
+            mConnectedThread.write(text);
+            byte[] buffer = new byte[1014];
+        }
+    }*/
+
+
+
     private void init(){
 
-        //TODO: get list from bluetooth devices
-        mDeviceList = Arrays.asList("Runline", "Device 2", "Device 3", "Device 4", "Device 5", "Device 6");
         mDeviceAdapter = new DeviceAdapter(mDeviceList);
         mRvDevicesList.setAdapter(mDeviceAdapter);
 
@@ -142,9 +185,34 @@ public class ChooseDeviceActivity extends AppCompatActivity {
             }
         });
     }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent Data){
 
+    }
 
+    @Override
+    public void setView(String text) {
 
+    }
 
+    @Override
+    public void addDevice(String text) {
+        mDeviceList.add(text);
+    }
+
+    @Override
+    public void setStatus(String text) {
+
+    }
+
+    @Override
+    public void updateData(String text) {
+
+    }
+
+    @Override
+    public void showSnackBar(String text) {
+
+    }
 
 }
