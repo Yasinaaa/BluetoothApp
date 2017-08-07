@@ -8,19 +8,31 @@
     android:layout_margin="10dp">
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/tv_device_title"
         android:gravity="center"
         android:text="Runtime"
-        android:textSize="30sp"/>
+        android:textSize="30sp"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/tb_mode_device"
+        android:layout_alignEnd="@+id/tb_mode_device" />
+
+    <ImageButton
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:id="@+id/ib_change_name"
+        android:background="@drawable/sync"
+        android:layout_marginRight="10dp"
+        android:layout_toLeftOf="@id/tv_device_title"
+        />
 
     <Switch
         android:id="@+id/switch_on_off_device"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textOn="On"
-        android:textOff="Off"
+        android:textOn="  On  "
+        android:textOff="  Off  "
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
@@ -128,15 +140,33 @@
             android:padding="10dp">
 
             <TextView
+                android:id="@+id/tv_change_password"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Изменить пароль"
+                android:padding="5dp"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/tv_date_title"
+                android:layout_toEndOf="@+id/tv_date_title" />
+
+            <ImageButton
+                android:id="@+id/ib_reset_controller"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:background="@drawable/sync"
+                android:layout_toLeftOf="@+id/tv_change_password"
+                android:layout_marginRight="10dp"
+                android:text="OK" />
+
+
+            <TextView
                 android:id="@+id/tv_reset"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignBaseline="@+id/btn_reset_controller"
-                android:layout_alignBottom="@+id/btn_reset_controller"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
                 android:layout_marginLeft="11dp"
                 android:layout_marginStart="11dp"
+                android:layout_marginTop="10dp"
+                android:layout_below="@+id/tv_change_password"
                 android:text="Сброс контроллера" />
 
             <Button
@@ -145,7 +175,7 @@
                 android:layout_height="40dp"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
+                android:layout_below="@+id/tv_change_password"
                 android:text="OK" />
 
             <TextView
@@ -163,10 +193,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="soft:09 01 \n27-06-17 08:55:10"
-                android:layout_below="@+id/btn_reset_controller"
+                android:layout_below="@+id/tv_reset"
                 android:layout_toRightOf="@+id/tv_repeat_day"
                 android:layout_toEndOf="@+id/tv_repeat_day"
                 android:layout_marginLeft="17dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginStart="17dp" />
 
             <ImageButton

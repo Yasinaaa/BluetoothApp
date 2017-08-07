@@ -29,10 +29,10 @@ public class BluetoothMessage {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                         try {
                             readMessage =  IOUtils.toString(r, "utf-8");
-                            //TODO: wrong!!!
-                            readMessage = readMessage.trim().replaceAll("�", "").replace("OK","");
+                            readMessage = readMessage.trim().replaceAll("�", "");
+                            if(readMessage.length() > 2) readMessage.replace("OK","");
                             mBluetoothMessageListener.onResponse(readMessage);
-                            Log.d("df", "readMessage = " + readMessage);
+
                         } catch (IOException e) {
                             e.printStackTrace();
                         }

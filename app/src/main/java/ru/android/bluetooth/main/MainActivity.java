@@ -257,16 +257,16 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
         Log.d(TAG, answer);
         switch (mStatus){
             case BluetoothCommands.RESET:
-
+                mTvReset.setText(answer);
                 break;
             case BluetoothCommands.STATUS:
                 mTvStatus.setText(answer);
                 break;
             case BluetoothCommands.VERSION:
-
+                mTvVersion.setText(answer);
                 break;
             case BluetoothCommands.GET_TIME:
-
+                mTvDate.setText(answer);
                 break;
             case BluetoothCommands.SET_DATA:
 
