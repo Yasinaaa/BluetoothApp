@@ -5,4 +5,7 @@ package ru.android.bluetooth.main;
  */
 
 public interface MainModel {
+
+    void setDeviceTitle(String title);
+    void setStatus(String status);
 }

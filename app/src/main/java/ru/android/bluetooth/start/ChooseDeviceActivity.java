@@ -1,70 +1,44 @@
-package ru.android.bluetooth.view;
+package ru.android.bluetooth.start;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.SystemClock;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
-
-import org.apache.commons.io.IOUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import ru.android.bluetooth.Manifest;
 import ru.android.bluetooth.R;
 import ru.android.bluetooth.adapter.DeviceAdapter;
 import ru.android.bluetooth.bluetooth.BluetoothModule;
+import ru.android.bluetooth.common.CommonView;
 import ru.android.bluetooth.main.MainActivity;
-import ru.android.bluetooth.main.MainMvp;
 import ru.android.bluetooth.utils.ActivityHelper;
+import ru.android.bluetooth.utils.BluetoothHelper;
 
 /**
  * Created by itisioslab on 01.08.17.
  */
 
-public class ChooseDeviceActivity extends AppCompatActivity implements MainMvp.View{
+public class ChooseDeviceActivity extends AppCompatActivity implements ChooseDeviceView, DeviceAdapter.OnItemClicked {
 
     @BindView(R.id.rv_devices)
     RecyclerView mRvDevicesList;
@@ -77,15 +51,25 @@ public class ChooseDeviceActivity extends AppCompatActivity implements MainMvp.V
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_choose_device);
+       super.onCreate(savedInstanceState);
+       checkBluetoothUser();
 
-//        ((App) getApplication()).getComponent().inject(this);
+    }
+
+    private void checkBluetoothUser(){
+        /*if(!BluetoothHelper.isFirstLaunch(getApplicationContext())){
+            goNext();
+        }else {
+            setContentView(R.layout.activity_choose_device);
+            ButterKnife.bind(this);
+            mBluetoothModule = BluetoothModule.createBluetoohModule(this, this);
+            init();
+        }*/
+        setContentView(R.layout.activity_choose_device);
         ButterKnife.bind(this);
         mBluetoothModule = BluetoothModule.createBluetoohModule(this, this);
         init();
     }
-
 
 
    /* private void writeMessage(String text){
@@ -99,7 +83,7 @@ public class ChooseDeviceActivity extends AppCompatActivity implements MainMvp.V
 
     private void init(){
 
-        mDeviceAdapter = new DeviceAdapter(mDeviceList);
+        mDeviceAdapter = new DeviceAdapter(mDeviceList, this);
         mRvDevicesList.setAdapter(mDeviceAdapter);
 
         mRvDevicesList.setItemAnimator(new DefaultItemAnimator());
@@ -191,28 +175,17 @@ public class ChooseDeviceActivity extends AppCompatActivity implements MainMvp.V
     }
 
     @Override
-    public void setView(String text) {
-
-    }
-
-    @Override
     public void addDevice(String text) {
         mDeviceList.add(text);
     }
 
     @Override
-    public void setStatus(String text) {
-
+    public void onItemClick(String text) {
+        mBluetoothModule.connectDevice(text, this);
     }
 
     @Override
-    public void updateData(String text) {
-
+    public void goNext(){
+        ActivityHelper.startActivity(ChooseDeviceActivity.this, MainActivity.class);
     }
-
-    @Override
-    public void showSnackBar(String text) {
-
-    }
-
 }

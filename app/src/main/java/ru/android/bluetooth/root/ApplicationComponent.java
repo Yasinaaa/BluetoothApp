@@ -2,7 +2,7 @@ package ru.android.bluetooth.root;
 
 import javax.inject.Singleton;
 
-import ru.android.bluetooth.view.ChooseDeviceActivity;
+import ru.android.bluetooth.start.ChooseDeviceActivity;
 
 /**
  * Created by itisioslab on 01.08.17.

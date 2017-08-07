@@ -35,6 +35,11 @@ import java.util.Set;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.android.bluetooth.R;
+import ru.android.bluetooth.bluetooth.BluetoothCommands;
+import ru.android.bluetooth.bluetooth.BluetoothMessage;
+import ru.android.bluetooth.bluetooth.BluetoothModule;
+import ru.android.bluetooth.bluetooth.ConnectedThread;
+import ru.android.bluetooth.common.CommonView;
 import ru.android.bluetooth.utils.ActivityHelper;
 import ru.android.bluetooth.view.CalendarActivity;
 
@@ -43,8 +48,9 @@ import ru.android.bluetooth.view.CalendarActivity;
  * Created by itisioslab on 01.08.17.
  */
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MainModel, BluetoothMessage.BluetoothMessageListener{
 
+    private final String TAG = MainActivity.class.getName();
     @BindView(R.id.tv_device_title)
     TextView mTvDeviceTitle;
     @BindView(R.id.switch_on_off_device)
@@ -93,11 +99,14 @@ public class MainActivity extends AppCompatActivity {
     RelativeLayout mRl;
 
     private RelativeLayout.LayoutParams mRlLayoutParams;
+    private BluetoothMessage mBluetoothMessage;
+    private String mStatus;
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,6 +120,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init(){
+
+        mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
+        mBluetoothMessage.setBluetoothMessageListener(this);
 
         mRlLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -133,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
 
         setGenerationType();
         setDate();
+        setClickListeners();
     }
 
     private void setMode(){
@@ -228,4 +241,46 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
+    @Override
+    public void setDeviceTitle(String title) {
+        mTvDeviceTitle.setText(title);
+    }
+
+    @Override
+    public void setStatus(String status) {
+        mTvStatus.setText(status);
+    }
+
+    @Override
+    public void onResponse(String answer) {
+        Log.d(TAG, answer);
+        switch (mStatus){
+            case BluetoothCommands.RESET:
+
+                break;
+            case BluetoothCommands.STATUS:
+                mTvStatus.setText(answer);
+                break;
+            case BluetoothCommands.VERSION:
+
+                break;
+            case BluetoothCommands.GET_TIME:
+
+                break;
+            case BluetoothCommands.SET_DATA:
+
+                break;
+        }
+    }
+
+    private void setClickListeners(){
+        mIbSyncStatus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mStatus = BluetoothCommands.STATUS;
+                mBluetoothMessage.writeMessage(mStatus);
+            }
+        });
+    }
 }

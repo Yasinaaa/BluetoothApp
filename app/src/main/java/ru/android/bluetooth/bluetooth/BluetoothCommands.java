@@ -4,7 +4,7 @@ package ru.android.bluetooth.bluetooth;
  * Created by yasina on 05.08.17.
  */
 
-public class Api {
+public class BluetoothCommands {
     public static final String RESET = "Reset\r\n";
     public static final String STATUS = "Read Status\r\n";
     public static final String VERSION = "Get Version\r\n";
@@ -19,4 +19,8 @@ public class Api {
     public static final String OFF = "Rele Off\r\n";
     public static final String MANUAL_ON = "Manual On\r\n";
     public static final String MANUAL_OFF = "Manual Off\r\n";
+
+    public final static int REQUEST_ENABLE_BT = 1;
+    public final static int MESSAGE_READ = 2;
+    public final static int CONNECTING_STATUS = 3;
 }

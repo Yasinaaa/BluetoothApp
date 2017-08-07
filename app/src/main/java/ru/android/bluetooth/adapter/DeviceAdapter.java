@@ -22,9 +22,17 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceHold
     private List<String> mList;
     private List<String> mFilteredList;
 
-    public DeviceAdapter(List<String> list) {
+    private OnItemClicked onClick;
+
+    public interface OnItemClicked {
+        void onItemClick(String text);
+    }
+
+
+    public DeviceAdapter(List<String> list, OnItemClicked onClick) {
         this.mList = list;
         mFilteredList = list;
+        this.onClick = onClick;
     }
 
     @Override
@@ -35,8 +43,19 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceHold
     }
 
     @Override
-    public void onBindViewHolder(DeviceHolder holder, int position) {
+    public void onBindViewHolder(DeviceHolder holder, final int position) {
         holder.title.setText(mFilteredList.get(position));
+        holder.itemView.getRootView().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onClick.onItemClick(mFilteredList.get(position));
+            }
+        });
+    }
+
+    public void setOnClick(OnItemClicked onClick)
+    {
+        this.onClick=onClick;
     }
 
     @Override

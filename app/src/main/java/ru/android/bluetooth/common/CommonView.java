@@ -5,6 +5,7 @@ package ru.android.bluetooth.common;
  */
 
 public interface CommonView {
-    void setView(String text);
+
+
 }
 
