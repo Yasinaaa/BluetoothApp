@@ -39,7 +39,7 @@
             fab:fab_labelsPosition="left">
 
             <com.getbase.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_event"
+                android:id="@+id/fab_generate_shedule_hand"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 fab:fab_colorNormal="@color/colorPrimary"
@@ -47,10 +47,11 @@
                 fab:fab_plusIconColor="@color/white"
                 fab:fab_icon="@drawable/hand"
                 fab:fab_size="mini"
+                android:onClick="fabClicked"
                 fab:fab_title="Сгенерировать в ручную" />
 
             <com.getbase.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_photo"
+                android:id="@+id/fab_generate_schedule_sunrise_set"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 fab:fab_colorNormal="@color/colorPrimary"
@@ -58,7 +59,7 @@
                 fab:fab_plusIconColor="@color/white"
                 fab:fab_icon="@drawable/sunrise"
                 fab:fab_size="mini"
-                fab:fab_title="Восход/Закат" />
+                fab:fab_title="Генерация по Восходу/Закату солнца" />
 
         </com.getbase.floatingactionbutton.FloatingActionsMenu>
     </FrameLayout>

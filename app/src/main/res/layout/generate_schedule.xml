@@ -181,7 +181,7 @@
         android:layout_alignLeft="@+id/ib_change_sunset_time"
         android:layout_alignStart="@+id/ib_change_sunset_time"/>
 
-        android:layout_below="@+id/tv_repeat_end_day_title" >
+     <!--   android:layout_below="@+id/tv_repeat_end_day_title" -->
 
 <!--    android:layout_below="@+id/tv_repeat_day" -->
     <android.support.design.widget.TextInputLayout

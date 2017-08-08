@@ -41,6 +41,8 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
     private final String TAG = MainActivity.class.getName();
     @BindView(R.id.tv_device_title)
     TextView mTvDeviceTitle;
+    @BindView(R.id.tv_device_address)
+    TextView mTvDeviceAddress;
     @BindView(R.id.btn_on_device)
     Button mBtnOnDevice;
     @BindView(R.id.btn_off_device)
@@ -145,6 +147,7 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
     }
 
     private void setDeviceTitle(){
+        mTvDeviceAddress.setText(BluetoothHelper.getBluetoothUser(getApplicationContext())[0]);
         mTvDeviceTitle.setText(BluetoothHelper.getBluetoothUser(getApplicationContext())[1]);
     }
 

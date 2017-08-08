@@ -19,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/tv_sunrise_title"
-        android:text="старт"
+        android:text="Включение"
         android:gravity="center"
         android:textSize="30sp"
         android:layout_below="@+id/tv_sunrise"
@@ -48,7 +48,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/tv_sunset_title"
-        android:text="финиш"
+        android:text="Выключение"
         android:gravity="center_horizontal"
         android:textSize="30sp"
         android:layout_below="@+id/tv_sunset"/>

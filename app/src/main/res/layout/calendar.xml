@@ -33,7 +33,7 @@
         android:layout_alignParentEnd="true">
 
         <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_event"
+            android:id="@+id/fab_generate_shedule_hand"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             fab:fab_colorNormal="@color/colorPrimary"
@@ -44,7 +44,7 @@
             fab:fab_title="Сгенерировать в ручную" />
 
         <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_photo"
+            android:id="@+id/fab_generate_schedule_sunrise_set"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             fab:fab_colorNormal="@color/colorPrimary"

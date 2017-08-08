@@ -17,6 +17,7 @@ import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.android.bluetooth.R;
+import ru.android.bluetooth.schedule.ScheduleGeneratorActivity;
 import ru.android.bluetooth.utils.ActivityHelper;
 
 /**
@@ -37,6 +38,17 @@ public class CalendarActivity extends AppCompatActivity {
         //((App) getApplication()).getComponent().inject(this);
         ButterKnife.bind(this);
         init();
+    }
+
+    public void fabClicked(View v){
+       switch (v.getId()){
+           case R.id.fab_generate_shedule_hand:
+               ActivityHelper.startActivity(CalendarActivity.this, GenerateSunRiseSetActivity.class);
+               break;
+           case R.id.fab_generate_schedule_sunrise_set:
+               ActivityHelper.startActivity(CalendarActivity.this, ScheduleGeneratorActivity.class);
+               break;
+       }
     }
 
     private void init(){
@@ -61,9 +73,11 @@ public class CalendarActivity extends AppCompatActivity {
             public void onMenuCollapsed() {
                 frameLayout.getBackground().setAlpha(0);
                 frameLayout.setOnTouchListener(null);
-                ActivityHelper.startActivity(CalendarActivity.this, GenerateSunRiseSetActivity.class);
+
             }
         });
+
+
         mCalendarViewSchedule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
