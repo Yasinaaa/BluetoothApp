@@ -17,7 +17,7 @@
         android:textSize="30sp"/>
 
     <Switch
-        android:id="@+id/switch_on_off_device"
+        android:id="@+id/btn_on_device"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textOn="On"

@@ -27,16 +27,24 @@
         android:layout_toLeftOf="@id/tv_device_title"
         />
 
-    <Switch
-        android:id="@+id/switch_on_off_device"
+    <Button
+        android:id="@+id/btn_on_device"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textOn="  On  "
-        android:textOff="  Off  "
+        android:text="ON"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:showText="true"/>
+        android:layout_alignParentEnd="true"/>
+
+    <Button
+        android:id="@+id/btn_off_device"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="OFF"
+        android:layout_below="@+id/btn_on_device"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"/>
+
 
     <ToggleButton
         android:id="@+id/tb_mode_device"
@@ -144,20 +152,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Изменить пароль"
-                android:padding="5dp"
+                android:layout_marginLeft="11dp"
+                android:layout_marginTop="10dp"
+                android:drawablePadding="15dp"
+                android:drawableLeft="@drawable/pen"
                 android:layout_alignParentTop="true"
-                android:layout_toRightOf="@+id/tv_date_title"
-                android:layout_toEndOf="@+id/tv_date_title" />
-
-            <ImageButton
-                android:id="@+id/ib_reset_controller"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:background="@drawable/sync"
-                android:layout_toLeftOf="@+id/tv_change_password"
-                android:layout_marginRight="10dp"
-                android:text="OK" />
-
+                android:textSize="15sp"/>
 
             <TextView
                 android:id="@+id/tv_reset"

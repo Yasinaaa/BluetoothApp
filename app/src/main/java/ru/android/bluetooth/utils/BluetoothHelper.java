@@ -15,7 +15,7 @@ public class BluetoothHelper {
     public static final String PREF_NAME = "pref_name_data";
 
 
-    public static boolean isFirstLaunch(@Nullable Context context) {
+    /*public static boolean isFirstLaunch(@Nullable Context context) {
         if (context == null) return false;
 
         SharedPreferences sp =
@@ -24,7 +24,7 @@ public class BluetoothHelper {
             return true;
         }
         return false;
-    }
+    }*/
     @Nullable public static String[] getBluetoothUser(@Nullable final Context context) {
         if (context == null) return null;
 

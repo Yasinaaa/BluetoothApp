@@ -3,15 +3,7 @@ package ru.android.bluetooth.main;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothHeadset;
-import android.bluetooth.BluetoothProfile;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -30,17 +22,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import java.io.UnsupportedEncodingException;
-import java.util.Set;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.android.bluetooth.R;
 import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
-import ru.android.bluetooth.bluetooth.BluetoothModule;
-import ru.android.bluetooth.bluetooth.ConnectedThread;
-import ru.android.bluetooth.common.CommonView;
 import ru.android.bluetooth.utils.ActivityHelper;
+import ru.android.bluetooth.utils.BluetoothHelper;
 import ru.android.bluetooth.view.CalendarActivity;
 
 
@@ -53,8 +41,10 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
     private final String TAG = MainActivity.class.getName();
     @BindView(R.id.tv_device_title)
     TextView mTvDeviceTitle;
-    @BindView(R.id.switch_on_off_device)
-    Switch mSwitchOnOffDevice;
+    @BindView(R.id.btn_on_device)
+    Button mBtnOnDevice;
+    @BindView(R.id.btn_off_device)
+    Button mBtnOffDevice;
     @BindView(R.id.cv_on_off_info)
     CardView mCvOnOffInfo;
     @BindView(R.id.tv_day)
@@ -77,6 +67,10 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
     TextView mTvVersion;
     @BindView(R.id.ib_sync_version)
     ImageButton mIbSyncVersion;
+    @BindView(R.id.ib_change_name)
+    ImageButton mIbChangeName;
+    @BindView(R.id.tv_change_password)
+    TextView mTvChangePassword;
     @BindView(R.id.tv_date)
     TextView mTvDate;
     @BindView(R.id.btn_set_date)
@@ -127,12 +121,13 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
         mRlLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        setMode();
+        mStatus = BluetoothCommands.STATUS;
+        mBluetoothMessage.writeMessage(BluetoothCommands.STATUS);
 
         mTbSwitchModeDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               setMode();
+               setMode(null);
             }
         });
 
@@ -143,12 +138,43 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
             }
         });
 
+        setDeviceTitle();
         setGenerationType();
         setDate();
         setClickListeners();
     }
 
-    private void setMode(){
+    private void setDeviceTitle(){
+        mTvDeviceTitle.setText(BluetoothHelper.getBluetoothUser(getApplicationContext())[1]);
+    }
+
+    private void setOnOff(String onOf){
+        if (onOf.equals("On")){
+            setDeviceModeColor(true);
+        }else if (onOf.equals("Off")){
+            setDeviceModeColor(false);
+        }
+    }
+
+    private void setMode(String mode){
+
+        if (mode == null){
+            if(mTbSwitchModeDevice.isChecked()){
+                mStatus = BluetoothCommands.MANUAL_OFF;
+                mBluetoothMessage.writeMessage(mStatus);
+            }else {
+                mStatus = BluetoothCommands.MANUAL_ON;
+                mBluetoothMessage.writeMessage(mStatus);
+            }
+
+        }else
+
+        if (mode.equals("On")){
+            mTbSwitchModeDevice.setChecked(true);
+        }else if (mode.equals("Off")){
+            mTbSwitchModeDevice.setChecked(false);
+        }
+
         if(mTbSwitchModeDevice.getText().equals(getResources().getString(R.string.manual_mode))){
             setModeVisiblity(View.INVISIBLE);
             mRlLayoutParams.addRule(RelativeLayout.BELOW, R.id.cv_controller_functions);
@@ -252,10 +278,27 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
         mTvStatus.setText(status);
     }
 
+
+
+    private void setDeviceModeColor(boolean isOn){
+        int color1 = getResources().getColor(R.color.accent);
+        int color2 = getResources().getColor(R.color.cardview_dark_background);
+        if(isOn) {
+            mBtnOnDevice.setBackgroundColor(color1);
+            mBtnOffDevice.setBackgroundColor(color2);
+        }else {
+            mBtnOnDevice.setBackgroundColor(color2);
+            mBtnOffDevice.setBackgroundColor(color1);
+        }
+    }
+
     @Override
     public void onResponse(String answer) {
         Log.d(TAG, answer);
         switch (mStatus){
+            case BluetoothCommands.DEBUG:
+                Log.d(TAG, answer);
+                break;
             case BluetoothCommands.RESET:
                 mTvReset.setText(answer);
                 break;
@@ -267,6 +310,12 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
                 break;
             case BluetoothCommands.GET_TIME:
                 mTvDate.setText(answer);
+                break;
+            case BluetoothCommands.ON:
+                setDeviceModeColor(true);
+                break;
+            case BluetoothCommands.OFF:
+                setDeviceModeColor(false);
                 break;
             case BluetoothCommands.SET_DATA:
 
@@ -282,5 +331,17 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
                 mBluetoothMessage.writeMessage(mStatus);
             }
         });
+    }
+
+    private void parseStatus(String status){
+        String[] parameters = status.split("\n");
+        for(String s: parameters){
+            if (s.contains("Manual")){
+                setMode(s.split(" ")[1]);
+            }
+            if (s.contains("Rele1")){
+                setMode(s.split(" ")[1]);
+            }
+        }
     }
 }

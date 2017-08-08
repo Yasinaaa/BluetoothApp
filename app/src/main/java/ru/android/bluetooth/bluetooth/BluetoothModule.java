@@ -3,6 +3,8 @@ package ru.android.bluetooth.bluetooth;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothHeadset;
+import android.bluetooth.BluetoothProfile;
 import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -24,6 +26,8 @@ import ru.android.bluetooth.Manifest;
 import ru.android.bluetooth.start.ChooseDeviceView;
 import ru.android.bluetooth.utils.BluetoothHelper;
 
+import static ru.android.bluetooth.bluetooth.BluetoothCommands.REQUEST_ENABLE_BT;
+
 /**
  * Created by yasina on 07.08.17.
  */
@@ -44,6 +48,25 @@ public class BluetoothModule {
     private BluetoothMessage mBluetoothMessage;
     private Handler mHandler;
     private Set<BluetoothDevice> mPairedDevices;
+
+    private BluetoothHeadset mBluetoothHeadset;
+
+    private BluetoothProfile.ServiceListener mProfileListener = new BluetoothProfile.ServiceListener() {
+        public void onServiceConnected(int profile, BluetoothProfile proxy) {
+            if (profile == BluetoothProfile.HEADSET) {
+                mBluetoothHeadset = (BluetoothHeadset) proxy;
+            }
+
+
+            mBTAdapter.closeProfileProxy(0,mBluetoothHeadset);
+        }
+        public void onServiceDisconnected(int profile) {
+            if (profile == BluetoothProfile.HEADSET) {
+                mBluetoothHeadset = null;
+            }
+        }
+    };
+
 
     private BluetoothModule(Activity mActivity, ChooseDeviceView view) {
         this.mActivity = mActivity;
@@ -69,16 +92,20 @@ public class BluetoothModule {
     }
 
     private void checkPermission(){
-        if(ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        if(ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(mActivity, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+
+        }
     }
 
     public void connect(){
-        checkPermission();
         mBTAdapter = BluetoothAdapter.getDefaultAdapter();
+        //checkPermission();
         setHandler();
         bluetoothOn();
-        discover();
+        //mBTAdapter.getProfileProxy(mContext, mProfileListener, BluetoothProfile.HEADSET);
+
+
     }
 
     private void setHandler(){
@@ -88,16 +115,27 @@ public class BluetoothModule {
     private void bluetoothOn(){
         if (!mBTAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            mActivity.startActivityForResult(enableBtIntent, BluetoothCommands.REQUEST_ENABLE_BT);
+            mActivity.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
             Toast.makeText(mContext,"Bluetooth turned on",Toast.LENGTH_SHORT).show();
 
         }
         else{
             Toast.makeText(mContext,"Bluetooth is already on", Toast.LENGTH_SHORT).show();
+
+            if(mBTAdapter.isEnabled()) {
+                mBTAdapter.startDiscovery();
+                Toast.makeText(mContext, "Discovery started", Toast.LENGTH_SHORT).show();
+                IntentFilter filter = new IntentFilter();
+                filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
+                //filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED);
+                //filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
+                filter.addAction(BluetoothDevice.ACTION_FOUND);
+                mActivity.registerReceiver(blReceiver, filter);
+            }
         }
 
     }
-    private void discover(){
+    public void discover(){
         if(mBTAdapter.isDiscovering()){
             Toast.makeText(mContext,"Discovery stopped",Toast.LENGTH_SHORT).show();
         }
@@ -106,7 +144,7 @@ public class BluetoothModule {
                 mBTAdapter.startDiscovery();
                 Toast.makeText(mContext, "Discovery started", Toast.LENGTH_SHORT).show();
                 IntentFilter filter = new IntentFilter();
-                //filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
+                filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
                 //filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED);
                 //filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
                 filter.addAction(BluetoothDevice.ACTION_FOUND);
@@ -188,7 +226,7 @@ public class BluetoothModule {
                         mHandler.obtainMessage(BluetoothCommands.CONNECTING_STATUS, 1, -1, name)
                                 .sendToTarget();
                         chooseDeviceView.goNext();
-                        //BluetoothHelper.saveBluetoothUser(mContext, address, name);
+                        BluetoothHelper.saveBluetoothUser(mContext, address, name);
 
                     }
                 }

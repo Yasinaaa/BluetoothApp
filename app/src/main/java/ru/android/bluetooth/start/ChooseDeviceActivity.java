@@ -171,12 +171,16 @@ public class ChooseDeviceActivity extends AppCompatActivity implements ChooseDev
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent Data){
-
+        mBluetoothModule.discover();
     }
 
     @Override
     public void addDevice(String text) {
         mDeviceList.add(text);
+
+        mDeviceAdapter = new DeviceAdapter(mDeviceList, this);
+        mRvDevicesList.setAdapter(mDeviceAdapter);
+        //mRvDevicesList.notifyDataSetChanged();
     }
 
     @Override
