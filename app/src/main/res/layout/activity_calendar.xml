@@ -59,6 +59,7 @@
                 fab:fab_plusIconColor="@color/white"
                 fab:fab_icon="@drawable/sunrise"
                 fab:fab_size="mini"
+                android:onClick="fabClicked"
                 fab:fab_title="Генерация по Восходу/Закату солнца" />
 
         </com.getbase.floatingactionbutton.FloatingActionsMenu>

@@ -67,7 +67,14 @@ public class CalendarActivity extends AppCompatActivity {
                         return true;
                     }
                 });
+                /*frameLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        fabClicked(view);
+                    }
+                });*/
             }
+
 
             @Override
             public void onMenuCollapsed() {
@@ -76,6 +83,7 @@ public class CalendarActivity extends AppCompatActivity {
 
             }
         });
+
 
 
         mCalendarViewSchedule.setOnClickListener(new View.OnClickListener() {

@@ -78,9 +78,9 @@ public class ConnectedThread extends Thread {
     }
 
 
-    public void cancel() {
+  /*  public void cancel() {
         try {
             mmSocket.close();
         } catch (IOException e) { }
-    }
+    }*/
 }

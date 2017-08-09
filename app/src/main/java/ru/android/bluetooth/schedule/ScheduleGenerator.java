@@ -556,7 +556,7 @@ public class ScheduleGenerator {
         if(timeLocal <0.0)
             timeLocal+= 1440.0;
         if(!min)return getTimeString(timeLocal);
-        else return String.format("{0}",Math.round(timeLocal));
+        else return Math.round(timeLocal)+"";
     }
 
     private static String getTimeString(double minutes)
@@ -582,7 +582,7 @@ public class ScheduleGenerator {
                 minute = 0;
                 hour += 1;
             }
-            output = String.format("{0} : {1}", hour, minute);
+            output = String.format("%d : %d",  Math.round(hour),  Math.round(minute));
         }
         else
         {

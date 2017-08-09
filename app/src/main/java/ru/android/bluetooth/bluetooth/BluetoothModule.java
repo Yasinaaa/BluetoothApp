@@ -209,14 +209,16 @@ public class BluetoothModule {
                     try {
                         mBTSocket.connect();
                     } catch (IOException e) {
-                        try {
+                       /* try {
                             fail = true;
-                            mBTSocket.close();
+                            //mBTSocket.close();
                             mHandler.obtainMessage(BluetoothCommands.CONNECTING_STATUS, -1, -1)
                                     .sendToTarget();
                         } catch (IOException e2) {
                             Toast.makeText(mContext, "Socket creation failed", Toast.LENGTH_SHORT).show();
-                        }
+                        }*/
+                        mHandler.obtainMessage(BluetoothCommands.CONNECTING_STATUS, -1, -1)
+                                .sendToTarget();
                     }
                     if(fail == false) {
                         mConnectedThread = ConnectedThread.createConnectedThread(mBTSocket, mHandler);
