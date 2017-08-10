@@ -17,10 +17,19 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -30,6 +39,8 @@ import ru.android.bluetooth.bluetooth.BluetoothMessage;
 import ru.android.bluetooth.utils.ActivityHelper;
 import ru.android.bluetooth.utils.BluetoothHelper;
 import ru.android.bluetooth.view.CalendarActivity;
+import java.util.zip.CRC32;
+
 
 
 /**
@@ -106,10 +117,12 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
         //((App) getApplication()).getComponent().inject(this);
         ButterKnife.bind(this);
+
         init();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -119,12 +132,42 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
 
         mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
         mBluetoothMessage.setBluetoothMessageListener(this);
+        setMessage(BluetoothCommands.STATUS);
 
         mRlLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        mStatus = BluetoothCommands.STATUS;
+       /* mStatus = BluetoothCommands.SET_DATA;
+        mBluetoothMessage.writeMessage(BluetoothCommands.SET_DATA);
+        mStatus = "okkk";
+        mBluetoothMessage.writeMessage("Ok\r\n");
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG,"Bytes=" + editText.getText().toString().getBytes().length);
+                mBluetoothMessage.writeMessage(editText.getText().toString());
+            }
+        });
+        String s = "Ok\r\n";
+        String t = "@10.08.2017 $16:40:00 %0 $16:41:00 %100 1;";
+        CRC32 crc = new CRC32();
+        crc.update(t.getBytes());
+        byte[] bytes = ByteBuffer.allocate(Long.SIZE / Byte.SIZE).putLong(crc.getValue()).array();
+        Log.d(TAG,Long.toBinaryString(crc.getValue()));
+        mBluetoothMessage.writeMessage(t.getBytes().length + " " + t + " " + Long.toBinaryString(crc.getValue()));*/
+
+
+       /* try {
+            byte[] dd = t.getBytes("UTF-8");
+            Log.d("f", "fff");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }*/
+        /*mStatus = BluetoothCommands.STATUS;
         mBluetoothMessage.writeMessage(BluetoothCommands.STATUS);
+
+        mStatus = BluetoothCommands.GET_TIME;
+        mBluetoothMessage.writeMessage(BluetoothCommands.GET_TIME);*/
 
         mTbSwitchModeDevice.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -140,24 +183,26 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
             }
         });
 
+
         setDeviceTitle();
         setGenerationType();
         setDate();
         setClickListeners();
     }
 
+
     private void setDeviceTitle(){
-        mTvDeviceAddress.setText(BluetoothHelper.getBluetoothUser(getApplicationContext())[0]);
-        mTvDeviceTitle.setText(BluetoothHelper.getBluetoothUser(getApplicationContext())[1]);
+        mTvDeviceAddress.setText(BluetoothHelper.getBluetoothUser(getApplicationContext())[0].trim());
+        mTvDeviceTitle.setText(BluetoothHelper.getBluetoothUser(getApplicationContext())[1].trim());
     }
 
-    private void setOnOff(String onOf){
+  /*  private void setOnOff(String onOf){
         if (onOf.equals("On")){
             setDeviceModeColor(true);
         }else if (onOf.equals("Off")){
             setDeviceModeColor(false);
         }
-    }
+    }*/
 
     private void setMode(String mode){
 
@@ -212,7 +257,6 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
         return visiblity == View.VISIBLE ? View.INVISIBLE : View.VISIBLE;
     }
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         onBackPressed();
@@ -264,7 +308,7 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
 
                     }
                 },2017, 03, 01);
-                mDatePicker.setTitle("Выберите дату");
+               // mDatePicker.setTitle("Выберите дату");
                 mDatePicker.show();
             }
         });
@@ -297,7 +341,8 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
 
     @Override
     public void onResponse(String answer) {
-        Log.d(TAG, answer);
+        Log.d(TAG, mStatus + " " + answer);
+
         switch (mStatus){
             case BluetoothCommands.DEBUG:
                 Log.d(TAG, answer);
@@ -307,9 +352,11 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
                 break;
             case BluetoothCommands.STATUS:
                 mTvStatus.setText(answer);
+                parseStatus(answer);
+
                 break;
             case BluetoothCommands.VERSION:
-                mTvVersion.setText(answer);
+                mTvVersion.setText(answer.substring(0, answer.indexOf("\n")));
                 break;
             case BluetoothCommands.GET_TIME:
                 mTvDate.setText(answer);
@@ -334,15 +381,43 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
                 mBluetoothMessage.writeMessage(mStatus);
             }
         });
+        mBtnOnDevice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setMessage(BluetoothCommands.ON);
+            }
+        });
+        mBtnOffDevice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setMessage(BluetoothCommands.OFF);
+            }
+        });
+        mIbSyncVersion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setMessage(BluetoothCommands.VERSION);
+            }
+        });
+    }
+
+    private void setMessage(String status){
+        mStatus = status;
+        mBluetoothMessage.writeMessage(status);
+    }
+
+    private void setMessage(String status, String text){
+        mStatus = status;
+        mBluetoothMessage.writeMessage(text);
     }
 
     private void parseStatus(String status){
-        String[] parameters = status.split("\n");
+        String[] parameters = status.replaceAll("\r","").split("\n");
         for(String s: parameters){
             if (s.contains("Manual")){
                 setMode(s.split(" ")[1]);
             }
-            if (s.contains("Rele1")){
+            if (s.contains("Rele")){
                 setMode(s.split(" ")[1]);
             }
         }

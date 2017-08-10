@@ -7,16 +7,16 @@
     android:layout_height="match_parent"
     android:layout_margin="10dp">
 
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/tv_device_title"
         android:gravity="center"
-        android:text="Runtime"
+        android:text="yasina"
+        android:layout_centerHorizontal="true"
         android:textSize="30sp"
-        android:layout_alignParentTop="true"
-        android:layout_alignRight="@+id/tb_mode_device"
-        android:layout_alignEnd="@+id/tb_mode_device" />
+        android:layout_alignParentTop="true"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -34,23 +34,27 @@
         android:id="@+id/ib_change_name"
         android:background="@drawable/pen"
         android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
         android:layout_toLeftOf="@id/tv_device_title"
         />
 
     <Button
         android:id="@+id/btn_on_device"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="60dp"
+        android:layout_height="40dp"
         android:text="ON"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"/>
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/tv_device_address"/>
 
     <Button
         android:id="@+id/btn_off_device"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="60dp"
+        android:layout_height="40dp"
         android:text="OFF"
+        android:layout_marginTop="10dp"
+        android:background="@color/accent"
         android:layout_below="@+id/btn_on_device"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"/>

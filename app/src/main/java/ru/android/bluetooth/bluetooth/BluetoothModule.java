@@ -132,6 +132,7 @@ public class BluetoothModule {
                 filter.addAction(BluetoothDevice.ACTION_FOUND);
                 mActivity.registerReceiver(blReceiver, filter);
             }
+            listPairedDevices();
         }
 
     }

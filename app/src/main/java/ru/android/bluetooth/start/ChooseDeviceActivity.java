@@ -42,8 +42,8 @@ public class ChooseDeviceActivity extends AppCompatActivity implements ChooseDev
 
     @BindView(R.id.rv_devices)
     RecyclerView mRvDevicesList;
-    @BindView(R.id.btn_connect)
-    Button mBtnConnect;
+    //@BindView(R.id.btn_connect)
+    //Button mBtnConnect;
 
     private DeviceAdapter mDeviceAdapter;
     private List<String> mDeviceList = new ArrayList<String>();
@@ -53,6 +53,12 @@ public class ChooseDeviceActivity extends AppCompatActivity implements ChooseDev
     protected void onCreate(Bundle savedInstanceState) {
        super.onCreate(savedInstanceState);
        checkBluetoothUser();
+
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setLogo(getResources().getDrawable(R.drawable.runline));
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
+      //  getActionBar().setIcon(getResources().getDrawable(R.drawable.runline));
+        //getSupportActionBar().setIcon(getResources().getDrawable(R.drawable.runline));
 
     }
 
@@ -140,7 +146,7 @@ public class ChooseDeviceActivity extends AppCompatActivity implements ChooseDev
 
     public void setPasswordDialog(){
         final Activity activity = this;
-        mBtnConnect.setOnClickListener(new View.OnClickListener() {
+        /*mBtnConnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 LayoutInflater inflater = activity.getLayoutInflater();
@@ -167,7 +173,7 @@ public class ChooseDeviceActivity extends AppCompatActivity implements ChooseDev
                         });
                 passwordDialogBuilder.show();
             }
-        });
+        });*/
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent Data){
@@ -176,7 +182,8 @@ public class ChooseDeviceActivity extends AppCompatActivity implements ChooseDev
 
     @Override
     public void addDevice(String text) {
-        mDeviceList.add(text);
+        if (!mDeviceList.contains(text))
+            mDeviceList.add(text);
 
         mDeviceAdapter = new DeviceAdapter(mDeviceList, this);
         mRvDevicesList.setAdapter(mDeviceAdapter);

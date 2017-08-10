@@ -7,7 +7,7 @@ package ru.android.bluetooth.bluetooth;
 public class BluetoothCommands {
     public static final String RESET = "Reset\r\n";
     public static final String STATUS = "Read Status\r\n";
-    public static final String VERSION = "Get Version\r\n";
+    public static final String VERSION = "Get Version BT\r\n";
     private static final String SET_TIME = "Set Time=%s:%s:%s\r\n";
     private static final String SET_DATE = "Set Date=%s-%s-%s\r\n";
     public static final String GET_TIME = "Get Time\r\n";
@@ -23,4 +23,9 @@ public class BluetoothCommands {
     public final static int REQUEST_ENABLE_BT = 1;
     public final static int MESSAGE_READ = 2;
     public final static int CONNECTING_STATUS = 3;
+
+    private static final String COMMAND = "@%s $%s %s $%s %s";
+    public static String setCommand(String startDate, String startTime, String startPow, String finshTime, String finishPow){
+        return String.format(COMMAND, startDate, startTime, startPow, finshTime, finishPow);
+    }
 }
