@@ -9,6 +9,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,6 +17,11 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,12 +60,52 @@ public class ChooseDeviceActivity extends AppCompatActivity implements ChooseDev
        super.onCreate(savedInstanceState);
        checkBluetoothUser();
 
+        String f = "@11.08.2017 $12:00:00 %0 $12:01:00 %100 1";
+        Log.d("f", "Set Data\\r\\n ");
+        Log.d("f",f.getBytes().length + "");
+        Log.d("f", (f + ";").getBytes().length + "");
+
+
+        StringBuilder stringBuilder = new StringBuilder();
+        StringBuilder stringBuilder2 = new StringBuilder();
+       // stringBuilder.append("Set Data\r\n");
+        for(int i=0; i<366;i++){
+            stringBuilder.append((22 & 0xfff));
+            stringBuilder2.append((23 & 0xfff));
+        }
+        int sum = sum(stringBuilder.toString()) + sum(stringBuilder2.toString());
+        Log.d("f", "Set Data \r\n 1464 " + stringBuilder.toString() + stringBuilder2.toString() + sum);
+        Log.d("f", stringBuilder.toString().getBytes().length + "");
+        try {
+            Log.d("f", getFilesDir().getAbsolutePath());
+
+            File file = new File(getFilesDir() + "/text.txt");
+            file.createNewFile();
+            PrintWriter printWriter = new PrintWriter(file,"UTF-8");
+            printWriter.write(stringBuilder.toString());
+            printWriter.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setLogo(getResources().getDrawable(R.drawable.runline));
         getSupportActionBar().setDisplayUseLogoEnabled(true);
       //  getActionBar().setIcon(getResources().getDrawable(R.drawable.runline));
         //getSupportActionBar().setIcon(getResources().getDrawable(R.drawable.runline));
 
+    }
+
+    private int sum(String chars){
+        int sum = 0;
+        for (int i=0; i<chars.length();i++){
+            sum += chars.charAt(i);
+        }
+        Log.d("dd", "sum=" + sum);
+        return sum;
     }
 
     private void checkBluetoothUser(){

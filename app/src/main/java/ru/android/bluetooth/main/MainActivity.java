@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
             }
         });
         String s = "Ok\r\n";
-        String t = "@10.08.2017 $16:40:00 %0 $16:41:00 %100 1;";
+        String t = "Set Data\r\n @11.08.2017 $12:00:00 %0 $12:01:00 %100 1;";
         CRC32 crc = new CRC32();
         crc.update(t.getBytes());
         byte[] bytes = ByteBuffer.allocate(Long.SIZE / Byte.SIZE).putLong(crc.getValue()).array();
@@ -168,6 +168,7 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
 
         mStatus = BluetoothCommands.GET_TIME;
         mBluetoothMessage.writeMessage(BluetoothCommands.GET_TIME);*/
+
 
         mTbSwitchModeDevice.setOnClickListener(new View.OnClickListener() {
             @Override
