@@ -1,10 +1,9 @@
-package ru.android.bluetooth.schedule;
+package ru.android.bluetooth;
 
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -12,49 +11,30 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.GoogleMap;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
-import ru.android.bluetooth.R;
-import ru.android.bluetooth.bluetooth.BluetoothCommands;
-import ru.android.bluetooth.bluetooth.BluetoothMessage;
-
-/**
- * Created by itisioslab on 08.08.17.
- */
-
-public class ScheduleGeneratorActivity extends AppCompatActivity implements BluetoothMessage.BluetoothMessageListener,
-        GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener,
+public class HomeActivity extends AppCompatActivity implements
+        ConnectionCallbacks,
+        OnConnectionFailedListener,
         LocationListener {
 
-    private final String TAG = ScheduleGeneratorActivity.class.getName();
-
-    int timerBehaviour = 0;
-    public double JD = 0;
-    public int zone = 0; // Seattle time Zone
-    public boolean dst = false; // Day Light Savings
-
+    //Define a request code to send to Google Play services
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     private double currentLatitude;
     private double currentLongitude;
-    private BluetoothMessage mBluetoothMessage;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_schedule);
-
-
-        mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
-        mBluetoothMessage.setBluetoothMessageListener(this);
+        setContentView(R.layout.activity_maps);
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 // The next two lines tell the new client that “this” current class will handle connection stuff
@@ -70,52 +50,6 @@ public class ScheduleGeneratorActivity extends AppCompatActivity implements Blue
                 .setInterval(10 * 1000)        // 10 seconds, in milliseconds
                 .setFastestInterval(1 * 1000); // 1 second, in milliseconds
 
-
-        //mBluetoothMessage.writeMessage( "[FILE_W]@10.08.2017 $13:45:00 %0 $15:00:00 %100;");
-        //mBluetoothMessage.writeMessage( "[FILE_R];");
-        //mBluetoothMessage.writeMessage( "@10.08.2017 $12:02:00 %0 $12:03:00 %100;\r\n");
-       // mStatus = BluetoothCommands.SET_DATA;
-       // mBluetoothMessage.writeMessage("[" + BluetoothCommands.setCommand("10.08.2017","11:44:00", "%0", "11:45:00", "%100") + "];");
-
-        //Log.d(TAG, "BluetoothCommands.setComma = " + BluetoothCommands.setCommand("10.08.2017","11:16:00", "%0", "11:17:00", "%100"));
-       // mBluetoothMessage.writeMessage(BluetoothCommands.SET_DATA + " " + BluetoothCommands.setCommand("10.08.2017","11:26:00", "%0", "11:27:00", "%100"));
-        Log.d(TAG, "1");
-        //mBluetoothMessage.writeMessage("Set Data " + BluetoothCommands.setCommand("10.08.2017","11:28:00", "%0", "11:29:00", "%100") + "\r\n");
-        //Log.d(TAG, "1");
-       // mBluetoothMessage.writeMessage(BluetoothCommands.setCommand("10.08.2017","11:13", "0", "11:14", "100"));
-    }
-
-    private void generateSchedule(Calendar startDate, Calendar endDate, double latitude, double longitude){
-        Calendar currentDate = Calendar.getInstance();
-        double sunRise;
-        double sunSet;
-        int d = 0;
-        while(startDate.compareTo(endDate) <= 0){
-            currentDate = startDate;
-
-            JD = ScheduleGenerator.calcJD(startDate);  //OR   JD = Util.calcJD(2014, 6, 1);
-            sunRise = ScheduleGenerator.calcSunRiseUTC(JD, latitude, longitude);
-            sunSet = ScheduleGenerator.calcSunSetUTC(JD, latitude, longitude);
-
-            //date.ToString().Remove(10,date.ToString().Length - 10)
-
-           // String.format("%1$tA %1$tb %1$td %1$tY at %1$tI:%1$tM %1$Tp",ScheduleGenerator.getDateTime(false,sunRise, zone, JD, dst).getSelectedDay().getTime());
-            d++;
-            Log.d(TAG,"day=" + d + " " +
-                    ScheduleGenerator.getTimeString(false,sunRise, zone, JD, dst) + " " +
-                    ScheduleGenerator.getTimeString(false,sunSet, zone, JD, dst)+ " " +
-                    ScheduleGenerator.getTimeString(true,sunRise, zone, JD, dst)+ " " +
-                    ScheduleGenerator.getTimeString(true,sunSet, zone, JD, dst)
-            );
-            startDate.add(Calendar.DAY_OF_YEAR, 1);
-
-
-        }
-    }
-
-    @Override
-    public void onResponse(String answer) {
-        Log.d(TAG, answer);
     }
 
     @Override
@@ -165,18 +99,10 @@ public class ScheduleGeneratorActivity extends AppCompatActivity implements Blue
             currentLatitude = location.getLatitude();
             currentLongitude = location.getLongitude();
 
-            Calendar finishDate = Calendar.getInstance();
-            finishDate.add(Calendar.YEAR, 1);
-            generateSchedule(Calendar.getInstance(), finishDate, currentLatitude, currentLongitude);
-
             Toast.makeText(this, currentLatitude + " WORKS " + currentLongitude + "", Toast.LENGTH_LONG).show();
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-
-    }
 
     @Override
     public void onConnectionSuspended(int i) {}

@@ -48,12 +48,13 @@ public class ChooseDeviceActivity extends AppCompatActivity implements ChooseDev
 
     @BindView(R.id.rv_devices)
     RecyclerView mRvDevicesList;
-    //@BindView(R.id.btn_connect)
-    //Button mBtnConnect;
+    @BindView(R.id.btn_connect)
+    Button mBtnConnect;
 
     private DeviceAdapter mDeviceAdapter;
     private List<String> mDeviceList = new ArrayList<String>();
     private BluetoothModule mBluetoothModule;
+    private String mDeviceTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -192,10 +193,10 @@ public class ChooseDeviceActivity extends AppCompatActivity implements ChooseDev
 
     public void setPasswordDialog(){
         final Activity activity = this;
-        /*mBtnConnect.setOnClickListener(new View.OnClickListener() {
+        mBtnConnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                LayoutInflater inflater = activity.getLayoutInflater();
+                /*LayoutInflater inflater = activity.getLayoutInflater();
                 View dialogView = inflater.inflate(R.layout.dialog_password, null);
 
                 EditText mPasswordView = (EditText) dialogView.findViewById(R.id.et_password);
@@ -217,9 +218,11 @@ public class ChooseDeviceActivity extends AppCompatActivity implements ChooseDev
                                 Toast.makeText(getBaseContext(), "Cancel", Toast.LENGTH_SHORT).show();
                             }
                         });
-                passwordDialogBuilder.show();
+                passwordDialogBuilder.show();*/
+                if(mDeviceTitle != null)
+                    mBluetoothModule.connectDevice(mDeviceTitle, ChooseDeviceActivity.this);
             }
-        });*/
+        });
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent Data){
@@ -238,7 +241,8 @@ public class ChooseDeviceActivity extends AppCompatActivity implements ChooseDev
 
     @Override
     public void onItemClick(String text) {
-        mBluetoothModule.connectDevice(text, this);
+        //mBluetoothModule.connectDevice(text, this);
+        mDeviceTitle = text;
     }
 
     @Override

@@ -1,6 +1,8 @@
 package ru.android.bluetooth.bluetooth;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothHeadset;
@@ -8,9 +10,11 @@ import android.bluetooth.BluetoothProfile;
 import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -92,17 +96,43 @@ public class BluetoothModule {
     }
 
     private void checkPermission(){
-        if(ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        /*if(ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(mActivity, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
 
-        }
+        }*/
+       /* if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+           /* if (ActivityCompat.shouldShowRequestPermissionRationale(mActivity,
+                    Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                AlertDialog.Builder alertBuilder = new AlertDialog.Builder(mContext);
+                alertBuilder.setCancelable(true);
+                alertBuilder.setTitle("Permission necessary");
+                alertBuilder.setMessage("External storage permission is necessary");
+                alertBuilder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+                    public void onClick(DialogInterface dialog, int which) {
+                        ActivityCompat.requestPermissions(mActivity, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+                    }
+                });
+
+                AlertDialog alert = alertBuilder.create();
+                alert.show();
+            } else {
+                ActivityCompat.requestPermissions(mActivity, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+            }*/
+
+        //}
+      //  ActivityCompat.requestPermissions(mActivity, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
     }
 
     public void connect(){
         mBTAdapter = BluetoothAdapter.getDefaultAdapter();
         //checkPermission();
         setHandler();
-        bluetoothOn();
+        //bluetoothOn();
+        mBTAdapter.enable();
+        discover();
         //mBTAdapter.getProfileProxy(mContext, mProfileListener, BluetoothProfile.HEADSET);
 
 
@@ -114,12 +144,13 @@ public class BluetoothModule {
     }
     private void bluetoothOn(){
         if (!mBTAdapter.isEnabled()) {
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+           /* Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             mActivity.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-            Toast.makeText(mContext,"Bluetooth turned on",Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext,"Bluetooth turned on",Toast.LENGTH_SHORT).show();*/
+
 
         }
-        else{
+        //else{
             Toast.makeText(mContext,"Bluetooth is already on", Toast.LENGTH_SHORT).show();
 
             if(mBTAdapter.isEnabled()) {
@@ -133,7 +164,7 @@ public class BluetoothModule {
                 mActivity.registerReceiver(blReceiver, filter);
             }
             listPairedDevices();
-        }
+      //  }
 
     }
     public void discover(){
@@ -175,8 +206,11 @@ public class BluetoothModule {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-            Log.d("f",device.getName());
-            mView.addDevice(device.getName() + "\n" + device.getAddress());
+            if(device != null){
+                Log.d("f",device.getName());
+                mView.addDevice(device.getName() + "\n" + device.getAddress());
+            }
+
             /*if(BluetoothDevice.ACTION_FOUND.equals(action)){
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 mView.addDevice(device.getName() + "\n" + device.getAddress());

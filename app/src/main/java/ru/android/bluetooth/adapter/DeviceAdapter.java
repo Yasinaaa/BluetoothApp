@@ -1,6 +1,9 @@
 package ru.android.bluetooth.adapter;
 
+import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,8 +24,9 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceHold
 
     private List<String> mList;
     private List<String> mFilteredList;
-
+    private Context mContext;
     private OnItemClicked onClick;
+    private SparseBooleanArray selectedItems;
 
     public interface OnItemClicked {
         void onItemClick(String text);
@@ -33,21 +37,31 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceHold
         this.mList = list;
         mFilteredList = list;
         this.onClick = onClick;
+        selectedItems = new SparseBooleanArray();
     }
 
     @Override
     public DeviceHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        mContext = parent.getContext();
         View itemView =
-                LayoutInflater.from(parent.getContext()).inflate(R.layout.item_device, parent, false);
+                LayoutInflater.from(mContext).inflate(R.layout.item_device, parent, false);
         return new DeviceHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(DeviceHolder holder, final int position) {
+    public void onBindViewHolder(final DeviceHolder holder, final int position) {
         holder.title.setText(mFilteredList.get(position));
         holder.itemView.getRootView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (selectedItems.get(position, false)) {
+                    selectedItems.delete(position);
+                    holder.itemView.setSelected(false);
+                }
+                else {
+                    selectedItems.put(position, true);
+                    holder.itemView.setSelected(true);
+                }
                 onClick.onItemClick(mFilteredList.get(position));
             }
         });
@@ -106,7 +120,7 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceHold
         notifyDataSetChanged();
     }
 
-    public static class DeviceHolder extends RecyclerView.ViewHolder {
+    public class DeviceHolder extends RecyclerView.ViewHolder{
 
         public TextView title;
 
