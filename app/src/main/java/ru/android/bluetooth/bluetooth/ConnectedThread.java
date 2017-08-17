@@ -77,6 +77,12 @@ public class ConnectedThread extends Thread {
         } catch (IOException e) { }
     }
 
+    public void write(byte[] input) {
+        try {
+            mmOutStream.write(input);
+        } catch (IOException e) { }
+    }
+
 
   /*  public void cancel() {
         try {

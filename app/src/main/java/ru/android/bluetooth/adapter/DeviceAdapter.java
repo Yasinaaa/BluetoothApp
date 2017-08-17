@@ -40,6 +40,17 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceHold
         selectedItems = new SparseBooleanArray();
     }
 
+    public void add(String item){
+        if (!mList.contains(item)) {
+            mList.add(item);
+            //mFilteredList.add(item);
+            notifyItemChanged(mList.size()-1);
+            //notifyItemChanged(mFilteredList.size()-1);
+            notifyDataSetChanged();
+        }
+
+    }
+
     @Override
     public DeviceHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         mContext = parent.getContext();

@@ -134,6 +134,9 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
         mBluetoothMessage.setBluetoothMessageListener(this);
         setMessage(BluetoothCommands.STATUS);
 
+        /*setMessage("Set Data\n");
+        setMessage(0000002-380000-764-4471);*/
+
         mRlLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
 

@@ -37,6 +37,7 @@ import ru.android.bluetooth.adapter.DeviceAdapter;
 import ru.android.bluetooth.bluetooth.BluetoothModule;
 import ru.android.bluetooth.common.CommonView;
 import ru.android.bluetooth.main.MainActivity;
+import ru.android.bluetooth.schedule.S;
 import ru.android.bluetooth.utils.ActivityHelper;
 import ru.android.bluetooth.utils.BluetoothHelper;
 
@@ -61,36 +62,8 @@ public class ChooseDeviceActivity extends AppCompatActivity implements ChooseDev
        super.onCreate(savedInstanceState);
        checkBluetoothUser();
 
-        String f = "@11.08.2017 $12:00:00 %0 $12:01:00 %100 1";
-        Log.d("f", "Set Data\\r\\n ");
-        Log.d("f",f.getBytes().length + "");
-        Log.d("f", (f + ";").getBytes().length + "");
-
-
-        StringBuilder stringBuilder = new StringBuilder();
-        StringBuilder stringBuilder2 = new StringBuilder();
-       // stringBuilder.append("Set Data\r\n");
-        for(int i=0; i<366;i++){
-            stringBuilder.append((22 & 0xfff));
-            stringBuilder2.append((23 & 0xfff));
-        }
-        int sum = sum(stringBuilder.toString()) + sum(stringBuilder2.toString());
-        Log.d("f", "Set Data \r\n 1464 " + stringBuilder.toString() + stringBuilder2.toString() + sum);
-        Log.d("f", stringBuilder.toString().getBytes().length + "");
-        try {
-            Log.d("f", getFilesDir().getAbsolutePath());
-
-            File file = new File(getFilesDir() + "/text.txt");
-            file.createNewFile();
-            PrintWriter printWriter = new PrintWriter(file,"UTF-8");
-            printWriter.write(stringBuilder.toString());
-            printWriter.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+       /* S s = new S();
+        s.setData();*/
 
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setLogo(getResources().getDrawable(R.drawable.runline));
@@ -121,23 +94,14 @@ public class ChooseDeviceActivity extends AppCompatActivity implements ChooseDev
         setContentView(R.layout.activity_choose_device);
         ButterKnife.bind(this);
         mBluetoothModule = BluetoothModule.createBluetoohModule(this, this);
+
         init();
     }
 
-
-   /* private void writeMessage(String text){
-        if (mConnectedThread != null) {
-            mConnectedThread.write(text);
-            byte[] buffer = new byte[1014];
-        }
-    }*/
-
-
-
     private void init(){
 
-        mDeviceAdapter = new DeviceAdapter(mDeviceList, this);
-        mRvDevicesList.setAdapter(mDeviceAdapter);
+        /*mDeviceAdapter = new DeviceAdapter(mDeviceList, this);
+        mRvDevicesList.setAdapter(mDeviceAdapter);*/
 
         mRvDevicesList.setItemAnimator(new DefaultItemAnimator());
         mRvDevicesList.setHasFixedSize(true);
@@ -224,18 +188,18 @@ public class ChooseDeviceActivity extends AppCompatActivity implements ChooseDev
             }
         });
     }
-    @Override
+   /* @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent Data){
         mBluetoothModule.discover();
-    }
+    }*/
 
     @Override
     public void addDevice(String text) {
-        if (!mDeviceList.contains(text))
-            mDeviceList.add(text);
-
-        mDeviceAdapter = new DeviceAdapter(mDeviceList, this);
-        mRvDevicesList.setAdapter(mDeviceAdapter);
+        if (mDeviceAdapter == null) {
+            mDeviceAdapter = new DeviceAdapter(mDeviceList, this);
+            mRvDevicesList.setAdapter(mDeviceAdapter);
+        }
+        mDeviceAdapter.add(text);
         //mRvDevicesList.notifyDataSetChanged();
     }
 

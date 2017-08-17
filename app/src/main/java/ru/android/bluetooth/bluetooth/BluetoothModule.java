@@ -132,6 +132,15 @@ public class BluetoothModule {
         setHandler();
         //bluetoothOn();
         mBTAdapter.enable();
+        try {
+            while(!mBTAdapter.isEnabled()) {
+                synchronized (this) {
+                    wait(1000);
+                }
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         discover();
         //mBTAdapter.getProfileProxy(mContext, mProfileListener, BluetoothProfile.HEADSET);
 
@@ -142,33 +151,9 @@ public class BluetoothModule {
         this.mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
         this.mHandler = mBluetoothMessage.getHandler();
     }
-    private void bluetoothOn(){
-        if (!mBTAdapter.isEnabled()) {
-           /* Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            mActivity.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-            Toast.makeText(mContext,"Bluetooth turned on",Toast.LENGTH_SHORT).show();*/
 
-
-        }
-        //else{
-            Toast.makeText(mContext,"Bluetooth is already on", Toast.LENGTH_SHORT).show();
-
-            if(mBTAdapter.isEnabled()) {
-                mBTAdapter.startDiscovery();
-                Toast.makeText(mContext, "Discovery started", Toast.LENGTH_SHORT).show();
-                IntentFilter filter = new IntentFilter();
-                filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
-                //filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED);
-                //filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
-                filter.addAction(BluetoothDevice.ACTION_FOUND);
-                mActivity.registerReceiver(blReceiver, filter);
-            }
-            listPairedDevices();
-      //  }
-
-    }
     public void discover(){
-        if(mBTAdapter.isDiscovering()){
+        /*if(mBTAdapter.isDiscovering()){
             Toast.makeText(mContext,"Discovery stopped",Toast.LENGTH_SHORT).show();
         }
         else{
@@ -185,20 +170,37 @@ public class BluetoothModule {
             else{
                 Toast.makeText(mContext, "Bluetooth not on", Toast.LENGTH_SHORT).show();
             }
-        }
+        }*/
+        //mBTAdapter.enable();
+        mBTAdapter.startDiscovery();
+        Toast.makeText(mContext, "Discovery started", Toast.LENGTH_SHORT).show();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
+        //filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED);
+        //filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
+        //filter.addAction(BluetoothDevice.ACTION_FOUND);
+        mActivity.registerReceiver(blReceiver, filter);
         listPairedDevices();
     }
 
     private void listPairedDevices(){
         mPairedDevices = mBTAdapter.getBondedDevices();
-        if(mBTAdapter.isEnabled()) {
+        /*if(mBTAdapter.isEnabled()) {
             for (BluetoothDevice device : mPairedDevices){
                 mView.addDevice(device.getName() + "\n" + device.getAddress());
             }
             Toast.makeText(mActivity, "Show Paired Devices", Toast.LENGTH_SHORT).show();
         }
         else
+            Toast.makeText(mActivity, "Bluetooth not on", Toast.LENGTH_SHORT).show();*/
+       // mBTAdapter.enable();
+        if(mBTAdapter.isEnabled()) {
+            for (BluetoothDevice device : mPairedDevices) {
+                mView.addDevice(device.getName() + "\n" + device.getAddress());
+            }
+        }else
             Toast.makeText(mActivity, "Bluetooth not on", Toast.LENGTH_SHORT).show();
+
     }
 
     public final BroadcastReceiver blReceiver = new BroadcastReceiver() {
@@ -206,15 +208,14 @@ public class BluetoothModule {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-            if(device != null){
+            /*if(device != null){
                 Log.d("f",device.getName());
                 mView.addDevice(device.getName() + "\n" + device.getAddress());
-            }
-
-            /*if(BluetoothDevice.ACTION_FOUND.equals(action)){
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                mView.addDevice(device.getName() + "\n" + device.getAddress());
             }*/
+
+            if(BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)){
+                mView.addDevice(device.getName() + "\n" + device.getAddress());
+            }
         }
     };
 
