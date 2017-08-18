@@ -3,6 +3,7 @@ package ru.android.bluetooth.start;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -15,6 +16,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ScrollView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +40,11 @@ public class ChooseDeviceActivity extends AppCompatActivity implements ChooseDev
     RecyclerView mRvDevicesList;
     @BindView(R.id.btn_connect)
     Button mBtnConnect;
+    @BindView(R.id.scrollView)
+    ScrollView scrollView;
+    @BindView(R.id.frame_layout)
+    FrameLayout frameLayout;
+
 
     private DeviceAdapter mDeviceAdapter;
     private List<String> mDeviceList = new ArrayList<String>();
@@ -52,10 +60,21 @@ public class ChooseDeviceActivity extends AppCompatActivity implements ChooseDev
         s.setData();*/
 
 
-        //getSupportActionBar().setDisplayShowHomeEnabled(true);
-       // getSupportActionBar().setIcon(getResources().getDrawable(R.drawable.runline));
+       getSupportActionBar().hide();
 
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                // Actions to do after 10 seconds
+                frameLayout.setVisibility(View.INVISIBLE);
+                getSupportActionBar().show();
+
+                getSupportActionBar().setLogo(getResources().getDrawable(R.drawable.runline));
+                getSupportActionBar().setDisplayUseLogoEnabled(true);
+                scrollView.setVisibility(View.VISIBLE);
+            }
+        }, 1000);
+
         /*getSupportActionBar().setLogo(getResources().getDrawable(R.drawable.runline));
         getSupportActionBar().setDisplayUseLogoEnabled(true);*/
       //  getActionBar().setIcon(getResources().getDrawable(R.drawable.runline));
