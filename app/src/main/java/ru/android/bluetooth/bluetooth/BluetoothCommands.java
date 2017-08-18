@@ -28,4 +28,12 @@ public class BluetoothCommands {
     public static String setCommand(String startDate, String startTime, String startPow, String finshTime, String finishPow){
         return String.format(COMMAND, startDate, startTime, startPow, finshTime, finishPow);
     }
+
+    public static String setPassword(String password){
+        return String.format(SET_PASSWORD, password);
+    }
+
+    public static String setName(String name){
+        return String.format(SET_NAME, name);
+    }
 }

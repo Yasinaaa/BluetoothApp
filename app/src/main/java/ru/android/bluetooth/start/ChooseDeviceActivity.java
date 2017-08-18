@@ -1,7 +1,7 @@
 package ru.android.bluetooth.start;
 
 import android.app.Activity;
-import android.content.Intent;
+import android.bluetooth.BluetoothAdapter;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -10,36 +10,22 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.widget.EditText;
-import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.android.bluetooth.R;
 import ru.android.bluetooth.adapter.DeviceAdapter;
 import ru.android.bluetooth.bluetooth.BluetoothModule;
-import ru.android.bluetooth.common.CommonView;
 import ru.android.bluetooth.main.MainActivity;
-import ru.android.bluetooth.schedule.S;
 import ru.android.bluetooth.utils.ActivityHelper;
-import ru.android.bluetooth.utils.BluetoothHelper;
 
 /**
  * Created by itisioslab on 01.08.17.
@@ -188,10 +174,6 @@ public class ChooseDeviceActivity extends AppCompatActivity implements ChooseDev
             }
         });
     }
-   /* @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent Data){
-        mBluetoothModule.discover();
-    }*/
 
     @Override
     public void addDevice(String text) {
@@ -201,6 +183,12 @@ public class ChooseDeviceActivity extends AppCompatActivity implements ChooseDev
         }
         mDeviceAdapter.add(text);
         //mRvDevicesList.notifyDataSetChanged();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mBluetoothModule.unregister();
     }
 
     @Override

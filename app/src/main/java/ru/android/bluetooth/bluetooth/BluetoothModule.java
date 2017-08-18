@@ -176,11 +176,16 @@ public class BluetoothModule {
         Toast.makeText(mContext, "Discovery started", Toast.LENGTH_SHORT).show();
         IntentFilter filter = new IntentFilter();
         filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
-        //filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED);
+        filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED);
         //filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
-        //filter.addAction(BluetoothDevice.ACTION_FOUND);
+        filter.addAction(BluetoothDevice.ACTION_FOUND);
         mActivity.registerReceiver(blReceiver, filter);
         listPairedDevices();
+    }
+
+    public void unregister(){
+        mActivity.unregisterReceiver(blReceiver);
+        mBTAdapter.disable();
     }
 
     private void listPairedDevices(){
@@ -212,10 +217,10 @@ public class BluetoothModule {
                 Log.d("f",device.getName());
                 mView.addDevice(device.getName() + "\n" + device.getAddress());
             }*/
-
-            if(BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)){
+            mView.addDevice(device.getName() + "\n" + device.getAddress());
+            /*if(BluetoothDevice.ACTION_FOUND.equals(action) || BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)){
                 mView.addDevice(device.getName() + "\n" + device.getAddress());
-            }
+            }*/
         }
     };
 
@@ -274,4 +279,5 @@ public class BluetoothModule {
     private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException {
         return  device.createRfcommSocketToServiceRecord(BTMODULEUUID);
     }
+
 }

@@ -5,8 +5,10 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -109,10 +111,6 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
     private BluetoothMessage mBluetoothMessage;
     private String mStatus;
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -172,7 +170,6 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
         mStatus = BluetoothCommands.GET_TIME;
         mBluetoothMessage.writeMessage(BluetoothCommands.GET_TIME);*/
 
-
         mTbSwitchModeDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -192,6 +189,7 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
         setGenerationType();
         setDate();
         setClickListeners();
+        setChangePassword();
     }
 
 
@@ -211,7 +209,7 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
     private void setMode(String mode){
 
         if (mode == null){
-            if(mTbSwitchModeDevice.isChecked()){
+            if(!mTbSwitchModeDevice.getText().equals(getResources().getString(R.string.manual_mode))){
                 mStatus = BluetoothCommands.MANUAL_OFF;
                 mBluetoothMessage.writeMessage(mStatus);
             }else {
@@ -223,8 +221,12 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
 
         if (mode.equals("On")){
             mTbSwitchModeDevice.setChecked(true);
+            setModeVisiblity(View.INVISIBLE);
+            mRlLayoutParams.addRule(RelativeLayout.BELOW, R.id.cv_controller_functions);
         }else if (mode.equals("Off")){
             mTbSwitchModeDevice.setChecked(false);
+            setModeVisiblity(View.VISIBLE);
+            mRlLayoutParams.addRule(RelativeLayout.BELOW, R.id.cv_on_off_info);
         }
 
         if(mTbSwitchModeDevice.getText().equals(getResources().getString(R.string.manual_mode))){
@@ -403,6 +405,12 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
                 setMessage(BluetoothCommands.VERSION);
             }
         });
+        mBtnResetController.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setMessage(BluetoothCommands.RESET);
+            }
+        });
     }
 
     private void setMessage(String status){
@@ -425,5 +433,74 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
                 setMode(s.split(" ")[1]);
             }
         }
+    }
+
+    private void setChangePassword(){
+        mTvChangePassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                 LayoutInflater inflater = getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.dialog_password, null);
+
+                final EditText mPasswordView = (EditText) dialogView.findViewById(R.id.et_password);
+
+
+                AlertDialog.Builder passwordDialogBuilder = new AlertDialog.Builder(MainActivity.this)
+                        .setTitle(getString(R.string.input_password))
+                        .setView(dialogView)
+
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                               // Toast.makeText(getBaseContext(), "Pressed OK", Toast.LENGTH_SHORT).show();
+                                setMessage(BluetoothCommands.setPassword(mPasswordView.getText().toString()));
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                Toast.makeText(getBaseContext(), "Cancel", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                passwordDialogBuilder.show();
+            }
+        });
+        mIbChangeName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LayoutInflater inflater = getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.dialog_password, null);
+
+
+                TextInputLayout textInputLayout = dialogView.findViewById(R.id.til_password);
+                textInputLayout.setHint("Новое название устройства");
+                final EditText mPasswordView = (EditText) dialogView.findViewById(R.id.et_password);
+                mPasswordView.setInputType(InputType.TYPE_CLASS_TEXT);
+
+
+                AlertDialog.Builder passwordDialogBuilder = new AlertDialog.Builder(MainActivity.this)
+                        .setTitle(getString(R.string.input_password))
+                        .setView(dialogView)
+
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // Toast.makeText(getBaseContext(), "Pressed OK", Toast.LENGTH_SHORT).show();
+                                setMessage(BluetoothCommands.setName(mPasswordView.getText().toString()));
+                                mTvDeviceTitle.setText(mPasswordView.getText().toString());
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                Toast.makeText(getBaseContext(), "Cancel", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                passwordDialogBuilder.show();
+            }
+        });
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
     }
 }

@@ -1,9 +1,9 @@
-package ru.android.bluetooth.schedule;
+package ru.android.bluetooth.schedule.helper;
 
 import android.util.Log;
 
 /**
- * Created by dinar on 10.08.17.
+ * Created by yasina on 10.08.17.
  */
 
 public class S {
