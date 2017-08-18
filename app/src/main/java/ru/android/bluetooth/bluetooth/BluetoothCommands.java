@@ -36,4 +36,10 @@ public class BluetoothCommands {
     public static String setName(String name){
         return String.format(SET_NAME, name);
     }
+
+/*Set Data
+40
+
+    412768625435*/
+
 }

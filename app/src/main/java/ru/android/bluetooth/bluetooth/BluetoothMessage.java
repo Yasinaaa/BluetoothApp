@@ -29,6 +29,7 @@ public class BluetoothMessage {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                         try {
                             readMessage =  IOUtils.toString(r, "utf-8");
+                            //Log.d("bm", readMessage);
                             readMessage = readMessage.trim().replaceAll("�", "");
                             if(readMessage.length() > 2) readMessage.replace("OK","");
                             //Log.d("bm", readMessage);
@@ -64,8 +65,15 @@ public class BluetoothMessage {
         return mBluetoothMessage;
     }
     */
-
-
+    public void writeMessage(int[] data){
+        mConnectedThread.write(data);
+    }
+    public void writeMessage(int data){
+        mConnectedThread.write(data);
+    }
+    public void writeMessage(byte count, int data){
+        mConnectedThread.write(count,data);
+    }
     public void writeMessage(String message){
         mConnectedThread.write(message);
     }

@@ -30,6 +30,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -38,6 +39,7 @@ import butterknife.ButterKnife;
 import ru.android.bluetooth.R;
 import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
+import ru.android.bluetooth.schedule.helper.ScheduleGenerator;
 import ru.android.bluetooth.utils.ActivityHelper;
 import ru.android.bluetooth.utils.BluetoothHelper;
 import ru.android.bluetooth.view.CalendarActivity;
@@ -111,6 +113,9 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
     private BluetoothMessage mBluetoothMessage;
     private String mStatus;
 
+    public double JD = 0;
+    public int zone = +4;
+    public boolean dst = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,16 +126,61 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
         //((App) getApplication()).getComponent().inject(this);
         ButterKnife.bind(this);
 
+
         init();
+
+        mTbSwitchModeDevice.setChecked(true);
+        setModeVisiblity(View.INVISIBLE);
+        mRlLayoutParams.addRule(RelativeLayout.BELOW, R.id.cv_controller_functions);
+        mRlLayoutParams.setMargins(0,10,0,0);
+        mCvSchedule.setLayoutParams(mRlLayoutParams);
+
+        testSetData();
+        mBluetoothMessage.writeMessage(BluetoothCommands.DEBUG);
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+    }
+
+    private void testSetData(){
+        //System.out.println(crc.getValue());
+        // mBluetoothMessage.writeMessage(BluetoothCommands.RESET);
+
+        //mBluetoothMessage.writeMessage("Set Data\r\n1460\n");
+        mBluetoothMessage.writeMessage(4);
+        Calendar finishDate = Calendar.getInstance();
+        finishDate.add(Calendar.YEAR, 1);
+        generateSchedule(Calendar.getInstance(), finishDate, 55.75, 37.50);
+
+
+    }
+
+    private int[] onList = new int[365];
+    private int[] offList = new int[365];
+    private void generateSchedule(Calendar startDate, Calendar endDate, double latitude, double longitude){
+        Calendar currentDate = Calendar.getInstance();
+        double sunRise;
+        double sunSet;
+        int d = 0;
+        while(startDate.compareTo(endDate) <= 0 && d != 365){
+
+            JD = ScheduleGenerator.calcJD(startDate);
+            sunRise = ScheduleGenerator.calcSunRiseUTC(JD, latitude, longitude);
+            sunSet = ScheduleGenerator.calcSunSetUTC(JD, latitude, longitude);
+
+            onList[d] = Integer.parseInt(ScheduleGenerator.getTimeString(true,sunRise, zone, JD, dst));
+            offList[d] = Integer.parseInt(ScheduleGenerator.getTimeString(true,sunSet, zone, JD, dst));
+            d++;
+            startDate.add(Calendar.DAY_OF_YEAR, 1);
+
+        }
     }
 
     private void init(){
 
         mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
         mBluetoothMessage.setBluetoothMessageListener(this);
-        setMessage(BluetoothCommands.STATUS);
+        //setMessage(BluetoothCommands.STATUS);
 
         /*setMessage("Set Data\n");
         setMessage(0000002-380000-764-4471);*/
@@ -347,35 +397,54 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
 
     @Override
     public void onResponse(String answer) {
-        Log.d(TAG, mStatus + " " + answer);
+        Log.d(TAG, " " + answer);
+        if(answer==" "){
+            //Log.d(TAG, "empty answer ");
+            //mBluetoothMessage.writeMessage(BluetoothCommands.DEBUG);
+        }
 
-        switch (mStatus){
-            case BluetoothCommands.DEBUG:
-                Log.d(TAG, answer);
-                break;
-            case BluetoothCommands.RESET:
-                mTvReset.setText(answer);
-                break;
-            case BluetoothCommands.STATUS:
-                mTvStatus.setText(answer);
-                parseStatus(answer);
+        try {
+            if (Integer.parseInt(answer) == 1) {
+                mBluetoothMessage.writeMessage(onList);
+                mBluetoothMessage.writeMessage(offList);
+                //mBluetoothMessage.writeMessage(BluetoothCommands.DEBUG);
+            }
+            /*if (Integer.parseInt(answer) == 3) {
+                mBluetoothMessage.writeMessage(offList);
+            }*/
+        }catch (Exception e){
 
-                break;
-            case BluetoothCommands.VERSION:
-                mTvVersion.setText(answer.substring(0, answer.indexOf("\n")));
-                break;
-            case BluetoothCommands.GET_TIME:
-                mTvDate.setText(answer);
-                break;
-            case BluetoothCommands.ON:
-                setDeviceModeColor(true);
-                break;
-            case BluetoothCommands.OFF:
-                setDeviceModeColor(false);
-                break;
-            case BluetoothCommands.SET_DATA:
+        }
 
-                break;
+        if(mStatus!= null) {
+            switch (mStatus) {
+                case BluetoothCommands.DEBUG:
+                    Log.d(TAG, answer);
+                    break;
+                case BluetoothCommands.RESET:
+                    mTvReset.setText(answer);
+                    break;
+                case BluetoothCommands.STATUS:
+                    mTvStatus.setText(answer);
+                    parseStatus(answer);
+
+                    break;
+                case BluetoothCommands.VERSION:
+                    mTvVersion.setText(answer.substring(0, answer.indexOf("\n")));
+                    break;
+                case BluetoothCommands.GET_TIME:
+                    mTvDate.setText(answer);
+                    break;
+                case BluetoothCommands.ON:
+                    setDeviceModeColor(true);
+                    break;
+                case BluetoothCommands.OFF:
+                    setDeviceModeColor(false);
+                    break;
+                case BluetoothCommands.SET_DATA:
+
+                    break;
+            }
         }
     }
 

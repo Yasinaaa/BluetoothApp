@@ -51,9 +51,13 @@ public class ChooseDeviceActivity extends AppCompatActivity implements ChooseDev
        /* S s = new S();
         s.setData();*/
 
+
+        //getSupportActionBar().setDisplayShowHomeEnabled(true);
+       // getSupportActionBar().setIcon(getResources().getDrawable(R.drawable.runline));
+
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        getSupportActionBar().setLogo(getResources().getDrawable(R.drawable.runline));
-        getSupportActionBar().setDisplayUseLogoEnabled(true);
+        /*getSupportActionBar().setLogo(getResources().getDrawable(R.drawable.runline));
+        getSupportActionBar().setDisplayUseLogoEnabled(true);*/
       //  getActionBar().setIcon(getResources().getDrawable(R.drawable.runline));
         //getSupportActionBar().setIcon(getResources().getDrawable(R.drawable.runline));
 
