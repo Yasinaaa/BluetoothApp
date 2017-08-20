@@ -117,6 +117,7 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
     public int zone = +4;
     public boolean dst = false;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -135,8 +136,8 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
         mRlLayoutParams.setMargins(0,10,0,0);
         mCvSchedule.setLayoutParams(mRlLayoutParams);
 
+
         testSetData();
-        mBluetoothMessage.writeMessage(BluetoothCommands.DEBUG);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -147,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
         // mBluetoothMessage.writeMessage(BluetoothCommands.RESET);
 
         //mBluetoothMessage.writeMessage("Set Data\r\n1460\n");
-        mBluetoothMessage.writeMessage(4);
+        mBluetoothMessage.writeMessage(0);
         Calendar finishDate = Calendar.getInstance();
         finishDate.add(Calendar.YEAR, 1);
         generateSchedule(Calendar.getInstance(), finishDate, 55.75, 37.50);
@@ -358,14 +359,15 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
         mBtnSetDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DatePickerDialog mDatePicker = new DatePickerDialog(MainActivity.this, new DatePickerDialog.OnDateSetListener() {
+               /* DatePickerDialog mDatePicker = new DatePickerDialog(MainActivity.this, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
 
                     }
                 },2017, 03, 01);
                // mDatePicker.setTitle("Выберите дату");
-                mDatePicker.show();
+                mDatePicker.show();*/
+                mBluetoothMessage.writeMessage(BluetoothCommands.DEBUG);
             }
         });
     }
@@ -395,26 +397,38 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
         }
     }
 
+    int count = 0;
     @Override
     public void onResponse(String answer) {
         Log.d(TAG, " " + answer);
-        if(answer==" "){
-            //Log.d(TAG, "empty answer ");
-            //mBluetoothMessage.writeMessage(BluetoothCommands.DEBUG);
-        }
 
-        try {
-            if (Integer.parseInt(answer) == 1) {
+
+       /* if(answer.contains("O") ){
+            //&& count != 2
+            count++;
+            mBluetoothMessage.writeMessageD(1);
+        }*/
+
+       /* if (count !=127) {
+            count++;
+            mBluetoothMessage.writeMessageD(count);
+        }*/
+       /* try {
+            /*if (Integer.parseInt(answer) == 1) {
                 mBluetoothMessage.writeMessage(onList);
                 mBluetoothMessage.writeMessage(offList);
                 //mBluetoothMessage.writeMessage(BluetoothCommands.DEBUG);
-            }
-            /*if (Integer.parseInt(answer) == 3) {
-                mBluetoothMessage.writeMessage(offList);
             }*/
-        }catch (Exception e){
+          /*  Integer.parseInt(answer);
 
-        }
+            if (count !=127) {
+                count++;
+                mBluetoothMessage.writeMessageD(count);
+            }
+        }catch (Exception e){
+            /*count = 14;
+            mBluetoothMessage.writeMessage(count);*/
+       // }
 
         if(mStatus!= null) {
             switch (mStatus) {
@@ -449,6 +463,8 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
     }
 
     private void setClickListeners(){
+
+
         mIbSyncStatus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

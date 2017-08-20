@@ -59,7 +59,6 @@ public class ChooseDeviceActivity extends AppCompatActivity implements ChooseDev
        /* S s = new S();
         s.setData();*/
 
-
        getSupportActionBar().hide();
 
         Handler handler = new Handler();

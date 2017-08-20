@@ -2,164 +2,258 @@ package ru.android.bluetooth.schedule.helper;
 
 import android.util.Log;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.util.Arrays;
+
 /**
  * Created by yasina on 10.08.17.
  */
 
 public class S {
 
-    private char makeData(){
-       // StringBuilder stringBuilder = new StringBuilder();
-        char num = 0;
-        for (int i=1; i<=732; i++){
-
-            num = (char)(num + numtostr2revers(i));
+    public String doPart2(String p){
+        String _so = p.substring(0, 128);
+        p = p.substring(_so.length());
+        char c = 255;
+        do
+        {
+            _so = _so + c;
         }
-        Log.d("ff", num + "");
-        return num;
+        while (_so.length() < 128);
+        Log.e("TAG", "so=" + _so);
+        return strToPackCRC(_so);
+    }
+    public void write(OutputStream mmOutStream, int count) {
 
-        //return stringBuilder.toString();
+        ByteBuffer byteBufferData = ByteBuffer.allocate(4);
+        IntBuffer intBuffer = byteBufferData.asIntBuffer();
+        intBuffer.put(count);
+
+        ByteBuffer crcBuffer = ByteBuffer.allocate(32);
+        /*CRC32 crc = new CRC32();
+        crc.update(count);
+        crcBuffer.putLong(crc.getValue());*/
+
+        //crcBuffer.putInt(checksum(count));
+        byte[] one = byteBufferData.array();
+
+        //byte crc = crc(count);
+
+        // byte[] bytes = combineBytes(byteBufferData.array(), crc);
+        //String s = makeCrc(count);
+        String p = "";
+        for (int i = 0; i < 366 * 2; i++) {
+            p += numToStrReverse(i + 1);
+        }
+
+        Log.e("TAG", "p=" + p);
+        Log.e("TAG", "numToStr(p.length())=" + numToStr(p.length()));
+        String text = strToPackCRC(numToStr(p.length()));
+        Log.e("TAG", "text=" + text);
+        String s = "Set Data\r" + text;
+        try {
+            //mmOutStream.write("Set Data\r\n4104010".getBytes());
+            //mmOutStream.write(s.getBytes());
+            byte[] a = temp();
+
+            mmOutStream.write(a);
+           // mmOutStream.write(doPart2(p).getBytes());
+
+           // mmOutStream.close();
+        } catch (IOException e) {
+            Log.e("TAG", e.getMessage());
+        }
     }
 
-    public S() {
+    private byte[] temp(){
+        byte[] setData = "Set Data\r".getBytes();
+        byte one = (byte)2;
+        byte[] two = ByteBuffer.allocate(4).putInt(1040).array();
+        byte three =(byte)249;
+
+        //[] n = "\n".getBytes();
+
+        byte[] combined = new byte[setData.length + 2 + two.length ];//+ n.length
+
+        System.arraycopy(setData,0,combined,0,setData.length);
+        System.arraycopy(two,0,combined,setData.length+1,two.length);
+        //System.arraycopy(n,0,combined,setData.length + two.length + 2,n.length);
+        combined[setData.length] = one;
+        combined[combined.length - 1] = three;
+        //combined[combined.length - 2] = three;
+
+        return combined;
     }
 
-    public void setData(){
-        //String data = makeData();
-        //String result = "Set Data" + "\n" + strToPackCRC(data);
-        //Log.d("S", result);
-        makeData();
-        strToPackCRC(makeData());
-        StringBuilder stringBuilder = new StringBuilder();
-        StringBuilder stringBuilder1 = new StringBuilder();
-       for(int i=0;i<366;i++){
-           stringBuilder.append("22,");
-           stringBuilder1.append("23,");
-       }
-        String sw ="Set Data\n1465";
-       String s =
-               "22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22";
-       Log.d("str1", stringBuilder.toString());
-        Log.d("str2", stringBuilder1.toString());
-
+    private String bytesToString(byte[] bytes){
+        String answer = "";
+        for(byte b: bytes){
+            answer += b;
+        }
+        return answer;
     }
 
-    private String strToPackCRC(int s){
-        int lenght = 5;
-        int so = 0;
+    private byte[] newBytesWithLenght(int lenght, byte[] bytes){
+        byte[] combined = new byte[1 + bytes.length];
+        combined[0] = (byte) lenght;
+        System.arraycopy(bytes,0,combined,1,bytes.length);
+        return combined;
+    }
+
+    private String[] newStringsWithLenght(String[] strings){
+        String[] combined = new String[strings.length + 1];
+        System.arraycopy(strings,0,combined,1,strings.length);
+        combined[0] = strings.length + "";
+        return combined;
+    }
+
+    private char[] newStringsWithLenght(char[] strings){
+        char[] combined = new char[strings.length + 1];
+        System.arraycopy(strings,0,combined,1,strings.length);
+        char l = (char)strings.length;
+        combined[0] = l;
+        return combined;
+    }
+
+    private String[] getArrayOfString(String s){
+        Log.d("TAG", "s.length()" + s.length());
+        String[] array = new String[s.length()];
+        for (int i=0; i<s.length(); i++){
+            array[i] = s.substring(i, i + 1);
+        }
+        return array;
+    }
+
+
+    private String strToPackCRC(String s)
+    {
+        char[] _so = null;
+        //int crc = 0;
         int crc = 0;
-        if(lenght > 0) {
-            so = (char) lenght + s;
-            Log.d("So", so + "");
-            int[] so2 = new int[]{9,0,2,8,8};
+        byte[] combined = null;
 
-            for (int i = 0; i < 5; i++) {
-                crc = crc + so2[i];
+        if (s != null)
+        {
+
+            //_so = newStringsWithLenght(getArrayOfString(s));
+            _so = (s.length() + s).toCharArray();
+
+            for (int i = 0; i <_so.length; i++)
+            {
+                try {
+                    //crc = crc + Integer.parseInt(_so[i]);
+                    crc += (int)_so[i];
+                    if(crc > 255){
+                        crc = crc - 255;
+                    }
+                }catch (NumberFormatException e) {
+
+                }
             }
-            if (crc > 255)
-                crc = crc - 255;
         }
-        Log.d("sss", so + (char)crc + "");
-        return null;
-       // return so + (char)crc;
+        else
+        {
+            return null;
+        }
+        Log.d("ff", "crc__="+crc);
+        String answer = Arrays.toString(_so) + crc;
+        byte[] d = ByteBuffer.allocate(4).putInt(s.length()).array();
+
+
+        //return s.length() + s + String.valueOf(crc);
+        return s.length() + s + (char)crc;
     }
-    private char numtostr2revers(int i){
-        char symbol = (char) (i % 256);
-        i = i/256;
-        return (char)(symbol + (i % 256));
+    /*private String strToPackCRC(String[] s)
+    {
+        String[] _so = null;
+        int crc = 0;
+        byte[] combined = null;
+
+        if (s.length > 0)
+        {
+            _so = newStringsWithLenght(s.length,s);
+
+            for (int i = 0; i <_so.length; i++)
+            {
+                crc = crc + Integer.parseInt(_so[i]);
+                if (crc > 255) {
+                    crc = crc - 255;
+                }
+            }
+        }
+        else
+        {
+            return null;
+        }
+        Log.d("ff", "crc__="+crc);
+        String answer = Arrays.toString(_so) + String.valueOf(crc);
+
+        return Arrays.toString(_so) + String.valueOf(crc);
+    }*/
+    /*private String strToPackCRC(byte[] s)
+    {
+        String _so;
+        byte crc = 0;
+        byte[] combined = null;
+
+        if (s.length > 0)
+        {
+            _so = s.length + bytesToString(s);
+            Log.d("ff", "_so="+_so);
+
+            combined = newBytesWithLenght(s.length, s);
+            for (int i = 0; i <_so.length(); i++)
+            {
+                crc = (byte)(crc + combined[i]);
+                Log.d("ff", "crc="+crc);
+                if (crc > 255) {
+                    crc = (byte)(crc - 255);
+                }
+            }
+        }
+        else
+        {
+            _so = "";
+            crc = 0;
+        }
+        Log.d("ff", "crc__="+crc);
+        return bytesToString(combined) + String.valueOf(crc);
+    }*/
+
+
+    private String numToStrReverse(int n){
+        String s=n%256 + "";
+        n=n/256;
+        s = s + n%256;
+        // Log.d("T","Reverse=" + s);
+        return s;
     }
-/*
-* отправка данных в контроллер, реализованная в таймерной части VFP
 
-IF thisform.step=0
- && тут формирование строковой переменной "P" увеличивающимися данными (для отладки)
- thisform.p=""
- FOR _i=1 TO 366*2
-  thisform.p=thisform.p+numtostr2revers(_i)
- ENDFOR
+    private String numToStr(int n){
+        String s=n%256 + "";
+        n=n/256;
+        s = n%256+s;
+        // Log.d("T", s);
+        return s;
+    }
+  /* private String numToStrReverse(int n){
+       char s=(char)(n%256);
+       n=n/256;
+       return s + (char)(n%256) + "";
+       // Log.d("T","Reverse=" + s);
 
- && формирование команды "Set Data" с первым пакетом,указывающим количество отправляемых данных
+   }
 
- _s="Set Data"+CHR(13)+StrToPackCRC(numtostr2(LEN(thisform.p)))
+    private String numToStr(int n){
+        char s=(char)(n%256);
+        n=n/256;
+        char c = (char)(n%256);
+        return c + s + "";
+        // Log.d("T", s);
 
- thisform.addMessage("Начало отправки пакетов!"+CHR(13))
- thisform.com.output=_s
- thisform._seconds=SECONDS()
- thisform.step=1
- thisform.nump=0
- thisform.btnSaveScen.Enabled=.f.
- RETURN
-ENDIF
-
-IF thisform.step=1	&& ждать ответа
- IF SECONDS()<thisform._seconds+1
-  IF CHR(13)$thisform._strcom
-   _s=LEFT(thisform._strcom,AT(CHR(13),thisform._strcom))
-   thisform._strcom=SUBSTR(thisform._strcom,AT(CHR(13),thisform._strcom)+1,0xFFFF)
-   IF UPPER(_s)="OK"
-    thisform.addMessage("Пакет "+TRANSFORM(thisform.nump)+"="+ _s)
-    thisform.nump=thisform.nump+1
-    thisform.step=2
-    RETURN
-   ENDIF
-  ENDIF
- ELSE
-  thisform.addMessage("Ошибка на шаге 1")
-  this.Enabled=.f.
- ENDIF
-ENDIF
-
-IF thisform.step=2	&& ждать ответа
- IF LEN(thisform.p)>0
-  _so=LEFT(thisform.p,128)
-
-  thisform.p=SUBSTR(thisform.p,LEN(_so)+1,0xFFFF)
-  *DO WHILE LEN(_so)<128
-  * _so=_so+CHR(255)
-  *ENDDO
-  thisform.com.output=StrToPackCRC(_so)
-  thisform._seconds=SECONDS()
-  thisform.step=1
- ELSE
-  thisform.step=3
-  thisform.addMessage("Все пакеты отправлены!"+CHR(13))
-  thisform.btnSaveScen.Enabled=.t.
-  this.Enabled=.f.
- ENDIF
-ENDIF
-
-*******************************************
-*StrToPackCRC(_s)
-LPARAMETERS _s
-LOCAL _so,i,crc
-*WAIT WINDOW TRANSFORM(LEN(_s))
-IF LEN(_s)>0
- _so=chr(LEN(_s))+_s
- crc=0
- FOR i=1 TO LEN(_so)
-  crc=crc+ASC(SUBSTR(_so,i,1))
-  IF crc>255
-   crc=crc-255
-  ENDIF
- ENDFOR
-ELSE
- _so=''
- crc=0
-ENDIF
-RETURN _so+CHR(crc)
-
-***************************************
-*NumToStr2revers.prg
-LPARAMETERS _n
-LOCAL _s
-_s=CHR(MOD(_n,256))
-_n=int(_n/256)
-_s=_s+CHR(MOD(_n,256))
-RETURN _s
-*************************************************
-С помощью команды "Get AOnOff\r\n" можно прочитать массив данных из контроллера
-Команда возвращает время включения и отключения одного дня.
-При каждом следующем выполнении команды день увеличивается
- */
+    }*/
 
 }

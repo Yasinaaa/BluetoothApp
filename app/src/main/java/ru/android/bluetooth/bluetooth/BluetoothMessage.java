@@ -65,6 +65,9 @@ public class BluetoothMessage {
         return mBluetoothMessage;
     }
     */
+    public void writeMessageD(int data){
+        mConnectedThread.writeData(data);
+    }
     public void writeMessage(int[] data){
         mConnectedThread.write(data);
     }

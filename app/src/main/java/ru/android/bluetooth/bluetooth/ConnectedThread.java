@@ -13,9 +13,11 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
+import java.nio.charset.Charset;
 import java.util.zip.CRC32;
 
 import ru.android.bluetooth.schedule.helper.S;
+import ru.android.bluetooth.schedule.helper.S2;
 
 import static java.lang.Long.BYTES;
 
@@ -135,35 +137,17 @@ public class ConnectedThread extends Thread {
     }
 
     public void write(int count) {
+        S2 s = new S2();
+        s.write(mmOutStream, count);
+    }
 
-        ByteBuffer byteBufferData = ByteBuffer.allocate(4);
-        IntBuffer intBuffer = byteBufferData.asIntBuffer();
-        intBuffer.put(count);
-
-        ByteBuffer crcBuffer = ByteBuffer.allocate(32);
-        /*CRC32 crc = new CRC32();
-        crc.update(count);
-        crcBuffer.putLong(crc.getValue());*/
-
-        //crcBuffer.putInt(checksum(count));
-        byte[] one = byteBufferData.array();
-
-        //byte crc = crc(count);
-
-       // byte[] bytes = combineBytes(byteBufferData.array(), crc);
-        //String s = makeCrc(count);
-        numToStr(count);
-        numToStrReverse(count);
-        try {
-            mmOutStream.write(("Set Data\r\n" + 40).getBytes());
-            //mmOutStream.write(bytes);
-        } catch (IOException e) {
-            Log.e("TAG", e.getMessage());
-        }
+    public void writeData(int count) {
+        S2 s = new S2();
+        s.writeData(mmOutStream, count);
     }
 
 
-    private String strToPackCRC(String s){
+    /*private String strToPackCRC(String s){
         int crc;
         String so;
 
@@ -173,15 +157,43 @@ public class ConnectedThread extends Thread {
            // for()
         }
         return null;
-    }
+    }*/
 
+    private String strToPackCRC(String s)
+    {
+        String _so;
+        int crc = 0;
+        //*WAIT WINDOW TRANSFORM(s.lenght())
+        if (s.length() > 0)
+        {
+            _so = s.length() + s;
+            Log.d("ff", "_so="+_so);
+            //byte[] byteArray = _so.getBytes(Charset.forName("Cp1252")); // 1040ﾙ
+            String[] charArray = _so.split("");
+            for (int i = 0; i <_so.length(); i++)
+            {
+                crc = crc + Integer.parseInt(charArray[i]);
+                Log.d("ff", "crc="+crc);
+                if (crc > 255) {
+                    crc = (char) (crc - 255);
+                }
+            }
+        }
+        else
+        {
+            _so = "";
+            crc = 0;
+        }
+        Log.d("ff", "crc__="+crc);
+        return s + String.valueOf(crc);
+    }
 
 
     private String numToStrReverse(int n){
         String s=n%256 + "";
         n=n/256;
         s = s + n%256;
-        Log.d("T","Reverse=" + s);
+       // Log.d("T","Reverse=" + s);
         return s;
     }
 
@@ -189,7 +201,7 @@ public class ConnectedThread extends Thread {
         String s=n%256 + "";
         n=n/256;
         s = n%256+s;
-        Log.d("T", s);
+       // Log.d("T", s);
         return s;
     }
 

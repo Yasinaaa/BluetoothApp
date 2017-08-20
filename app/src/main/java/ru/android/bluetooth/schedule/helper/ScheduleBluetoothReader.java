@@ -73,9 +73,11 @@ public class ScheduleBluetoothReader {
 
     public void addItem(String item){
 
-        String answer = item.substring(0, item.indexOf("\r\n"));
-        writer.println(answer);
-        Log.d(TAG,answer);
+//        String answer = item.substring(0, item.indexOf("\r\n"));
+       // writer.println(answer);
+       // Log.d(TAG,answer);
+        writer.println(item);
+        Log.d(TAG,item);
         if (!isFinish()){
             mBluetoothMessage.writeMessage(BluetoothCommands.DEBUG);
         }else {
