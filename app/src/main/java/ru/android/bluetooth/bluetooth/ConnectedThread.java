@@ -13,6 +13,7 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.zip.CRC32;
 
+import ru.android.bluetooth.schedule.helper.S;
 import ru.android.bluetooth.schedule.helper.S2;
 
 
@@ -111,23 +112,10 @@ public class ConnectedThread extends Thread {
 
     }
 
-    int checksum(int[] array, int size) {
-        int c = 0;
-        for(int i = 0; i < size; i++) {
-            c += array[i];
-            c = c << 3 | c >> (32 - 3); // rotate a little
-            c ^= 0xFFFFFFFF; // invert just for fun
-        }
-        return c;
-    }
+    public void write(int[] listOn, int[] listOff){
+        S2 s = new S2();
+        s.write(mmOutStream, listOn, listOff);
 
-    private byte crc(int num){
-
-        byte answer = (byte)num;
-        byte one = 1;
-        byte t = (byte) (answer + one);
-
-        return t;
     }
 
     public void write(int count) {
@@ -135,23 +123,19 @@ public class ConnectedThread extends Thread {
         s.write(mmOutStream, count);
     }
 
-    public void writeData(int count) {
-        S2 s = new S2();
-        s.writeData(mmOutStream, count);
+    public void writeData(int[] data) {
+        S s = new S();
+        s.part2(mmOutStream, data);
     }
 
-
-    /*private String strToPackCRC(String s){
-        int crc;
-        String so;
-
-        if(s.length() != 0){
-            so = s.length() + s;
-            crc = 0;
-           // for()
+    public void writeData(String data) {
+        try {
+            mmOutStream.write(data.getBytes());
+        } catch (IOException e) {
+            Log.d("T", e.getMessage());
         }
-        return null;
-    }*/
+    }
+
 
     private String strToPackCRC(String s)
     {

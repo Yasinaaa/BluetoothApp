@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
         mCvSchedule.setLayoutParams(mRlLayoutParams);
 
 
-        //testSetData();
+        testSetData();
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -145,10 +145,11 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
 
     private void testSetData(){
 
-        mBluetoothMessage.writeMessage(0);
         Calendar finishDate = Calendar.getInstance();
         finishDate.add(Calendar.YEAR, 1);
         generateSchedule(Calendar.getInstance(), finishDate, 55.75, 37.50);
+        mBluetoothMessage.writeMessage(onList, offList);
+
     }
 
     private int[] onList = new int[365];
@@ -367,13 +368,27 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
     int count = 0;
     @Override
     public void onResponse(String answer) {
-        Log.d(TAG, " " + answer + " count=" + count);
+        Log.d(TAG, " " + answer);
 
 
         if(answer.contains("O") ){
             //&& count != 2
-            count++;
-            mBluetoothMessage.writeMessageD(1);
+            /*if(count == 0) {
+                count++;
+                /*int[] data = new int[2];
+                data[0] = 5;
+                data[1] = 184;*/
+                //mBluetoothMessage.writeMessageD(onList);
+              //  mBluetoothMessage.writeMessageD(offList);
+           // }*/
+
+            /*if (count != 2){
+                count++;
+                int[] data = new int[2];
+                data[0] = 5;
+                data[1] = 184;
+                mBluetoothMessage.writeMessageD(data);
+            }*/
         }
 
        /* if (count !=127) {

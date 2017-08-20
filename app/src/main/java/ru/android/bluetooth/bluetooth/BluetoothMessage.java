@@ -65,7 +65,7 @@ public class BluetoothMessage {
         return mBluetoothMessage;
     }
     */
-    public void writeMessageD(int data){
+    public void writeMessageD(int[] data){
         mConnectedThread.writeData(data);
     }
     public void writeMessage(int[] data){
@@ -78,7 +78,10 @@ public class BluetoothMessage {
         mConnectedThread.write(count,data);
     }
     public void writeMessage(String message){
-        mConnectedThread.write(message);
+        mConnectedThread.writeData(message);
+    }
+    public void writeMessage(int[] listOn, int[] listOff){
+        mConnectedThread.write(listOn, listOff);
     }
 
     public Handler getHandler() {
