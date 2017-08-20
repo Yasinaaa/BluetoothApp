@@ -71,7 +71,7 @@ public class S2 {
         byte one = (byte)128;
 
         byte[] two = new byte[128];
-        Arrays.fill(two, (byte)1);
+        Arrays.fill(two, (byte)2);
         //two[0] = (byte)count;
         //byte three = crc(two);
         byte three = (byte)count;
@@ -84,7 +84,7 @@ public class S2 {
     }
 
     private byte crc(byte[] two){
-        int crc = 2;
+        int crc = 1;
 
         for (int i=0; i<two.length; i++){
             crc += two[i];
@@ -103,8 +103,8 @@ public class S2 {
         int d1 = (int)data.charAt(0);
         int d2 = (int)data.charAt(1);
         byte[] two = new byte[2];
-        two[0] = (byte)2;
-        two[1] = (byte)2;
+        two[0] = (byte)5;
+        two[1] = (byte)5;
 
 
         byte three = (byte) (two[0] + two[1] + 2);

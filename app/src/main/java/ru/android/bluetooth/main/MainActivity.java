@@ -400,14 +400,14 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
     int count = 0;
     @Override
     public void onResponse(String answer) {
-        Log.d(TAG, " " + answer);
+        Log.d(TAG, " " + answer + " count=" + count);
 
 
-       /* if(answer.contains("O") ){
+        if(answer.contains("O") ){
             //&& count != 2
             count++;
             mBluetoothMessage.writeMessageD(1);
-        }*/
+        }
 
        /* if (count !=127) {
             count++;
