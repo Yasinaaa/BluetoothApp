@@ -78,11 +78,11 @@ public class ScheduleBluetoothReader {
        // Log.d(TAG,answer);
         writer.println(item);
         Log.d(TAG,item);
-        if (!isFinish()){
+        //if (!isFinish()){
             mBluetoothMessage.writeMessage(BluetoothCommands.DEBUG);
-        }else {
+        /*}else {
             writer.close();
-        }
+        }*/
 
     }
 

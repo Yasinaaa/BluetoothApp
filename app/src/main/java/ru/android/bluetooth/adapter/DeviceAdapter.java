@@ -32,7 +32,6 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceHold
         void onItemClick(String text);
     }
 
-
     public DeviceAdapter(List<String> list, OnItemClicked onClick) {
         this.mList = list;
         mFilteredList = list;

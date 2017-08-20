@@ -56,28 +56,19 @@ public class ChooseDeviceActivity extends AppCompatActivity implements ChooseDev
        super.onCreate(savedInstanceState);
        checkBluetoothUser();
 
-       /* S s = new S();
-        s.setData();*/
-
        getSupportActionBar().hide();
 
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             public void run() {
-                // Actions to do after 10 seconds
                 frameLayout.setVisibility(View.INVISIBLE);
                 getSupportActionBar().show();
 
-                getSupportActionBar().setLogo(getResources().getDrawable(R.drawable.runline));
-                getSupportActionBar().setDisplayUseLogoEnabled(true);
+                ActivityHelper.setVisibleIcon(ChooseDeviceActivity.this);
                 scrollView.setVisibility(View.VISIBLE);
             }
         }, 1000);
 
-        /*getSupportActionBar().setLogo(getResources().getDrawable(R.drawable.runline));
-        getSupportActionBar().setDisplayUseLogoEnabled(true);*/
-      //  getActionBar().setIcon(getResources().getDrawable(R.drawable.runline));
-        //getSupportActionBar().setIcon(getResources().getDrawable(R.drawable.runline));
 
     }
 
@@ -107,14 +98,9 @@ public class ChooseDeviceActivity extends AppCompatActivity implements ChooseDev
     }
 
     private void init(){
-
-        /*mDeviceAdapter = new DeviceAdapter(mDeviceList, this);
-        mRvDevicesList.setAdapter(mDeviceAdapter);*/
-
         mRvDevicesList.setItemAnimator(new DefaultItemAnimator());
         mRvDevicesList.setHasFixedSize(true);
         mRvDevicesList.setLayoutManager(new LinearLayoutManager(this));
-
         setPasswordDialog();
     }
 
@@ -168,29 +154,6 @@ public class ChooseDeviceActivity extends AppCompatActivity implements ChooseDev
         mBtnConnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*LayoutInflater inflater = activity.getLayoutInflater();
-                View dialogView = inflater.inflate(R.layout.dialog_password, null);
-
-                EditText mPasswordView = (EditText) dialogView.findViewById(R.id.et_password);
-                //TODO: set password to connect by bluetooth
-
-                AlertDialog.Builder passwordDialogBuilder = new AlertDialog.Builder(activity)
-                        .setTitle(getString(R.string.input_password))
-                        .setView(dialogView)
-
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                Toast.makeText(getBaseContext(), "Pressed OK", Toast.LENGTH_SHORT).show();
-                                //TODO: save login and password
-                                ActivityHelper.startActivity(ChooseDeviceActivity.this, MainActivity.class);
-                            }
-                        })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                Toast.makeText(getBaseContext(), "Cancel", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                passwordDialogBuilder.show();*/
                 if(mDeviceTitle != null)
                     mBluetoothModule.connectDevice(mDeviceTitle, ChooseDeviceActivity.this);
             }
@@ -204,7 +167,6 @@ public class ChooseDeviceActivity extends AppCompatActivity implements ChooseDev
             mRvDevicesList.setAdapter(mDeviceAdapter);
         }
         mDeviceAdapter.add(text);
-        //mRvDevicesList.notifyDataSetChanged();
     }
 
     @Override
@@ -215,7 +177,6 @@ public class ChooseDeviceActivity extends AppCompatActivity implements ChooseDev
 
     @Override
     public void onItemClick(String text) {
-        //mBluetoothModule.connectDevice(text, this);
         mDeviceTitle = text;
     }
 

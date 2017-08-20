@@ -1,6 +1,5 @@
 package ru.android.bluetooth.bluetooth;
 
-import android.app.Activity;
 import android.bluetooth.BluetoothSocket;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -12,14 +11,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.nio.LongBuffer;
-import java.nio.charset.Charset;
 import java.util.zip.CRC32;
 
-import ru.android.bluetooth.schedule.helper.S;
 import ru.android.bluetooth.schedule.helper.S2;
-
-import static java.lang.Long.BYTES;
 
 
 /**

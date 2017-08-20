@@ -71,7 +71,7 @@ public class S2 {
         byte one = (byte)128;
 
         byte[] two = new byte[128];
-        Arrays.fill(two, (byte)2);
+        Arrays.fill(two, (byte)1);
         //two[0] = (byte)count;
         //byte three = crc(two);
         byte three = (byte)count;

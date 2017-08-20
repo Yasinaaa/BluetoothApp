@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
 
         //((App) getApplication()).getComponent().inject(this);
         ButterKnife.bind(this);
-
+        ActivityHelper.setVisibleIcon(this);
 
         init();
 
@@ -137,27 +137,23 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
         mCvSchedule.setLayoutParams(mRlLayoutParams);
 
 
-        testSetData();
+        //testSetData();
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
     }
 
     private void testSetData(){
-        //System.out.println(crc.getValue());
-        // mBluetoothMessage.writeMessage(BluetoothCommands.RESET);
 
-        //mBluetoothMessage.writeMessage("Set Data\r\n1460\n");
         mBluetoothMessage.writeMessage(0);
         Calendar finishDate = Calendar.getInstance();
         finishDate.add(Calendar.YEAR, 1);
         generateSchedule(Calendar.getInstance(), finishDate, 55.75, 37.50);
-
-
     }
 
     private int[] onList = new int[365];
     private int[] offList = new int[365];
+
     private void generateSchedule(Calendar startDate, Calendar endDate, double latitude, double longitude){
         Calendar currentDate = Calendar.getInstance();
         double sunRise;
@@ -183,38 +179,9 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
         mBluetoothMessage.setBluetoothMessageListener(this);
         //setMessage(BluetoothCommands.STATUS);
 
-        /*setMessage("Set Data\n");
-        setMessage(0000002-380000-764-4471);*/
-
         mRlLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
 
-       /* mStatus = BluetoothCommands.SET_DATA;
-        mBluetoothMessage.writeMessage(BluetoothCommands.SET_DATA);
-        mStatus = "okkk";
-        mBluetoothMessage.writeMessage("Ok\r\n");
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG,"Bytes=" + editText.getText().toString().getBytes().length);
-                mBluetoothMessage.writeMessage(editText.getText().toString());
-            }
-        });
-        String s = "Ok\r\n";
-        String t = "Set Data\r\n @11.08.2017 $12:00:00 %0 $12:01:00 %100 1;";
-        CRC32 crc = new CRC32();
-        crc.update(t.getBytes());
-        byte[] bytes = ByteBuffer.allocate(Long.SIZE / Byte.SIZE).putLong(crc.getValue()).array();
-        Log.d(TAG,Long.toBinaryString(crc.getValue()));
-        mBluetoothMessage.writeMessage(t.getBytes().length + " " + t + " " + Long.toBinaryString(crc.getValue()));*/
-
-
-       /* try {
-            byte[] dd = t.getBytes("UTF-8");
-            Log.d("f", "fff");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }*/
         /*mStatus = BluetoothCommands.STATUS;
         mBluetoothMessage.writeMessage(BluetoothCommands.STATUS);
 
