@@ -31,6 +31,7 @@ import butterknife.ButterKnife;
 import ru.android.bluetooth.R;
 import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
+import ru.android.bluetooth.main.helper.ResponseView;
 import ru.android.bluetooth.root.RootActivity;
 import ru.android.bluetooth.schedule.ScheduleGeneratorActivity;
 import ru.android.bluetooth.schedule.helper.ScheduleGenerator;
@@ -335,7 +336,7 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
                         int month = datePicker.getMonth();
                         int day = datePicker.getDayOfMonth();
                         thisTextNeedToSetTextView = String.format("%s-%s-%s", new String[]{
-                                i+"", i1+"", i2+""
+                                i2+"", i1+"", i+""
                         });
                         setMessage(BluetoothCommands.SET_DATE, BluetoothCommands.setDate(year, month+1, day));
 
@@ -423,13 +424,18 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
 
                     break;
                 case BluetoothCommands.SET_DATE:
-                    if(answer.contains("OK")){
+                    if(answer.contains("Ok")){
                         mTvDate.setText(thisTextNeedToSetTextView);
+                        ResponseView.showSnackbar(getWindow().getDecorView().getRootView(),
+                                ResponseView.SET_DATE);
                     }
                     break;
                 case BluetoothCommands.SET_TIME:
-                    if(answer.contains("OK")){
+                    if(answer.contains("Ok")){
                         mTvTime.setText(thisTextNeedToSetTextView);
+                        ResponseView.showSnackbar(getWindow().getDecorView().getRootView(),
+                                ResponseView.SET_TIME);
+
                     }
                     break;
             }

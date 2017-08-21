@@ -178,7 +178,7 @@ public class BluetoothModule {
         }*/
         //mBTAdapter.enable();
         mBTAdapter.startDiscovery();
-        Toast.makeText(mContext, "Discovery started", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(mContext, "Discovery started", Toast.LENGTH_SHORT).show();
         IntentFilter filter = new IntentFilter();
         filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
         filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED);
