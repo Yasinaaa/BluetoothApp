@@ -2,6 +2,8 @@ package ru.android.bluetooth.main;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -14,10 +16,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.ToggleButton;
 
 import java.util.Calendar;
@@ -87,13 +91,21 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
     TextView mTvEditSchedule;
     @BindView(R.id.tv_generate_schedule)
     TextView mTvGenerateSchedule;
-    @BindView(R.id.tv_new_schedule)
-    TextView mTvNewSchedule;
+    /*@BindView(R.id.tv_new_schedule)
+    TextView mTvNewSchedule;*/
     @BindView(R.id.tb_mode_device)
     ToggleButton mTbSwitchModeDevice;
     @BindView(R.id.rl)
     RelativeLayout mRl;
 
+    @BindView(R.id.tv_time)
+    TextView mTvTime;
+    @BindView(R.id.btn_set_time)
+    Button mBtnSetTime;
+    @BindView(R.id.ib_sync_date)
+    ImageButton mIbSyncDate;
+
+    private String thisTextNeedToSetTextView;
     private RelativeLayout.LayoutParams mRlLayoutParams;
     private BluetoothMessage mBluetoothMessage;
     private String mStatus;
@@ -101,7 +113,6 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
     public double JD = 0;
     public int zone = +4;
     public boolean dst = false;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -307,19 +318,47 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
     }
 
     private void setDate(){
+        final Calendar calendar = Calendar.getInstance();
+        mIbSyncDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setMessage(BluetoothCommands.GET_TIME);
+            }
+        });
         mBtnSetDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               /* DatePickerDialog mDatePicker = new DatePickerDialog(MainActivity.this, new DatePickerDialog.OnDateSetListener() {
+                DatePickerDialog mDatePicker = new DatePickerDialog(MainActivity.this, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
+                        int year = datePicker.getYear();
+                        int month = datePicker.getMonth();
+                        int day = datePicker.getDayOfMonth();
+                        thisTextNeedToSetTextView = String.format("%s-%s-%s", new String[]{
+                                i+"", i1+"", i2+""
+                        });
+                        setMessage(BluetoothCommands.SET_DATE, BluetoothCommands.setDate(year, month+1, day));
 
                     }
-                },2017, 03, 01);
-               // mDatePicker.setTitle("Выберите дату");
-                mDatePicker.show();*/
-                //mBluetoothMessage.writeMessage(BluetoothCommands.DEBUG);
-                testSetData();
+                }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+                mDatePicker.show();
+                //testSetData();
+            }
+        });
+
+        mBtnSetTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TimePickerDialog timePickerDialog = new TimePickerDialog(MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int i, int i1) {
+                        thisTextNeedToSetTextView = String.format("%s:%s", new String[]{
+                               String.valueOf(i), String.valueOf(i1)
+                        });
+                        setMessage(BluetoothCommands.SET_TIME, BluetoothCommands.setTime(i,i1));
+                    }
+                },Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), true);
+                timePickerDialog.show();
             }
         });
     }
@@ -350,30 +389,10 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
     int count = 0;
     @Override
     public void onResponse(String answer) {
-        Log.d(TAG, " " + answer + " count=" + count);
-
-        if (answer.contains("О")) {
-
-            /*Handler handler = new Handler() {
-                @Override
-                public void publish(LogRecord logRecord) {
-                    mBluetoothMessage.writeMessage();
-                }
-
-                @Override
-                public void flush() {
-
-                }
-
-                @Override
-                public void close() throws SecurityException {
-
-                }
-            };
-*/
-        }
+        //Log.d(TAG, " " + answer);
 
         if(mStatus!= null) {
+            Log.d(TAG, "mStatus=" + mStatus + " " + answer);
             switch (mStatus) {
                 case BluetoothCommands.DEBUG:
                     Log.d(TAG, answer);
@@ -390,7 +409,9 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
                     mTvVersion.setText(answer.substring(0, answer.indexOf("\n")));
                     break;
                 case BluetoothCommands.GET_TIME:
-                    mTvDate.setText(answer);
+                    String[] time = answer.split(" ");
+                    mTvDate.setText(time[0]);
+                    mTvTime.setText(time[1]);
                     break;
                 case BluetoothCommands.ON:
                     setDeviceModeColor(false);
@@ -400,6 +421,16 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
                     break;
                 case BluetoothCommands.SET_DATA:
 
+                    break;
+                case BluetoothCommands.SET_DATE:
+                    if(answer.contains("OK")){
+                        mTvDate.setText(thisTextNeedToSetTextView);
+                    }
+                    break;
+                case BluetoothCommands.SET_TIME:
+                    if(answer.contains("OK")){
+                        mTvTime.setText(thisTextNeedToSetTextView);
+                    }
                     break;
             }
         }
