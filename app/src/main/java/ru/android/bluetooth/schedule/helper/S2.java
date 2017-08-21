@@ -178,6 +178,7 @@ public class S2 {
         }
 
         array = new byte[]{2, 5, (byte)180, (byte)187};
+        //array = new byte[]{2, 5, 0, 7};
         return array;
     }
 

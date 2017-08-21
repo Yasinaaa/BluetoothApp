@@ -87,6 +87,11 @@ public class BluetoothModule {
     }
 
 
+    public void onDestroy(){
+        mBTAdapter.disable();
+        mBTAdapter.cancelDiscovery();
+    }
+
     public ConnectedThread getConnectedThread() {
         return mConnectedThread;
     }

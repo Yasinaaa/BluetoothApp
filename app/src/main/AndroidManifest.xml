@@ -47,6 +47,7 @@
         <activity android:screenOrientation="portrait" android:name=".view.ChangeOneDayScheduleActivity"></activity>
         <activity android:screenOrientation="portrait" android:name=".view.GenerateSunRiseSetActivity"></activity>
         <activity android:screenOrientation="portrait" android:name=".schedule.ScheduleGeneratorActivity"></activity>
+        <!--<service android:name=".utils.AppDestroyService"/> -->
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

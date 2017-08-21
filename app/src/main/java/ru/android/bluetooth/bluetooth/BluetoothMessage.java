@@ -78,6 +78,9 @@ public class BluetoothMessage {
     public void writeMessage(byte count, int data){
         mConnectedThread.write(count,data);
     }*/
+    public void writeMessage(){
+        mConnectedThread.writeeeeeeeeeeeeeeeeeee();
+    }
     public void writeMessage(String message){
         mConnectedThread.writeData(message);
     }

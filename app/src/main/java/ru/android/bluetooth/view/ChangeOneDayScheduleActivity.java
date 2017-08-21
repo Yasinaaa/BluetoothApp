@@ -10,6 +10,7 @@ import android.widget.EditText;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.android.bluetooth.R;
+import ru.android.bluetooth.root.RootActivity;
 
 import static java.security.AccessController.getContext;
 
@@ -17,7 +18,7 @@ import static java.security.AccessController.getContext;
  * Created by itisioslab on 03.08.17.
  */
 
-public class ChangeOneDayScheduleActivity extends AppCompatActivity {
+public class ChangeOneDayScheduleActivity extends RootActivity {
 
     /*@BindView(R.id.actv_repeat)
     AutoCompleteTextView mActvRepeat;*/

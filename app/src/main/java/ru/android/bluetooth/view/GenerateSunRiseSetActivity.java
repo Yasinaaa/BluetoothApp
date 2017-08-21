@@ -14,12 +14,13 @@ import java.util.Calendar;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.android.bluetooth.R;
+import ru.android.bluetooth.root.RootActivity;
 
 /**
  * Created by itisioslab on 03.08.17.
  */
 
-public class GenerateSunRiseSetActivity extends AppCompatActivity {
+public class GenerateSunRiseSetActivity extends RootActivity {
 
     @BindView(R.id.ib_change_start_time)
     ImageButton mIbChangeStartTime;

@@ -31,7 +31,9 @@ import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
+import java.util.logging.Handler;
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import butterknife.BindView;
@@ -39,10 +41,14 @@ import butterknife.ButterKnife;
 import ru.android.bluetooth.R;
 import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
+import ru.android.bluetooth.root.RootActivity;
+import ru.android.bluetooth.schedule.ScheduleGeneratorActivity;
 import ru.android.bluetooth.schedule.helper.ScheduleGenerator;
 import ru.android.bluetooth.utils.ActivityHelper;
 import ru.android.bluetooth.utils.BluetoothHelper;
 import ru.android.bluetooth.view.CalendarActivity;
+import ru.android.bluetooth.view.GenerateSunRiseSetActivity;
+
 import java.util.zip.CRC32;
 
 
@@ -51,7 +57,7 @@ import java.util.zip.CRC32;
  * Created by itisioslab on 01.08.17.
  */
 
-public class MainActivity extends AppCompatActivity implements MainModel, BluetoothMessage.BluetoothMessageListener{
+public class MainActivity extends RootActivity implements MainModel, BluetoothMessage.BluetoothMessageListener{
 
     private final String TAG = MainActivity.class.getName();
     @BindView(R.id.tv_device_title)
@@ -94,10 +100,6 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
     Button mBtnSetDate;
     @BindView(R.id.cv_schedule)
     CardView mCvSchedule;
-    @BindView(R.id.et_schedule)
-    EditText mEtSchedule;
-    @BindView(R.id.btn_remove_schedule)
-    Button mBtnRemoveSchedule;
     @BindView(R.id.tv_edit_schedule)
     TextView mTvEditSchedule;
     @BindView(R.id.tv_generate_schedule)
@@ -137,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
         mCvSchedule.setLayoutParams(mRlLayoutParams);
 
 
-        testSetData();
+        mBluetoothMessage.writeMessage(BluetoothCommands.DEBUG);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -149,7 +151,8 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
         finishDate.add(Calendar.YEAR, 1);
         generateSchedule(Calendar.getInstance(), finishDate, 55.75, 37.50);
         mBluetoothMessage.writeMessage(onList, offList);
-
+        mBluetoothMessage.writeMessage();
+        mBluetoothMessage.writeMessage();
     }
 
     private int[] onList = new int[365];
@@ -272,8 +275,8 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
     }
 
     private void setScheduleModeVisiblity(int visiblity){
-        mEtSchedule.setVisibility(visiblity);
-        mBtnRemoveSchedule.setVisibility(visiblity);
+        //mEtSchedule.setVisibility(visiblity);
+        //mBtnRemoveSchedule.setVisibility(visiblity);
         mTvEditSchedule.setVisibility(visiblity);
     }
 
@@ -299,6 +302,7 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
                 handGeneration.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        ActivityHelper.startActivity(MainActivity.this, GenerateSunRiseSetActivity.class);
 
                     }
                 });
@@ -306,7 +310,7 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
                 sunRiseSetGeneration.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-
+                        ActivityHelper.startActivity(MainActivity.this, ScheduleGeneratorActivity.class);
                     }
                 });
 
@@ -335,7 +339,8 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
                 },2017, 03, 01);
                // mDatePicker.setTitle("Выберите дату");
                 mDatePicker.show();*/
-                mBluetoothMessage.writeMessage(BluetoothCommands.DEBUG);
+                //mBluetoothMessage.writeMessage(BluetoothCommands.DEBUG);
+                testSetData();
             }
         });
     }
@@ -370,47 +375,26 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
     public void onResponse(String answer) {
         Log.d(TAG, " " + answer + " count=" + count);
 
+        if (answer.contains("О")) {
 
-        if(answer.contains("O") ){
-            //&& count != 2
-            /*if(count == 0) {
-                count++;
-                /*int[] data = new int[2];
-                data[0] = 5;
-                data[1] = 184;*/
-                //mBluetoothMessage.writeMessageD(onList);
-              //  mBluetoothMessage.writeMessageD(offList);
-           // }*/
+            /*Handler handler = new Handler() {
+                @Override
+                public void publish(LogRecord logRecord) {
+                    mBluetoothMessage.writeMessage();
+                }
 
-            /*if (count != 2){
-                count++;
-                int[] data = new int[2];
-                data[0] = 5;
-                data[1] = 184;
-                mBluetoothMessage.writeMessageD(data);
-            }*/
+                @Override
+                public void flush() {
+
+                }
+
+                @Override
+                public void close() throws SecurityException {
+
+                }
+            };
+*/
         }
-
-        /*if (count !=1) {
-            count++;
-            mBluetoothMessage.wr(count);
-        }*/
-       /* try {
-            /*if (Integer.parseInt(answer) == 1) {
-                mBluetoothMessage.writeMessage(onList);
-                mBluetoothMessage.writeMessage(offList);
-                //mBluetoothMessage.writeMessage(BluetoothCommands.DEBUG);
-            }*/
-          /*  Integer.parseInt(answer);
-
-            if (count !=127) {
-                count++;
-                mBluetoothMessage.writeMessageD(count);
-            }
-        }catch (Exception e){
-            /*count = 14;
-            mBluetoothMessage.writeMessage(count);*/
-       // }
 
         if(mStatus!= null) {
             switch (mStatus) {

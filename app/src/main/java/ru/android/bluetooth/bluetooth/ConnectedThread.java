@@ -112,19 +112,54 @@ public class ConnectedThread extends Thread {
 
     }
 
+    public void writeeeeeeeeeeeeeeeeeee(){
+        byte[] answer2 = new byte[]{2,2,0,4};
+        /*for (int i=0; i<732;i++) {
+
+        }*/
+        try {
+            mmOutStream.write(answer2);
+            //mmOutStream.write(answer2);
+
+        } catch (IOException e) {
+            Log.e("TAG", e.getMessage());
+        }
+
+    }
+
     String p;
     public void write(int[] listOn, int[] listOff){
         S2 s = new S2();
         p = s.write(mmOutStream, listOn, listOff);
-        Log.d("iiiiiii", "seeeeeeeeeeeeeeeeenddd package 1");
-        new S().part2(mmOutStream, p, 1);
+        /*Log.d("iiiiiii", "seeeeeeeeeeeeeeeeenddd package 1");
+
+        /*for (int i=0; i<732;i++) {
+
+        }*/
+        /*byte[] answer = new byte[]{2,1,0,3};
+        byte[] answer2 = new byte[]{2,2,0,4};
+        try {
+            mmOutStream.write(answer);
+           /* SystemClock.sleep(100);
+            mmOutStream.write(answer2);*/
+
+       /* } catch (IOException e) {
+            Log.e("TAG", e.getMessage());
+        }*/
+
+        /*try {
+            mmOutStream.write(answer);
+            //mmOutStream.write(answer2);
+        } catch (IOException e) {
+            Log.e("TAG", e.getMessage());
+        }*/
         /*Log.d("iiiiiii", "seeeeeeeeeeeeeeeeenddd package 2");
-        new S().part2(mmOutStream, p, 1);*/
-        /*Log.d("iiiiiii", "seeeeeeeeeeeeeeeeenddd package 3");
+        new S().part2(mmOutStream, p, 1);
+        Log.d("iiiiiii", "seeeeeeeeeeeeeeeeenddd package 3");
         new S().part2(mmOutStream, p, 1);
         Log.d("iiiiiii", "seeeeeeeeeeeeeeeeenddd package 4");
-        new S().part2(mmOutStream, p, 1);
-        Log.d("iiiiiii", "seeeeeeeeeeeeeeeeenddd package 5");
+        new S().part2(mmOutStream, p, 1);*/
+        /*Log.d("iiiiiii", "seeeeeeeeeeeeeeeeenddd package 5");
         new S().part2(mmOutStream, p, 1);
         Log.d("iiiiiii", "seeeeeeeeeeeeeeeeenddd package 6");
         new S().part2(mmOutStream, p, 1);
@@ -137,6 +172,23 @@ public class ConnectedThread extends Thread {
         Log.d("iiiiiii", "seeeeeeeeeeeeeeeeenddd package 10");
         new S().part2(mmOutStream, p, 1);
         Log.d("iiiiiii", "seeeeeeeeeeeeeeeeenddd package 11");*/
+    }
+
+    public void part2(OutputStream mmOutStream, String p){
+        if(p.length()>0){
+            String so = p.substring(0, 365);
+            //String so2 = p.substring(p.length()/2 + 1, p.length());
+            // byte[] answer = myCRC(mmOutStream,so, crc);
+            //byte[] answer2 = myCRC(so2);
+
+            try {
+                byte[] answer = new byte[]{2,0,1,3};
+                mmOutStream.write(answer);
+                //mmOutStream.write(answer2);
+            } catch (IOException e) {
+                Log.e("TAG", e.getMessage());
+            }
+        }
     }
 
     public void writePPP(int crc){

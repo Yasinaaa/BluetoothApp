@@ -29,11 +29,12 @@ public class S {
         if(p.length()>0){
             String so = p.substring(0, 365);
             //String so2 = p.substring(p.length()/2 + 1, p.length());
-            byte[] answer = myCRC(mmOutStream,so, crc);
+           // byte[] answer = myCRC(mmOutStream,so, crc);
             //byte[] answer2 = myCRC(so2);
 
         try {
-            mmOutStream.write(answer);
+            byte[] answer = new byte[]{2,0,1,3};
+              mmOutStream.write(answer);
             //mmOutStream.write(answer2);
         } catch (IOException e) {
             Log.e("TAG", e.getMessage());
@@ -49,29 +50,23 @@ public class S {
         if (data != null)
         {
             char[] temp = data.toCharArray();
-            for(int i=0; i< 365;i++){
-                /*if(i%2==0){
-                    _so[i] = 3;
-                }else{
-                    _so[i] = 1;
-                }*/
+            for(int i=0; i< 128;i++){
                 _so[i] = 10;
             }
 
            // crc += data.length();
-            crc += 365;
+            crc += 128;
 
             for (int i=0; i< _so.length; i++){
-                crc += _so[i];
-                /*if(crc > 255){
+                crc = crc + _so[i];
+                if(crc > 255){
                     crc -= 255;
-                }*/
+                }
             }
 
         }
         Log.d("d", "crc=" + crc);
 
-        //return
         return answer(mmOutStream,_so, (byte)crc);
     }
 

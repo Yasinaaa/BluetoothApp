@@ -21,6 +21,7 @@ import java.util.Calendar;
 import ru.android.bluetooth.R;
 import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
+import ru.android.bluetooth.root.RootActivity;
 import ru.android.bluetooth.schedule.helper.ScheduleBluetoothReader;
 import ru.android.bluetooth.schedule.helper.ScheduleGenerator;
 
@@ -28,7 +29,7 @@ import ru.android.bluetooth.schedule.helper.ScheduleGenerator;
  * Created by itisioslab on 08.08.17.
  */
 
-public class ScheduleGeneratorActivity extends AppCompatActivity implements BluetoothMessage.BluetoothMessageListener,
+public class ScheduleGeneratorActivity extends RootActivity implements BluetoothMessage.BluetoothMessageListener,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {

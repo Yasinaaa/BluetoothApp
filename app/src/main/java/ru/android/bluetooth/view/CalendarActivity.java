@@ -17,6 +17,7 @@ import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.android.bluetooth.R;
+import ru.android.bluetooth.root.RootActivity;
 import ru.android.bluetooth.schedule.ScheduleGeneratorActivity;
 import ru.android.bluetooth.utils.ActivityHelper;
 
@@ -24,7 +25,7 @@ import ru.android.bluetooth.utils.ActivityHelper;
  * Created by itisioslab on 03.08.17.
  */
 
-public class CalendarActivity extends AppCompatActivity {
+public class CalendarActivity extends RootActivity {
 
     @BindView(R.id.calendar_view_schedule)
     CalendarView mCalendarViewSchedule;

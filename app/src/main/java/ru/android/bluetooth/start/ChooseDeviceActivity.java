@@ -1,11 +1,10 @@
 package ru.android.bluetooth.start;
 
 import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -28,13 +27,15 @@ import ru.android.bluetooth.R;
 import ru.android.bluetooth.adapter.DeviceAdapter;
 import ru.android.bluetooth.bluetooth.BluetoothModule;
 import ru.android.bluetooth.main.MainActivity;
+import ru.android.bluetooth.root.RootActivity;
 import ru.android.bluetooth.utils.ActivityHelper;
+import ru.android.bluetooth.utils.AppDestroyService;
 
 /**
  * Created by itisioslab on 01.08.17.
  */
 
-public class ChooseDeviceActivity extends AppCompatActivity implements ChooseDeviceView, DeviceAdapter.OnItemClicked {
+public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceView, DeviceAdapter.OnItemClicked {
 
     @BindView(R.id.rv_devices)
     RecyclerView mRvDevicesList;
@@ -169,10 +170,14 @@ public class ChooseDeviceActivity extends AppCompatActivity implements ChooseDev
         mDeviceAdapter.add(text);
     }
 
+
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mBluetoothModule.unregister();
+    protected void onStart() {
+        super.onStart();
+        /*AppDestroyService.createAppDestroyListener(getApplicationContext()).
+                onActivityModeListener(getLocalClassName(), true);*/
+        /*ActivityHelper.startBroadcastReceiver(this);
+        ActivityHelper.sendToAppDestroyListener(this, true);*/
     }
 
     @Override
