@@ -2,11 +2,10 @@ package ru.android.bluetooth.main;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
 import android.content.DialogInterface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.text.InputType;
 import android.util.Log;
@@ -15,26 +14,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -48,9 +34,6 @@ import ru.android.bluetooth.utils.ActivityHelper;
 import ru.android.bluetooth.utils.BluetoothHelper;
 import ru.android.bluetooth.view.CalendarActivity;
 import ru.android.bluetooth.view.GenerateSunRiseSetActivity;
-
-import java.util.zip.CRC32;
-
 
 
 /**
@@ -139,8 +122,6 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
         mCvSchedule.setLayoutParams(mRlLayoutParams);
 
 
-        mBluetoothMessage.writeMessage(BluetoothCommands.DEBUG);
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
     }
@@ -181,14 +162,12 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
 
         mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
         mBluetoothMessage.setBluetoothMessageListener(this);
-        //setMessage(BluetoothCommands.STATUS);
+        setMessage(BluetoothCommands.STATUS);
 
         mRlLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        /*mStatus = BluetoothCommands.STATUS;
-        mBluetoothMessage.writeMessage(BluetoothCommands.STATUS);
-
+        /*
         mStatus = BluetoothCommands.GET_TIME;
         mBluetoothMessage.writeMessage(BluetoothCommands.GET_TIME);*/
 
@@ -220,13 +199,13 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
         mTvDeviceTitle.setText(BluetoothHelper.getBluetoothUser(getApplicationContext())[1].trim());
     }
 
-  /*  private void setOnOff(String onOf){
+    private void setOnOff(String onOf){
         if (onOf.equals("On")){
-            setDeviceModeColor(true);
-        }else if (onOf.equals("Off")){
             setDeviceModeColor(false);
+        }else if (onOf.equals("Off")){
+            setDeviceModeColor(true);
         }
-    }*/
+    }
 
     private void setMode(String mode){
 
@@ -319,7 +298,7 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
                         .setView(dialogView)
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                Toast.makeText(getBaseContext(), "Cancel", Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(getBaseContext(), "Cancel", Toast.LENGTH_SHORT).show();
                             }
                         });
                 passwordDialogBuilder.show();
@@ -356,17 +335,15 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
         mTvStatus.setText(status);
     }
 
-
-
     private void setDeviceModeColor(boolean isOn){
-        int color1 = getResources().getColor(R.color.accent);
-        int color2 = getResources().getColor(R.color.cardview_dark_background);
+        Drawable color1 = getResources().getDrawable(R.drawable.btn_off);
+        Drawable color2 = getResources().getDrawable(R.drawable.btn_on);
         if(isOn) {
-            mBtnOnDevice.setBackgroundColor(color1);
-            mBtnOffDevice.setBackgroundColor(color2);
+            mBtnOnDevice.setBackground(color1);
+            mBtnOffDevice.setBackground(color2);
         }else {
-            mBtnOnDevice.setBackgroundColor(color2);
-            mBtnOffDevice.setBackgroundColor(color1);
+            mBtnOnDevice.setBackground(color2);
+            mBtnOffDevice.setBackground(color1);
         }
     }
 
@@ -416,10 +393,10 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
                     mTvDate.setText(answer);
                     break;
                 case BluetoothCommands.ON:
-                    setDeviceModeColor(true);
+                    setDeviceModeColor(false);
                     break;
                 case BluetoothCommands.OFF:
-                    setDeviceModeColor(false);
+                    setDeviceModeColor(true);
                     break;
                 case BluetoothCommands.SET_DATA:
 
@@ -481,7 +458,8 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
                 setMode(s.split(" ")[1]);
             }
             if (s.contains("Rele")){
-                setMode(s.split(" ")[1]);
+                //setMode(s.split(" ")[1]);
+                setOnOff(s.split(" ")[1]);
             }
         }
     }
@@ -508,7 +486,7 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
                         })
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                Toast.makeText(getBaseContext(), "Cancel", Toast.LENGTH_SHORT).show();
+                               // Toast.makeText(getBaseContext(), "Cancel", Toast.LENGTH_SHORT).show();
                             }
                         });
                 passwordDialogBuilder.show();
@@ -540,7 +518,7 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
                         })
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                Toast.makeText(getBaseContext(), "Cancel", Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(getBaseContext(), "Cancel", Toast.LENGTH_SHORT).show();
                             }
                         });
                 passwordDialogBuilder.show();

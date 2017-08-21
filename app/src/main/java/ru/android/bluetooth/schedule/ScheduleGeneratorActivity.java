@@ -153,7 +153,7 @@ public class ScheduleGeneratorActivity extends RootActivity implements Bluetooth
             finishDate.add(Calendar.YEAR, 1);
             generateSchedule(Calendar.getInstance(), finishDate, currentLatitude, currentLongitude);
 
-            Toast.makeText(this, currentLatitude + " WORKS " + currentLongitude + "", Toast.LENGTH_LONG).show();
+            //Toast.makeText(this, currentLatitude + " WORKS " + currentLongitude + "", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -183,7 +183,7 @@ public class ScheduleGeneratorActivity extends RootActivity implements Bluetooth
         currentLatitude = location.getLatitude();
         currentLongitude = location.getLongitude();
 
-        Toast.makeText(this, currentLatitude + " WORKS " + currentLongitude + "", Toast.LENGTH_LONG).show();
+        //Toast.makeText(this, currentLatitude + " WORKS " + currentLongitude + "", Toast.LENGTH_LONG).show();
     }
 
     @Override

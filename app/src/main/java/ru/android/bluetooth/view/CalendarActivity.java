@@ -98,7 +98,7 @@ public class CalendarActivity extends RootActivity {
             @Override
             public void onSelectedDayChange(CalendarView view, int year, int month,
                                             int dayOfMonth) {
-                Toast.makeText(getApplicationContext(), ""+dayOfMonth, Toast.LENGTH_LONG).show();// TODO Auto-generated method stub
+                //Toast.makeText(getApplicationContext(), ""+dayOfMonth, Toast.LENGTH_LONG).show();// TODO Auto-generated method stub
                 ActivityHelper.startActivity(CalendarActivity.this, ChangeOneDayScheduleActivity.class);
             }
         });
@@ -106,7 +106,7 @@ public class CalendarActivity extends RootActivity {
         mCalendarViewSchedule.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                Toast.makeText(getApplicationContext(), "touch="+mCalendarViewSchedule.getDate(), Toast.LENGTH_LONG).show();// TODO Auto-generated method stub
+                //Toast.makeText(getApplicationContext(), "touch="+mCalendarViewSchedule.getDate(), Toast.LENGTH_LONG).show();// TODO Auto-generated method stub
 
                 return false;
             }

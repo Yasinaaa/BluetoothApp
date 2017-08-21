@@ -153,25 +153,6 @@ public class ConnectedThread extends Thread {
         } catch (IOException e) {
             Log.e("TAG", e.getMessage());
         }*/
-        /*Log.d("iiiiiii", "seeeeeeeeeeeeeeeeenddd package 2");
-        new S().part2(mmOutStream, p, 1);
-        Log.d("iiiiiii", "seeeeeeeeeeeeeeeeenddd package 3");
-        new S().part2(mmOutStream, p, 1);
-        Log.d("iiiiiii", "seeeeeeeeeeeeeeeeenddd package 4");
-        new S().part2(mmOutStream, p, 1);*/
-        /*Log.d("iiiiiii", "seeeeeeeeeeeeeeeeenddd package 5");
-        new S().part2(mmOutStream, p, 1);
-        Log.d("iiiiiii", "seeeeeeeeeeeeeeeeenddd package 6");
-        new S().part2(mmOutStream, p, 1);
-        Log.d("iiiiiii", "seeeeeeeeeeeeeeeeenddd package 7");
-        new S().part2(mmOutStream, p, 1);
-        Log.d("iiiiiii", "seeeeeeeeeeeeeeeeenddd package 8");
-        new S().part2(mmOutStream, p, 1);
-        Log.d("iiiiiii", "seeeeeeeeeeeeeeeeenddd package 9");
-        new S().part2(mmOutStream, p, 1);
-        Log.d("iiiiiii", "seeeeeeeeeeeeeeeeenddd package 10");
-        new S().part2(mmOutStream, p, 1);
-        Log.d("iiiiiii", "seeeeeeeeeeeeeeeeenddd package 11");*/
     }
 
     public void part2(OutputStream mmOutStream, String p){

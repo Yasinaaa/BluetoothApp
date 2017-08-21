@@ -43,6 +43,7 @@
         android:layout_width="60dp"
         android:layout_height="40dp"
         android:text="ON"
+        android:background="@drawable/btn_off"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
@@ -54,7 +55,7 @@
         android:layout_height="40dp"
         android:text="OFF"
         android:layout_marginTop="10dp"
-        android:background="@color/accent"
+        android:background="@drawable/btn_off"
         android:layout_below="@+id/btn_on_device"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"/>

@@ -37,9 +37,4 @@ public class BluetoothCommands {
         return String.format(SET_NAME, name);
     }
 
-/*Set Data
-40
-
-    412768625435*/
-
 }

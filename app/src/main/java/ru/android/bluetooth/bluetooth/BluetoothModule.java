@@ -208,8 +208,10 @@ public class BluetoothModule {
             for (BluetoothDevice device : mPairedDevices) {
                 mView.addDevice(device.getName() + "\n" + device.getAddress());
             }
-        }else
-            Toast.makeText(mActivity, "Bluetooth not on", Toast.LENGTH_SHORT).show();
+        }else{
+           // Toast.makeText(mActivity, "Bluetooth not on", Toast.LENGTH_SHORT).show();
+        }
+
 
     }
 
@@ -232,7 +234,7 @@ public class BluetoothModule {
     public void connectDevice(String info, final ChooseDeviceView chooseDeviceView){
 
             if(!mBTAdapter.isEnabled()) {
-                Toast.makeText(mContext, "Bluetooth not on", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(mContext, "Bluetooth not on", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -250,7 +252,7 @@ public class BluetoothModule {
                         mBTSocket = createBluetoothSocket(device);
                     } catch (IOException e) {
                         fail = true;
-                        Toast.makeText(mContext, "Socket creation failed", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(mContext, "Socket creation failed", Toast.LENGTH_SHORT).show();
                     }
                     try {
                         mBTSocket.connect();

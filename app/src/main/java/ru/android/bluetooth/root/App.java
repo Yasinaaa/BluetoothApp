@@ -13,11 +13,6 @@ public class App extends Application {
     private ApplicationComponent component;
 
     @Override
-    public void onTrimMemory(int level) {
-        super.onTrimMemory(level);
-    }
-
-    @Override
     public void onCreate() {
         super.onCreate();
 

@@ -20,7 +20,7 @@ public class BluetoothMessage {
     private ConnectedThread mConnectedThread;
 
     private BluetoothMessage() {
-        //this.mConnectedThread = connectedThread; ConnectedThread connectedThread
+
         this.mHandler = new Handler(){
             public void handleMessage(android.os.Message msg){
                 if(msg.what == BluetoothCommands.MESSAGE_READ){

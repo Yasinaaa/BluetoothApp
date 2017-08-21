@@ -32,25 +32,27 @@ public class ScheduleBluetoothReader {
         mValues = new ArrayList<String>();
     }
 
-    private void createFile(){
-        File file = new File("scccc.txt");
-        try{
-            writer = new PrintWriter(Environment.getExternalStorageDirectory() + "the-file-name.txt", "UTF-8");
-            writer.println("The first line");
-
-        } catch (IOException e) {
-
-        }
+    private String getDate(Calendar calendar){
+        return calendar.get(Calendar.DAY_OF_MONTH) + "_" +
+                calendar.get(Calendar.MONTH) + "_" +
+                calendar.get(Calendar.YEAR);
     }
+    private String createFileName(Calendar startDate, Calendar finishDate){
+        String begin = getDate(startDate);
+        String finish = getDate(finishDate);
+        return begin + "__" + finish + ".txt";
+    }
+
     public void readSchedule(Calendar startDate, Calendar finishDate){
-        //createFile();
+
         this.startDate = startDate;
         this.finishDate = finishDate;
 
         try{
-            writer = new PrintWriter(Environment.getExternalStorageDirectory() + "/the-file-name.txt", "UTF-8");
-            Log.d(TAG, "path=" + Environment.getExternalStorageDirectory() + "/the-file-name.txt");
-            //writer.println("The first line");
+            writer = new PrintWriter(Environment.getExternalStorageDirectory() + "/" +
+                    createFileName(startDate, finishDate), "UTF-8");
+            Log.d(TAG, "path=" + Environment.getExternalStorageDirectory() + "/" +
+                    createFileName(startDate, finishDate));
             mBluetoothMessage.writeMessage(BluetoothCommands.DEBUG);
 
             /*while(startDate.compareTo(finishDate) <= 0){
@@ -73,16 +75,15 @@ public class ScheduleBluetoothReader {
 
     public void addItem(String item){
 
-//        String answer = item.substring(0, item.indexOf("\r\n"));
-       // writer.println(answer);
-       // Log.d(TAG,answer);
-        writer.println(item);
-        Log.d(TAG,item);
-        //if (!isFinish()){
+        String answer = item.substring(0, item.indexOf(" "));
+        writer.println(answer);
+        Log.d(TAG, item);
+
+        if (!isFinish()){
             mBluetoothMessage.writeMessage(BluetoothCommands.DEBUG);
-        /*}else {
+        }else {
             writer.close();
-        }*/
+        }
 
     }
 
