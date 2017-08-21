@@ -79,16 +79,16 @@ public class ConnectedThread extends Thread {
 
 
     public void write(String input) {
-        byte[] bytes = input.getBytes();
+    /*    byte[] bytes = input.getBytes();
         try {
             mmOutStream.write(bytes);
-        } catch (IOException e) { }
+        } catch (IOException e) { }*/
     }
 
     public void write(byte[] input) {
-        try {
+       /* try {
             mmOutStream.write(input);
-        } catch (IOException e) { }
+        } catch (IOException e) { }*/
     }
 
     public void write(byte count, int data) {
@@ -102,30 +102,56 @@ public class ConnectedThread extends Thread {
 
         byte[] bytes = combineBytes(count, bufferNumber.array(), byteBuffer.array());
 
-        try {
+        /*try {
             mmOutStream.write(bytes);
 
             mmOutStream.write(BluetoothCommands.DEBUG.getBytes());
         } catch (IOException e) {
             Log.d("T", e.getMessage());
-        }
+        }*/
 
     }
 
+    String p;
     public void write(int[] listOn, int[] listOff){
         S2 s = new S2();
-        s.write(mmOutStream, listOn, listOff);
+        p = s.write(mmOutStream, listOn, listOff);
+        Log.d("iiiiiii", "seeeeeeeeeeeeeeeeenddd package 1");
+        new S().part2(mmOutStream, p, 1);
+        /*Log.d("iiiiiii", "seeeeeeeeeeeeeeeeenddd package 2");
+        new S().part2(mmOutStream, p, 1);*/
+        /*Log.d("iiiiiii", "seeeeeeeeeeeeeeeeenddd package 3");
+        new S().part2(mmOutStream, p, 1);
+        Log.d("iiiiiii", "seeeeeeeeeeeeeeeeenddd package 4");
+        new S().part2(mmOutStream, p, 1);
+        Log.d("iiiiiii", "seeeeeeeeeeeeeeeeenddd package 5");
+        new S().part2(mmOutStream, p, 1);
+        Log.d("iiiiiii", "seeeeeeeeeeeeeeeeenddd package 6");
+        new S().part2(mmOutStream, p, 1);
+        Log.d("iiiiiii", "seeeeeeeeeeeeeeeeenddd package 7");
+        new S().part2(mmOutStream, p, 1);
+        Log.d("iiiiiii", "seeeeeeeeeeeeeeeeenddd package 8");
+        new S().part2(mmOutStream, p, 1);
+        Log.d("iiiiiii", "seeeeeeeeeeeeeeeeenddd package 9");
+        new S().part2(mmOutStream, p, 1);
+        Log.d("iiiiiii", "seeeeeeeeeeeeeeeeenddd package 10");
+        new S().part2(mmOutStream, p, 1);
+        Log.d("iiiiiii", "seeeeeeeeeeeeeeeeenddd package 11");*/
+    }
 
+    public void writePPP(int crc){
+        S s = new S();
+        s.part2(mmOutStream, p, crc);
     }
 
     public void write(int count) {
         S2 s = new S2();
-        s.write(mmOutStream, count);
+        //s.write(mmOutStream, count);
     }
 
     public void writeData(int[] data) {
-        S s = new S();
-        s.part2(mmOutStream, data);
+       /* S s = new S();
+        s.part2(mmOutStream, data);*/
     }
 
     public void writeData(String data) {
@@ -185,7 +211,7 @@ public class ConnectedThread extends Thread {
 
     public void write(int[] data) {
 
-        ByteBuffer byteBufferData = ByteBuffer.allocate(data.length * Byte.SIZE);
+       ByteBuffer byteBufferData = ByteBuffer.allocate(data.length * Byte.SIZE);
         IntBuffer intBuffer = byteBufferData.asIntBuffer();
         intBuffer.put(data);
         byte[] dataBytes = byteBufferData.array();
@@ -197,13 +223,13 @@ public class ConnectedThread extends Thread {
 
        // byte[] bytes = combineBytes(byteBufferData.array(), byteBuffer.array());
 
-        try {
+       /* try {
             mmOutStream.write(dataBytes);
 
             //mmOutStream.write(BluetoothCommands.DEBUG.getBytes());
         } catch (IOException e) {
             Log.d("T", e.getMessage());
-        }
+        }*/
 
     }
 

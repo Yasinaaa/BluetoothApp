@@ -27,6 +27,8 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceHold
     private Context mContext;
     private OnItemClicked onClick;
     private SparseBooleanArray selectedItems;
+    private int selectedItemPosition = -1;
+    private List<View> allView;
 
     public interface OnItemClicked {
         void onItemClick(String text);
@@ -36,7 +38,8 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceHold
         this.mList = list;
         mFilteredList = list;
         this.onClick = onClick;
-        selectedItems = new SparseBooleanArray();
+        selectedItems = new SparseBooleanArray(list.size());
+        allView = new ArrayList<View>();
     }
 
     public void add(String item){
@@ -60,15 +63,24 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceHold
 
     @Override
     public void onBindViewHolder(final DeviceHolder holder, final int position) {
+        allView.add(holder.itemView);
+
         holder.title.setText(mFilteredList.get(position));
         holder.itemView.getRootView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 if (selectedItems.get(position, false)) {
                     selectedItems.delete(position);
                     holder.itemView.setSelected(false);
+                    selectedItemPosition = -1;
                 }
                 else {
+                    if(selectedItems.size() > 0) {
+                        selectedItems.delete(selectedItemPosition);
+                        allView.get(selectedItemPosition).setSelected(false);
+                    }
+                    selectedItemPosition = position;
                     selectedItems.put(position, true);
                     holder.itemView.setSelected(true);
                 }

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.Arrays;
 
 /**
  * Created by dinar on 20.08.17.
@@ -24,51 +25,57 @@ public class S {
         n=n/256;
         return String.valueOf((char)n%256) + s;
     }
-    public void part2(OutputStream mmOutStream, String p){
+    public void part2(OutputStream mmOutStream, String p, int crc){
         if(p.length()>0){
             String so = p.substring(0, 365);
             //String so2 = p.substring(p.length()/2 + 1, p.length());
-            //byte[] answer =
-                    myCRC(mmOutStream,so);
+            byte[] answer = myCRC(mmOutStream,so, crc);
             //byte[] answer2 = myCRC(so2);
 
-       /* try {
+        try {
             mmOutStream.write(answer);
             //mmOutStream.write(answer2);
         } catch (IOException e) {
             Log.e("TAG", e.getMessage());
-        }*/
+        }
         }
     }
 
-    private void myCRC(OutputStream mmOutStream,String data){
+    private byte[] myCRC(OutputStream mmOutStream,String data, int crc2){
         int crc = 0;
-        char[] _so = null;
+        int[] _so = new int[data.length()];
+
 
         if (data != null)
         {
-            _so = data.toCharArray();
-            crc += data.length();
+            char[] temp = data.toCharArray();
+            for(int i=0; i< 365;i++){
+                /*if(i%2==0){
+                    _so[i] = 3;
+                }else{
+                    _so[i] = 1;
+                }*/
+                _so[i] = 10;
+            }
+
+           // crc += data.length();
+            crc += 365;
 
             for (int i=0; i< _so.length; i++){
-                try {
-                    crc += Integer.parseInt(_so[i]+"");
-                }catch (NumberFormatException e){
-                    crc += (int)_so[i];
-                }
-                if(crc > 255){
+                crc += _so[i];
+                /*if(crc > 255){
                     crc -= 255;
-                }
+                }*/
             }
 
         }
         Log.d("d", "crc=" + crc);
 
         //return
-        answer(mmOutStream,_so, (byte)crc);
+        return answer(mmOutStream,_so, (byte)crc);
     }
 
-    private byte[] answer(OutputStream mmOutStream, char[] array, byte crc){
+    private byte[] answer(OutputStream mmOutStream, int[] array, byte crc){
         byte[] combined = new byte[1 + array.length + 1];
         byte[] chars = new byte[array.length];
         for (int i=0; i< chars.length; i++){
@@ -77,19 +84,6 @@ public class S {
         System.arraycopy(chars,0,combined,1, chars.length);
         combined[0] = (byte)array.length;
         combined[combined.length - 1] = (byte)crc;
-        int count = -127;
-       /* while (count != 128) {
-
-            combined[combined.length - 1] = (byte)count;
-
-            try {
-                Log.d("ppp", "count=" + count);
-                mmOutStream.write(combined);
-            } catch (IOException e) {
-                Log.e("TAG", e.getMessage());
-            }
-            count++;
-        }*/
 
         return combined;
     }

@@ -32,6 +32,7 @@ public class BluetoothMessage {
                             //Log.d("bm", readMessage);
                             readMessage = readMessage.trim().replaceAll("�", "");
                             if(readMessage.length() > 2) readMessage.replace("OK","");
+                            //if (readMessage.contains("3")) readMessage = "3";
                             //Log.d("bm", readMessage);
                             mBluetoothMessageListener.onResponse(readMessage);
 
@@ -65,7 +66,7 @@ public class BluetoothMessage {
         return mBluetoothMessage;
     }
     */
-    public void writeMessageD(int[] data){
+    /*public void writeMessageD(int[] data){
         mConnectedThread.writeData(data);
     }
     public void writeMessage(int[] data){
@@ -76,12 +77,15 @@ public class BluetoothMessage {
     }
     public void writeMessage(byte count, int data){
         mConnectedThread.write(count,data);
-    }
+    }*/
     public void writeMessage(String message){
         mConnectedThread.writeData(message);
     }
     public void writeMessage(int[] listOn, int[] listOff){
         mConnectedThread.write(listOn, listOff);
+    }
+    public void wr(int count){
+        mConnectedThread.writePPP(count);
     }
 
     public Handler getHandler() {

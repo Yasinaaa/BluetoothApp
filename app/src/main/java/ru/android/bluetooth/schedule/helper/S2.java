@@ -26,7 +26,7 @@ public class S2 {
         return strToPackCRC(_so);
     }*/
 
-   public void writeData(OutputStream mmOutStream, int count) {
+  /* public void writeData(OutputStream mmOutStream, int count) {
 
        byte[] data = dataToBytes(count);
        try {
@@ -35,9 +35,9 @@ public class S2 {
            Log.e("TAG", e.getMessage());
        }
    }
+*/
 
-
-    public void write(OutputStream mmOutStream, int[] lisOn, int[] listOff) {
+    public String write(OutputStream mmOutStream, int[] lisOn, int[] listOff) {
 
         String p = "";
         for (int i = 0; i < lisOn.length; i++) {
@@ -46,36 +46,27 @@ public class S2 {
         for (int i = 0; i < listOff.length; i++) {
             p += numToStrReverse(3);
         }
-        /*for (int i = 0; i < 366*2; i++) {
-            p += numToStrReverse(3);
-        }*/
 
         Log.e("TAG", "p=" + p.length());
         Log.e("TAG", "numToStr(p.length())=" + numToStr(p.length()));
 
-       // String text = strToPackCRC(mmOutStream,numToStr(p.length()));
-        //String text = strToPackCRC(null);
-        //Log.e("TAG", "text=" + text);
-        //String s = "Set Data\r" + text;
-        //Log.e("TAG", "sss=" + s);
-        //byte[] a = strToPackCRC(numToStr(p.length()), count);
         try {
 
            // byte[] array = new byte[]{2, 5, (byte)184, (byte)191};
+            array = strToPackCRC(mmOutStream,numToStr(p.length()));
             mmOutStream.write("Set Data\r".getBytes());
-            mmOutStream.write(strToPackCRC(mmOutStream,numToStr(p.length())));
+            mmOutStream.write(array);
 
-            S s = new S();
-            s.part2(mmOutStream, p);
+
 
         } catch (IOException e) {
             Log.e("TAG", e.getMessage());
         }
-
+        return p;
     }
 
 
-    public void write(OutputStream mmOutStream, int count) {
+    /*public void write(OutputStream mmOutStream, int count) {
 
             String p = "";
             for (int i = 0; i < 366 * 2; i++) {
@@ -98,12 +89,12 @@ public class S2 {
                 mmOutStream.write("Set Data\r".getBytes());
                 mmOutStream.write(array);
 
-                S s = new S();
-                s.part2(mmOutStream, p);
+                /**S s = new S();
+                s.part2(mmOutStream, p);*/
                 // mmOutStream.write(doPart2(p).getBytes());
 
                 // mmOutStream.close();
-            } catch (IOException e) {
+           /* } catch (IOException e) {
                 Log.e("TAG", e.getMessage());
             }
 
@@ -157,7 +148,7 @@ public class S2 {
         combined[0] = one;
         combined[combined.length - 1] = three;
         return combined;
-    }
+    }*/
 
     byte[] array;
     private byte[] strToPackCRC(OutputStream mmOutStream, String s)
@@ -186,18 +177,7 @@ public class S2 {
             return null;
         }
 
-
-        //return dataToBytes(s.length(), s, count);
-
         array = new byte[]{2, 5, (byte)180, (byte)187};
-        /*try {
-            mmOutStream.write("Set Data\r".getBytes());
-            mmOutStream.write(array);
-
-        } catch (IOException e) {
-            Log.e("TAG", e.getMessage());
-        }*/
-        //return s.length() + s + crc;
         return array;
     }
 

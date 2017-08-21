@@ -368,7 +368,7 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
     int count = 0;
     @Override
     public void onResponse(String answer) {
-        Log.d(TAG, " " + answer);
+        Log.d(TAG, " " + answer + " count=" + count);
 
 
         if(answer.contains("O") ){
@@ -391,9 +391,9 @@ public class MainActivity extends AppCompatActivity implements MainModel, Blueto
             }*/
         }
 
-       /* if (count !=127) {
+        /*if (count !=1) {
             count++;
-            mBluetoothMessage.writeMessageD(count);
+            mBluetoothMessage.wr(count);
         }*/
        /* try {
             /*if (Integer.parseInt(answer) == 1) {
