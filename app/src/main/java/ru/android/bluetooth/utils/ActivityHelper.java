@@ -1,10 +1,13 @@
 package ru.android.bluetooth.utils;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
+import android.view.View;
 
 import ru.android.bluetooth.R;
 
@@ -14,6 +17,14 @@ import ru.android.bluetooth.R;
 
 public class ActivityHelper {
 
+    public static void showProgressBar(Activity activity){
+        LayoutInflater inflater = activity.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_loading, null);
+
+        AlertDialog.Builder dialog = new AlertDialog.Builder(activity)
+                .setView(dialogView);
+        dialog.show();
+    }
 
     public static void startBroadcastReceiver(Activity from){
         IntentFilter filter = new IntentFilter(AppDestroyBroadcastReceiver.TAG);

@@ -15,7 +15,9 @@
         completions."
     </string>
 
-
+    <string name="generate_hand">Сгенерировать в ручную</string>
+    <string name="generate_sunrise_sunset">Генерация по Восходу/Закату солнца</string>
+    <string name="generate_dialog_title">Выберите способ генерации</string>
     <string name="choose_type_"></string>
     <string name="choose_device">Выберите устройство</string>
     <string name="connect">Cоединиться</string>

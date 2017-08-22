@@ -35,6 +35,7 @@ import ru.android.bluetooth.main.helper.ResponseView;
 import ru.android.bluetooth.root.RootActivity;
 import ru.android.bluetooth.schedule.ScheduleGeneratorActivity;
 import ru.android.bluetooth.schedule.helper.ScheduleGenerator;
+import ru.android.bluetooth.start.ChooseDeviceActivity;
 import ru.android.bluetooth.utils.ActivityHelper;
 import ru.android.bluetooth.utils.BluetoothHelper;
 import ru.android.bluetooth.view.CalendarActivity;
@@ -145,7 +146,7 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
         generateSchedule(Calendar.getInstance(), finishDate, 55.75, 37.50);
         mBluetoothMessage.writeMessage(onList, offList);
         mBluetoothMessage.writeMessage();
-        mBluetoothMessage.writeMessage();
+       // mBluetoothMessage.writeMessage();
     }
 
     private int[] onList = new int[365];
@@ -175,6 +176,8 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
         mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
         mBluetoothMessage.setBluetoothMessageListener(this);
         setMessage(BluetoothCommands.STATUS);
+
+
 
         mRlLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -306,7 +309,7 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
                 });
 
                 AlertDialog.Builder passwordDialogBuilder = new AlertDialog.Builder(activity)
-                        .setTitle(getString(R.string.input_password))
+                        .setTitle(getString(R.string.generate_dialog_title))
                         .setView(dialogView)
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
@@ -324,6 +327,7 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
             @Override
             public void onClick(View view) {
                 setMessage(BluetoothCommands.GET_TIME);
+               // testSetData();
             }
         });
         mBtnSetDate.setOnClickListener(new View.OnClickListener() {
@@ -390,35 +394,48 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
     int count = 0;
     @Override
     public void onResponse(String answer) {
-        //Log.d(TAG, " " + answer);
+        Log.d(TAG, " " + answer);
 
         if(mStatus!= null) {
-            Log.d(TAG, "mStatus=" + mStatus + " " + answer);
+            //Log.d(TAG, "mStatus=" + mStatus + " " + answer);
             switch (mStatus) {
                 case BluetoothCommands.DEBUG:
                     Log.d(TAG, answer);
                     break;
                 case BluetoothCommands.RESET:
-                    mTvReset.setText(answer);
+                    //mTvReset.setText(answer);
+                    ResponseView.showSnackbar(getWindow().getDecorView().getRootView(),
+                            ResponseView.RESET);
                     break;
                 case BluetoothCommands.STATUS:
                     mTvStatus.setText(answer);
                     parseStatus(answer);
-
+                    ResponseView.showSnackbar(getWindow().getDecorView().getRootView(),
+                            ResponseView.STATUS);
                     break;
                 case BluetoothCommands.VERSION:
                     mTvVersion.setText(answer.substring(0, answer.indexOf("\n")));
+                    ResponseView.showSnackbar(getWindow().getDecorView().getRootView(),
+                            ResponseView.VERSION);
                     break;
                 case BluetoothCommands.GET_TIME:
-                    String[] time = answer.split(" ");
-                    mTvDate.setText(time[0]);
-                    mTvTime.setText(time[1]);
+                    if(answer.contains(" ")){
+                        String[] time = answer.split(" ");
+                        mTvDate.setText(time[0]);
+                        mTvTime.setText(time[1]);
+                        ResponseView.showSnackbar(getWindow().getDecorView().getRootView(),
+                                ResponseView.GET_TIME);
+                    }
                     break;
                 case BluetoothCommands.ON:
                     setDeviceModeColor(false);
+                    ResponseView.showSnackbar(getWindow().getDecorView().getRootView(),
+                            ResponseView.ON);
                     break;
                 case BluetoothCommands.OFF:
                     setDeviceModeColor(true);
+                    ResponseView.showSnackbar(getWindow().getDecorView().getRootView(),
+                            ResponseView.OFF);
                     break;
                 case BluetoothCommands.SET_DATA:
 
@@ -543,7 +560,7 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
 
 
                 AlertDialog.Builder passwordDialogBuilder = new AlertDialog.Builder(MainActivity.this)
-                        .setTitle(getString(R.string.input_password))
+                       // .setTitle(getString(R.string.input_password))
                         .setView(dialogView)
 
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {

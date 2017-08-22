@@ -75,8 +75,10 @@ public class ScheduleBluetoothReader {
 
     public void addItem(String item){
 
-        String answer = item.substring(0, item.indexOf(" "));
-        writer.println(answer);
+        if(item.contains(" ")) {
+            item = item.substring(0, item.indexOf(" "));
+        }
+        writer.println(item);
         Log.d(TAG, item);
 
         if (!isFinish()){

@@ -113,11 +113,15 @@ public class ConnectedThread extends Thread {
     }
 
     public void writeeeeeeeeeeeeeeeeeee(){
-        byte[] answer2 = new byte[]{2,2,0,4};
+
         /*for (int i=0; i<732;i++) {
 
         }*/
         try {
+            byte[] answer = new byte[]{2,1,0,3};
+            byte[] answer2 = new byte[]{2,2,0,4};
+
+            mmOutStream.write(answer);
             mmOutStream.write(answer2);
             //mmOutStream.write(answer2);
 

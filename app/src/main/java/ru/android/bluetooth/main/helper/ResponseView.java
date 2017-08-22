@@ -1,8 +1,10 @@
 package ru.android.bluetooth.main.helper;
 
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import ru.android.bluetooth.bluetooth.BluetoothCommands;
 
@@ -29,49 +31,17 @@ public class ResponseView {
     public static final String MANUAL_OFF = "Переход на автоматический режим";
 
     public static void showSnackbar(View view, String message){
-        Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
+        Snackbar snackbar = Snackbar.make(view, message, Snackbar.LENGTH_LONG);
+
+        final View snackBarView = snackbar.getView();
+        final FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) snackBarView.getLayoutParams();
+
+        params.setMargins(params.leftMargin,
+                params.topMargin,
+                params.rightMargin,
+                params.bottomMargin + 80);
+
+        snackBarView.setLayoutParams(params);
+        snackbar.show();
     }
-
-    public static void setMessage(View view, String status, String response){
-        if(status!= null) {
-            Log.d(TAG, "mStatus=" + status + " " + response);
-            switch (status) {
-                case BluetoothCommands.DEBUG:
-                    Log.d(TAG, response);
-                    break;
-                case BluetoothCommands.RESET:
-
-                    break;
-                case BluetoothCommands.STATUS:
-
-                    break;
-                case BluetoothCommands.VERSION:
-                    break;
-                case BluetoothCommands.GET_TIME:
-                    break;
-                case BluetoothCommands.ON:
-
-                    break;
-                case BluetoothCommands.OFF:
-
-                    break;
-                case BluetoothCommands.SET_DATA:
-
-                    break;
-                case BluetoothCommands.SET_DATE:
-                    if(response.contains("Ok")){
-                       showSnackbar(view, SET_DATE);
-                    }
-                    break;
-                case BluetoothCommands.SET_TIME:
-                    if(response.contains("Ok")){
-                        showSnackbar(view, SET_TIME);
-                    }
-                    break;
-            }
-        }
-    }
-
-
-
 }

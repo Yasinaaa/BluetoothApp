@@ -48,7 +48,7 @@
                 fab:fab_icon="@drawable/hand"
                 fab:fab_size="mini"
                 android:onClick="fabClicked"
-                fab:fab_title="Сгенерировать в ручную" />
+                fab:fab_title="@string/generate_hand" />
 
             <com.getbase.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab_generate_schedule_sunrise_set"
@@ -60,7 +60,7 @@
                 fab:fab_icon="@drawable/sunrise"
                 fab:fab_size="mini"
                 android:onClick="fabClicked"
-                fab:fab_title="Генерация по Восходу/Закату солнца" />
+                fab:fab_title="@string/generate_sunrise_sunset" />
 
         </com.getbase.floatingactionbutton.FloatingActionsMenu>
     </FrameLayout>
