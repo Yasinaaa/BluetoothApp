@@ -9,6 +9,8 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,16 +26,20 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.ToggleButton;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.android.bluetooth.R;
+import ru.android.bluetooth.adapter.OnOffAdapter;
 import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
 import ru.android.bluetooth.main.helper.ResponseView;
 import ru.android.bluetooth.root.RootActivity;
 import ru.android.bluetooth.schedule.ScheduleGeneratorActivity;
+import ru.android.bluetooth.schedule.helper.OneDayModel;
 import ru.android.bluetooth.schedule.helper.ScheduleGenerator;
 import ru.android.bluetooth.start.ChooseDeviceActivity;
 import ru.android.bluetooth.utils.ActivityHelper;
@@ -57,14 +63,14 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
     Button mBtnOnDevice;
     @BindView(R.id.btn_off_device)
     Button mBtnOffDevice;
-    @BindView(R.id.cv_on_off_info)
-    CardView mCvOnOffInfo;
-    @BindView(R.id.tv_day)
+    @BindView(R.id.rv_on_off_info)
+    RecyclerView mRvOnOffInfo;
+   /* @BindView(R.id.tv_day)
     TextView mTvDay;
     @BindView(R.id.tv_on)
     TextView mTvOn;
     @BindView(R.id.tv_off)
-    TextView mTvOff;
+    TextView mTvOff;*/
     @BindView(R.id.cv_controller_functions)
     CardView mCvControllerFunctions;
     @BindView(R.id.tv_reset)
@@ -177,8 +183,6 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
         mBluetoothMessage.setBluetoothMessageListener(this);
         setMessage(BluetoothCommands.STATUS);
 
-
-
         mRlLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
 
@@ -226,11 +230,9 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
 
         if (mode == null){
             if(!mTbSwitchModeDevice.getText().equals(getResources().getString(R.string.manual_mode))){
-                mStatus = BluetoothCommands.MANUAL_OFF;
-                mBluetoothMessage.writeMessage(mStatus);
+                setMessage(BluetoothCommands.MANUAL_OFF);
             }else {
-                mStatus = BluetoothCommands.MANUAL_ON;
-                mBluetoothMessage.writeMessage(mStatus);
+                setMessage(BluetoothCommands.MANUAL_ON);
             }
 
         }else
@@ -238,28 +240,22 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
         if (mode.equals("On")){
             mTbSwitchModeDevice.setChecked(true);
             setModeVisiblity(View.INVISIBLE);
-            mRlLayoutParams.addRule(RelativeLayout.BELOW, R.id.cv_controller_functions);
+
         }else if (mode.equals("Off")){
             mTbSwitchModeDevice.setChecked(false);
             setModeVisiblity(View.VISIBLE);
-            mRlLayoutParams.addRule(RelativeLayout.BELOW, R.id.cv_on_off_info);
+            setMessage(BluetoothCommands.MANUAL_OFF);
         }
 
         if(mTbSwitchModeDevice.getText().equals(getResources().getString(R.string.manual_mode))){
             setModeVisiblity(View.INVISIBLE);
-            mRlLayoutParams.addRule(RelativeLayout.BELOW, R.id.cv_controller_functions);
         }else {
             setModeVisiblity(View.VISIBLE);
-            mRlLayoutParams.addRule(RelativeLayout.BELOW, R.id.cv_on_off_info);
         }
-        mRlLayoutParams.setMargins(0,10,0,0);
-        mCvSchedule.setLayoutParams(mRlLayoutParams);
+
     }
 
     private void setModeVisiblity(int visiblity){
-        mCvControllerFunctions.setVisibility(visiblity == View.VISIBLE ? View.INVISIBLE : View.VISIBLE);
-        mCvOnOffInfo.setVisibility(visiblity);
-
         if(visiblity == View.INVISIBLE){
             setScheduleModeVisiblity(View.GONE);
         }else {
@@ -269,9 +265,8 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
     }
 
     private void setScheduleModeVisiblity(int visiblity){
-        //mEtSchedule.setVisibility(visiblity);
-        //mBtnRemoveSchedule.setVisibility(visiblity);
         mTvEditSchedule.setVisibility(visiblity);
+        mRvOnOffInfo.setVisibility(visiblity);
     }
 
     // arguing for it
@@ -400,6 +395,19 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
             //Log.d(TAG, "mStatus=" + mStatus + " " + answer);
             switch (mStatus) {
                 case BluetoothCommands.DEBUG:
+                    //TODO!!!
+                    if(answer.contains(" ")){
+                        answer = answer.substring(0, answer.indexOf("\r\n"));
+                    }
+                    List<OneDayModel> oneDayModel = new ArrayList<OneDayModel>();
+                    oneDayModel.add(new OneDayModel(answer));
+                    OnOffAdapter onOffAdapter = new OnOffAdapter(oneDayModel);
+
+                    LinearLayoutManager layoutManager
+                            = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+
+                    mRvOnOffInfo.setLayoutManager(layoutManager);
+                    mRvOnOffInfo.setAdapter(onOffAdapter);
                     Log.d(TAG, answer);
                     break;
                 case BluetoothCommands.RESET:
@@ -453,6 +461,21 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
                         ResponseView.showSnackbar(getWindow().getDecorView().getRootView(),
                                 ResponseView.SET_TIME);
 
+                    }
+                    break;
+                case BluetoothCommands.MANUAL_ON:
+                    if(answer.contains("Ok")){
+                        ResponseView.showSnackbar(getWindow().getDecorView().getRootView(),
+                                ResponseView.MANUAL_ON);
+
+                    }
+                    break;
+
+                case BluetoothCommands.MANUAL_OFF:
+                    if(answer.contains("Ok")){
+                        ResponseView.showSnackbar(getWindow().getDecorView().getRootView(),
+                                ResponseView.MANUAL_OFF);
+                        setMessage(BluetoothCommands.DEBUG);
                     }
                     break;
             }

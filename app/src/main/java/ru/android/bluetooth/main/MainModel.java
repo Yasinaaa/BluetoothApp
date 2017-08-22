@@ -6,6 +6,9 @@ package ru.android.bluetooth.main;
 
 public interface MainModel {
 
+    public interface AutoModeView{
+        void addItemToDateRecyclerView();
+    }
     void setDeviceTitle(String title);
     void setStatus(String status);
 }
