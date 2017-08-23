@@ -43,6 +43,14 @@ public class BluetoothMessage {
                 }
             }
         };
+        this.mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //here call the second method
+
+            }
+
+        }, 90000);
     }
 
     public static BluetoothMessage createBluetoothMessage(){

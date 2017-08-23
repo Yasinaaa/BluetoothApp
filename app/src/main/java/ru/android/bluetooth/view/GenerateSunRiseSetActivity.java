@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
@@ -56,10 +57,9 @@ public class GenerateSunRiseSetActivity extends RootActivity {
                 mTimePicker.setTitle("Выберите время");
                 mTimePicker.show();
 
-
-
-
             }
         });
     }
+
+
 }

@@ -80,7 +80,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/rv_on_off_info"
             android:layout_gravity="center"
-            android:layout_marginTop="14dp"
+            android:layout_marginTop="10dp"
             android:layout_below="@+id/tb_mode_device"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true">
@@ -293,16 +293,13 @@
                 android:layout_marginLeft="3dp"
                 android:textSize="18sp"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="20dp"
-                android:id="@+id/tv_edit_schedule"
-                android:drawablePadding="15dp"
-                android:drawableLeft="@drawable/pen"
-                android:text="Посмотреть / Изменить"
-                android:textSize="15sp"
-                android:layout_marginTop="10dp"
-                android:layout_below="@+id/tv_schedule_title"/>
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/et_schedule_name"
+                android:visibility="gone"
+                android:layout_below="@id/tv_schedule_title"
+                android:text="schedule.txt"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -313,7 +310,20 @@
                 android:layout_marginTop="10dp"
                 android:drawablePadding="15dp"
                 android:textSize="15sp"
-                android:layout_below="@+id/tv_edit_schedule" />
+                android:layout_below="@+id/et_schedule_name"
+                 />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:id="@+id/tv_edit_schedule"
+                android:drawablePadding="15dp"
+                android:drawableLeft="@drawable/pen"
+                android:text="Посмотреть файл"
+                android:textSize="15sp"
+                android:layout_marginTop="10dp"
+                android:layout_below="@+id/tv_generate_schedule"
+                />
 
            <!-- <TextView
                 android:layout_width="wrap_content"

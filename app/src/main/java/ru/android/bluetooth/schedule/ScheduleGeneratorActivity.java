@@ -57,7 +57,7 @@ public class ScheduleGeneratorActivity extends RootActivity implements Bluetooth
 
         mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
         mBluetoothMessage.setBluetoothMessageListener(this);
-        mScheduleBluetoothReader = new ScheduleBluetoothReader(mBluetoothMessage);
+        mScheduleBluetoothReader = new ScheduleBluetoothReader(mBluetoothMessage, getApplicationContext());
         Calendar finishDate = Calendar.getInstance();
         finishDate.add(Calendar.YEAR, 1);
 

@@ -1,6 +1,7 @@
 package ru.android.bluetooth.root;
 
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 
 import ru.android.bluetooth.utils.ActivityHelper;
 
@@ -20,5 +21,11 @@ public class RootActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         //ActivityHelper.sendToAppDestroyListener(this, false);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        onBackPressed();
+        return true;
     }
 }

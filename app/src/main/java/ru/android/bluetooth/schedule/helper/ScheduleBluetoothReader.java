@@ -1,5 +1,6 @@
 package ru.android.bluetooth.schedule.helper;
 
+import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
@@ -13,6 +14,7 @@ import java.util.regex.Pattern;
 
 import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
+import ru.android.bluetooth.db.DBHelper;
 
 /**
  * Created by yasina on 18.08.17.
@@ -26,21 +28,30 @@ public class ScheduleBluetoothReader {
     private PrintWriter writer;
     private Calendar startDate;
     private Calendar finishDate;
+    private DBHelper mDbHelper;
 
-    public ScheduleBluetoothReader(BluetoothMessage mBluetoothMessage) {
+    public ScheduleBluetoothReader(BluetoothMessage mBluetoothMessage,Context context) {
         this.mBluetoothMessage = mBluetoothMessage;
         mValues = new ArrayList<String>();
+        mDbHelper = new DBHelper(context);
     }
 
     private String getDate(Calendar calendar){
-        return calendar.get(Calendar.DAY_OF_MONTH) + "_" +
-                calendar.get(Calendar.MONTH) + "_" +
+        return calendar.get(Calendar.DAY_OF_MONTH) + "/" +
+                calendar.get(Calendar.MONTH) + "/" +
                 calendar.get(Calendar.YEAR);
     }
     private String createFileName(Calendar startDate, Calendar finishDate){
         String begin = getDate(startDate);
         String finish = getDate(finishDate);
-        return begin + "__" + finish + ".txt";
+        return begin + "_" + finish;
+    }
+
+    public void readSchedule() {
+        Calendar startDate = Calendar.getInstance();
+        Calendar finishDate = startDate;
+        finishDate.add(Calendar.YEAR, 1);
+        readSchedule(startDate, finishDate);
     }
 
     public void readSchedule(Calendar startDate, Calendar finishDate){
@@ -49,16 +60,10 @@ public class ScheduleBluetoothReader {
         this.finishDate = finishDate;
 
         try{
-            writer = new PrintWriter(Environment.getExternalStorageDirectory() + "/" +
-                    createFileName(startDate, finishDate), "UTF-8");
-            Log.d(TAG, "path=" + Environment.getExternalStorageDirectory() + "/" +
-                    createFileName(startDate, finishDate));
+            writer = new PrintWriter(Environment.getExternalStorageDirectory() + "/" + "schedule.txt", "UTF-8");
+            Log.d(TAG, "path=" + Environment.getExternalStorageDirectory() + "/" + "schedule.txt");
+            writer.println(createFileName(startDate, finishDate));
             mBluetoothMessage.writeMessage(BluetoothCommands.DEBUG);
-
-            /*while(startDate.compareTo(finishDate) <= 0){
-                mBluetoothMessage.writeMessage(BluetoothCommands.DEBUG);
-                startDate.add(Calendar.DAY_OF_YEAR, 1);
-            }*/
 
         } catch (IOException e) {
             Log.e(TAG, e.getMessage());
@@ -79,6 +84,7 @@ public class ScheduleBluetoothReader {
             item = item.substring(0, item.indexOf(" "));
         }
         writer.println(item);
+        mDbHelper.addContact(new OneDayModel(startDate, item));
         Log.d(TAG, item);
 
         if (!isFinish()){

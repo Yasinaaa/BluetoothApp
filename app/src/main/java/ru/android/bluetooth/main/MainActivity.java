@@ -5,8 +5,11 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -26,6 +29,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.ToggleButton;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -113,10 +117,14 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
     @BindView(R.id.ib_sync_date)
     ImageButton mIbSyncDate;
 
+    @BindView(R.id.et_schedule_name)
+    EditText mEtScheduleName;
+
     private String thisTextNeedToSetTextView;
     private RelativeLayout.LayoutParams mRlLayoutParams;
     private BluetoothMessage mBluetoothMessage;
     private String mStatus;
+    private AutoModePresenter mAutoModePresenter;
 
     public double JD = 0;
     public int zone = +4;
@@ -135,6 +143,26 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
         init();
 
         mTbSwitchModeDevice.setChecked(true);
+        mTbSwitchModeDevice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!mTbSwitchModeDevice.getText().equals(getResources().getString(R.string.manual_mode))){
+
+                    mAutoModePresenter = new AutoModePresenter(getApplicationContext(), mBluetoothMessage);
+                    mAutoModePresenter.createDatesView(mRvOnOffInfo);
+
+                    if(mAutoModePresenter.isHaveScheduleTxt()){
+                        setModeVisiblity(View.VISIBLE);
+                    }else {
+                        setModeVisiblity(View.INVISIBLE);
+                    }
+
+                }else {
+                    setModeVisiblity(View.INVISIBLE);
+
+                }
+            }
+        });
         setModeVisiblity(View.INVISIBLE);
         mRlLayoutParams.addRule(RelativeLayout.BELOW, R.id.cv_controller_functions);
         mRlLayoutParams.setMargins(0,10,0,0);
@@ -200,9 +228,16 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
         mTvEditSchedule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ActivityHelper.startActivity(MainActivity.this, CalendarActivity.class);
+                File file = new File(Environment.getExternalStorageDirectory(), "schedule.txt");
+                Uri uri = Uri.parse("file://" + file.getAbsolutePath());
+
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(uri);
+                startActivity(intent);
             }
         });
+
+
 
 
         setDeviceTitle();
@@ -245,13 +280,23 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
             mTbSwitchModeDevice.setChecked(false);
             setModeVisiblity(View.VISIBLE);
             setMessage(BluetoothCommands.MANUAL_OFF);
+
+            mAutoModePresenter = new AutoModePresenter(getApplicationContext(), mBluetoothMessage);
+            mAutoModePresenter.createDatesView(mRvOnOffInfo);
+
+            if(mAutoModePresenter.isHaveScheduleTxt()){
+                setModeVisiblity(View.VISIBLE);
+            }else {
+                setModeVisiblity(View.INVISIBLE);
+            }
+
         }
 
-        if(mTbSwitchModeDevice.getText().equals(getResources().getString(R.string.manual_mode))){
+        /*if(mTbSwitchModeDevice.getText().equals(getResources().getString(R.string.manual_mode))){
             setModeVisiblity(View.INVISIBLE);
         }else {
             setModeVisiblity(View.VISIBLE);
-        }
+        }*/
 
     }
 
@@ -265,6 +310,7 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
     }
 
     private void setScheduleModeVisiblity(int visiblity){
+        mEtScheduleName.setVisibility(visiblity);
         mTvEditSchedule.setVisibility(visiblity);
         mRvOnOffInfo.setVisibility(visiblity);
     }
@@ -285,7 +331,8 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
         mTvGenerateSchedule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                LayoutInflater inflater = activity.getLayoutInflater();
+                ActivityHelper.startActivity(MainActivity.this, CalendarActivity.class);
+                /*LayoutInflater inflater = activity.getLayoutInflater();
                 View dialogView = inflater.inflate(R.layout.dialog_choose_generation_schedule_type, null);
                 TextView handGeneration = dialogView.findViewById(R.id.tv_generate_schedule_hand);
                 handGeneration.setOnClickListener(new View.OnClickListener() {
@@ -311,7 +358,7 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
                                 //Toast.makeText(getBaseContext(), "Cancel", Toast.LENGTH_SHORT).show();
                             }
                         });
-                passwordDialogBuilder.show();
+                passwordDialogBuilder.show();*/
             }
         });
     }
@@ -396,19 +443,7 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
             switch (mStatus) {
                 case BluetoothCommands.DEBUG:
                     //TODO!!!
-                    if(answer.contains(" ")){
-                        answer = answer.substring(0, answer.indexOf("\r\n"));
-                    }
-                    List<OneDayModel> oneDayModel = new ArrayList<OneDayModel>();
-                    oneDayModel.add(new OneDayModel(answer));
-                    OnOffAdapter onOffAdapter = new OnOffAdapter(oneDayModel);
-
-                    LinearLayoutManager layoutManager
-                            = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-
-                    mRvOnOffInfo.setLayoutManager(layoutManager);
-                    mRvOnOffInfo.setAdapter(onOffAdapter);
-                    Log.d(TAG, answer);
+                    //mAutoModePresenter.add(answer);
                     break;
                 case BluetoothCommands.RESET:
                     //mTvReset.setText(answer);
@@ -475,7 +510,8 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
                     if(answer.contains("Ok")){
                         ResponseView.showSnackbar(getWindow().getDecorView().getRootView(),
                                 ResponseView.MANUAL_OFF);
-                        setMessage(BluetoothCommands.DEBUG);
+                        //setMessage(BluetoothCommands.DEBUG);
+                       // mAutoModePresenter.createDatesView(mRvOnOffInfo);
                     }
                     break;
             }
