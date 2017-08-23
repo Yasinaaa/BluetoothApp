@@ -2,7 +2,6 @@ package ru.android.bluetooth.bluetooth;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothHeadset;
@@ -18,6 +17,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -256,17 +256,23 @@ public class BluetoothModule {
                     }
                     try {
                         mBTSocket.connect();
-                    } catch (IOException e) {
-                       /* try {
+                    } catch (final IOException e) {
+                        /*try {
                             fail = true;
-                            //mBTSocket.close();
-                            mHandler.obtainMessage(BluetoothCommands.CONNECTING_STATUS, -1, -1)
-                                    .sendToTarget();
-                        } catch (IOException e2) {
-                            Toast.makeText(mContext, "Socket creation failed", Toast.LENGTH_SHORT).show();
+                            mBTSocket.close();
+
+                            chooseDeviceView.error(e.getMessage());
+
+                        } catch (IOException ex) {
+
                         }*/
-                        mHandler.obtainMessage(BluetoothCommands.CONNECTING_STATUS, -1, -1)
-                                .sendToTarget();
+                        fail = true;
+                        mActivity.runOnUiThread(new Runnable() {
+                            public void run() {
+                                chooseDeviceView.error(e.getMessage());
+                            }
+                        });
+                        //
                     }
                     if(fail == false) {
                         mConnectedThread = ConnectedThread.createConnectedThread(mBTSocket, mHandler);
@@ -275,6 +281,7 @@ public class BluetoothModule {
 
                         mHandler.obtainMessage(BluetoothCommands.CONNECTING_STATUS, 1, -1, name)
                                 .sendToTarget();
+
                         chooseDeviceView.goNext();
                         BluetoothHelper.saveBluetoothUser(mContext, address, name);
 

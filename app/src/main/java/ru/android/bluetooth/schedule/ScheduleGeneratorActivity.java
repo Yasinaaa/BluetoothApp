@@ -1,5 +1,6 @@
 package ru.android.bluetooth.schedule;
 
+import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -13,7 +14,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
+
 import android.util.Log;
 import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
@@ -196,6 +197,8 @@ public class ScheduleGeneratorActivity extends RootActivity implements Bluetooth
     @Override
     protected void onResume() {
         super.onResume();
+        Log.v(this.getClass().getSimpleName(), "onResume");
+
         mGoogleApiClient.connect();
     }
 
@@ -203,7 +206,8 @@ public class ScheduleGeneratorActivity extends RootActivity implements Bluetooth
     protected void onPause() {
         super.onPause();
         Log.v(this.getClass().getSimpleName(), "onPause()");
-
+        alertDialog.dismiss();
+        alertDialog.cancel();
 
         if (mGoogleApiClient.isConnected()) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
@@ -213,6 +217,7 @@ public class ScheduleGeneratorActivity extends RootActivity implements Bluetooth
     }
 
 
+    AlertDialog alertDialog;
     @Override
     public void onConnected(Bundle bundle) {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
@@ -225,17 +230,20 @@ public class ScheduleGeneratorActivity extends RootActivity implements Bluetooth
 
         if (location == null) {
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-            new AlertDialog.Builder(this)
+
+            AlertDialog.Builder dialog = new AlertDialog.Builder(this)
                     .setTitle("Местопложение")
                     .setMessage("Разрешите включить ваше местоположение")
-                    .setPositiveButton("Ок", new DialogInterface.OnClickListener() {
+                    .setNegativeButton("Ок", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+
                         }
-                    })
-                    .create()
-                    .show();
+                    });
+                    alertDialog = dialog.create();
+                    dialog.show();
+
 
         } else {
 

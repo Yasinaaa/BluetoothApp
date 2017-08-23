@@ -17,13 +17,15 @@ import ru.android.bluetooth.R;
 
 public class ActivityHelper {
 
-    public static void showProgressBar(Activity activity){
+    public static AlertDialog showProgressBar(Activity activity){
         LayoutInflater inflater = activity.getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dialog_loading, null);
 
         AlertDialog.Builder dialog = new AlertDialog.Builder(activity)
                 .setView(dialogView);
-        dialog.show();
+        AlertDialog dialog1 = dialog.create();
+        dialog1.show();
+        return dialog1;
     }
 
     public static void startBroadcastReceiver(Activity from){

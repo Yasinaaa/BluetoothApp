@@ -191,13 +191,14 @@ public class ConnectedThread extends Thread {
         s.part2(mmOutStream, data);*/
     }
 
-    public void writeData(String data) {
+    public String writeData(String data) {
         try {
             mmOutStream.write(data.getBytes());
         } catch (IOException e) {
             Log.d("T", e.getMessage());
-
+            return e.getMessage();
         }
+        return null;
     }
 
 

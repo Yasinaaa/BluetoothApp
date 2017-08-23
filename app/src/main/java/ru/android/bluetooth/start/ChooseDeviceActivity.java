@@ -1,6 +1,8 @@
 package ru.android.bluetooth.start;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.view.MenuItemCompat;
@@ -148,17 +150,24 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceVi
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
+    private AlertDialog dialog;
     public void setPasswordDialog(){
         final Activity activity = this;
         mBtnConnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(mDeviceTitle != null) {
-                    ActivityHelper.showProgressBar(activity);
+                    dialog = ActivityHelper.showProgressBar(activity);
                     mBluetoothModule.connectDevice(mDeviceTitle, ChooseDeviceActivity.this);
                 }
             }
         });
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        dialog.cancel();
     }
 
     @Override
@@ -187,7 +196,23 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceVi
 
     @Override
     public void goNext(){
+
         ActivityHelper.startActivity(ChooseDeviceActivity.this, MainActivity.class);
+    }
+
+    @Override
+    public void error(String message){
+        dialog.cancel();
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this)
+                .setTitle("Ошибка")
+                .setMessage("Устройство не находится в сети")
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Toast.makeText(getBaseContext(), "Cancel", Toast.LENGTH_SHORT).show();
+                        dialog.cancel();
+                    }
+                });
+        dialog.show();
     }
 
 

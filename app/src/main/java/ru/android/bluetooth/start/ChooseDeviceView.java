@@ -8,6 +8,7 @@ import ru.android.bluetooth.common.CommonView;
 
 public interface ChooseDeviceView extends CommonView{
 
+    void error(String message);
     void goNext();
     void addDevice(String text);
 }
