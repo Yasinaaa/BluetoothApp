@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.CardView;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.util.Log;
@@ -30,26 +29,19 @@ import android.widget.TimePicker;
 import android.widget.ToggleButton;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.android.bluetooth.R;
-import ru.android.bluetooth.adapter.OnOffAdapter;
 import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
 import ru.android.bluetooth.main.helper.ResponseView;
 import ru.android.bluetooth.root.RootActivity;
-import ru.android.bluetooth.schedule.ScheduleGeneratorActivity;
-import ru.android.bluetooth.schedule.helper.OneDayModel;
 import ru.android.bluetooth.schedule.helper.ScheduleGenerator;
-import ru.android.bluetooth.start.ChooseDeviceActivity;
 import ru.android.bluetooth.utils.ActivityHelper;
 import ru.android.bluetooth.utils.BluetoothHelper;
 import ru.android.bluetooth.view.CalendarActivity;
-import ru.android.bluetooth.view.GenerateSunRiseSetActivity;
 
 
 /**
@@ -338,7 +330,7 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
                 handGeneration.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        ActivityHelper.startActivity(MainActivity.this, GenerateSunRiseSetActivity.class);
+                        ActivityHelper.startActivity(MainActivity.this, GenerateHandActivity.class);
 
                     }
                 });

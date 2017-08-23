@@ -17,6 +17,7 @@ import java.util.Calendar;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.android.bluetooth.R;
+import ru.android.bluetooth.hand_generation.GenerateHandActivity;
 import ru.android.bluetooth.one_day.ChangeOneDayScheduleActivity;
 import ru.android.bluetooth.root.RootActivity;
 import ru.android.bluetooth.schedule.ScheduleGeneratorActivity;
@@ -47,9 +48,9 @@ public class CalendarActivity extends RootActivity {
            case R.id.fab_generate_shedule_hand_one_day:
                ActivityHelper.startActivity(CalendarActivity.this, ChangeOneDayScheduleActivity.class);
                break;
-           case R.id.fab_generate_shedule_hand:
-               ActivityHelper.startActivity(CalendarActivity.this, GenerateSunRiseSetActivity.class);
-               break;
+           /*case R.id.fab_generate_shedule_hand:
+               ActivityHelper.startActivity(CalendarActivity.this, GenerateHandActivity.class);
+               break;*/
            case R.id.fab_generate_schedule_sunrise_set:
                ActivityHelper.startActivity(CalendarActivity.this, ScheduleGeneratorActivity.class);
                break;

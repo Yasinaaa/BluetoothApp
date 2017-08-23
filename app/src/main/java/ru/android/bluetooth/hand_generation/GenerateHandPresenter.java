@@ -1,4 +1,4 @@
-package ru.android.bluetooth.schedule;
+package ru.android.bluetooth.hand_generation;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -17,19 +17,15 @@ import android.widget.TimePicker;
 
 import java.util.Calendar;
 
-import ru.android.bluetooth.bluetooth.BluetoothCommands;
-import ru.android.bluetooth.main.MainActivity;
-
 /**
- * Created by yasina on 18.08.17.
+ * Created by yasina on 23.08.17.
  */
 
-public class SchedulePresenter {
-
+public class GenerateHandPresenter {
     private Activity mActivity;
     private Context mContext;
 
-    public SchedulePresenter(Activity activity) {
+    public GenerateHandPresenter(Activity activity) {
         this.mActivity = activity;
         this.mContext = activity.getApplicationContext();
     }
@@ -39,17 +35,14 @@ public class SchedulePresenter {
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DatePickerDialog mDatePicker = new DatePickerDialog(mActivity, new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
-                        int year = datePicker.getYear();
-                        int month = datePicker.getMonth();
-                        int day = datePicker.getDayOfMonth();
-                        tvTime.setText(day + "." + month + "." + year);
-
-                    }
-                }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-                mDatePicker.show();
+               TimePickerDialog timePickerDialog = new TimePickerDialog(mActivity,
+                            new TimePickerDialog.OnTimeSetListener() {
+                                @Override
+                                public void onTimeSet(TimePicker timePicker, int i, int i1) {
+                                    tvTime.setText(i + ":" + i1);
+                                }
+                            }, Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), true);
+                timePickerDialog.show();
             }
         });
 

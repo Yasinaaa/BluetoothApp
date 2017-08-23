@@ -196,6 +196,7 @@ public class ConnectedThread extends Thread {
             mmOutStream.write(data.getBytes());
         } catch (IOException e) {
             Log.d("T", e.getMessage());
+
         }
     }
 

@@ -45,12 +45,12 @@
                 fab:fab_colorNormal="@color/colorPrimary"
                 fab:fab_colorPressed="@color/colorPrimaryDark"
                 fab:fab_plusIconColor="@color/white"
-                fab:fab_icon="@android:drawable/ic_media_next"
+                fab:fab_icon="@drawable/hand"
                 fab:fab_size="mini"
                 android:onClick="fabClicked"
                 fab:fab_title="@string/generate_hand_one_day" />
 
-            <com.getbase.floatingactionbutton.FloatingActionButton
+            <!--<com.getbase.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab_generate_shedule_hand"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -60,7 +60,7 @@
                 fab:fab_icon="@drawable/hand"
                 fab:fab_size="mini"
                 android:onClick="fabClicked"
-                fab:fab_title="@string/generate_hand" />
+                fab:fab_title="@string/generate_hand" />-->
 
             <com.getbase.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab_generate_schedule_sunrise_set"

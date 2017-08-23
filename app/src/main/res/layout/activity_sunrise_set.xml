@@ -19,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/tv_sunrise_title"
-        android:text="Включение"
+        android:text="Старт"
         android:gravity="center"
         android:textSize="30sp"
         android:layout_below="@+id/tv_sunrise"
@@ -48,7 +48,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/tv_sunset_title"
-        android:text="Выключение"
+        android:text="Финиш"
         android:gravity="center_horizontal"
         android:textSize="30sp"
         android:layout_below="@+id/tv_sunset"/>
@@ -100,10 +100,10 @@
 
     </android.support.design.widget.TextInputLayout>
 
-    <RadioButton
+    <CheckBox
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/rb_set_coordinates_by_hand"
+        android:id="@+id/cb_set_coordinates_by_hand"
         android:text="Ввести координаты вручную"
         android:layout_below="@+id/til_longitude"/>
 
@@ -112,7 +112,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:layout_below="@+id/rb_set_coordinates_by_hand">
+        android:layout_below="@+id/cb_set_coordinates_by_hand">
 
         <AutoCompleteTextView
             android:id="@+id/actv_timezone"
@@ -127,11 +127,21 @@
 
     </android.support.design.widget.TextInputLayout>
 
-    <RadioButton
+    <CheckBox
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/rb_set_timezone_by_hand"
+        android:id="@+id/cb_set_timezone_by_hand"
         android:text="Ввести временную зону вручную"
         android:layout_below="@+id/til_timezone" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/fab_save"
+        android:src="@android:drawable/ic_menu_save"
+        android:padding="20dp"/>
 
 </RelativeLayout>
