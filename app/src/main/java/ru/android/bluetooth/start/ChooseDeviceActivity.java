@@ -19,6 +19,8 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ScrollView;
 
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,6 +57,7 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceVi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
        super.onCreate(savedInstanceState);
+       Fabric.with(this, new Crashlytics());
        checkBluetoothUser();
 
        getSupportActionBar().hide();

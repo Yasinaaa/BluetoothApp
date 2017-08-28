@@ -48,7 +48,8 @@ import ru.android.bluetooth.view.CalendarActivity;
  * Created by itisioslab on 01.08.17.
  */
 
-public class MainActivity extends RootActivity implements MainModel, BluetoothMessage.BluetoothMessageListener{
+public class MainActivity extends RootActivity implements MainModel.ManualModeView, MainModel.AutoModeView,
+        BluetoothMessage.BluetoothMessageListener{
 
     private final String TAG = MainActivity.class.getName();
     @BindView(R.id.tv_device_title)
@@ -139,7 +140,7 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
             @Override
             public void onClick(View view) {
                 if(!mTbSwitchModeDevice.getText().equals(getResources().getString(R.string.manual_mode))){
-
+                    setMessage(BluetoothCommands.MANUAL_OFF);
                     mAutoModePresenter = new AutoModePresenter(getApplicationContext(), mBluetoothMessage);
                     mAutoModePresenter.createDatesView(mRvOnOffInfo);
 
@@ -151,7 +152,7 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
 
                 }else {
                     setModeVisiblity(View.INVISIBLE);
-
+                    setMessage(BluetoothCommands.MANUAL_ON);
                 }
             }
         });
@@ -512,7 +513,6 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
 
     private void setClickListeners(){
 
-
         mIbSyncStatus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -635,6 +635,11 @@ public class MainActivity extends RootActivity implements MainModel, BluetoothMe
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+    }
+
+    @Override
+    public void addItemToDateRecyclerView() {
 
     }
 }

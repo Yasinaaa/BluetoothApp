@@ -182,7 +182,7 @@ public class BluetoothModule {
         IntentFilter filter = new IntentFilter();
         filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
         filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED);
-        //filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
+        filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
         filter.addAction(BluetoothDevice.ACTION_FOUND);
         mActivity.registerReceiver(blReceiver, filter);
         listPairedDevices();
@@ -267,11 +267,11 @@ public class BluetoothModule {
 
                         }*/
                         fail = true;
-                        mActivity.runOnUiThread(new Runnable() {
+                        /*mActivity.runOnUiThread(new Runnable() {
                             public void run() {
                                 chooseDeviceView.error(e.getMessage());
                             }
-                        });
+                        });*/
                         //
                     }
                     if(fail == false) {
