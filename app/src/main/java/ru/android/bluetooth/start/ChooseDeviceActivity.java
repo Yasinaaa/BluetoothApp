@@ -48,7 +48,6 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceVi
     @BindView(R.id.frame_layout)
     FrameLayout frameLayout;
 
-
     private DeviceAdapter mDeviceAdapter;
     private List<String> mDeviceList = new ArrayList<String>();
     private BluetoothModule mBluetoothModule;
@@ -170,7 +169,7 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceVi
     @Override
     protected void onStop() {
         super.onStop();
-        dialog.cancel();
+        //dialog.cancel();
     }
 
     @Override

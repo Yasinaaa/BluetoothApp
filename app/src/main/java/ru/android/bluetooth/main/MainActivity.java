@@ -256,7 +256,7 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
 
     private void setMode(String mode){
 
-        if (mode == null){
+       /* if (mode == null){
             if(!mTbSwitchModeDevice.getText().equals(getResources().getString(R.string.manual_mode))){
                 setMessage(BluetoothCommands.MANUAL_OFF);
             }else {
@@ -283,7 +283,7 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
                 setModeVisiblity(View.INVISIBLE);
             }
 
-        }
+        }*/
 
         /*if(mTbSwitchModeDevice.getText().equals(getResources().getString(R.string.manual_mode))){
             setModeVisiblity(View.INVISIBLE);
@@ -467,6 +467,7 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
                     setDeviceModeColor(false);
                     ResponseView.showSnackbar(getWindow().getDecorView().getRootView(),
                             ResponseView.ON);
+
                     break;
                 case BluetoothCommands.OFF:
                     setDeviceModeColor(true);
@@ -495,7 +496,7 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
                     if(answer.contains("Ok")){
                         ResponseView.showSnackbar(getWindow().getDecorView().getRootView(),
                                 ResponseView.MANUAL_ON);
-
+                        setMessage(BluetoothCommands.STATUS);
                     }
                     break;
 
@@ -505,9 +506,11 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
                                 ResponseView.MANUAL_OFF);
                         //setMessage(BluetoothCommands.DEBUG);
                        // mAutoModePresenter.createDatesView(mRvOnOffInfo);
+                        setMessage(BluetoothCommands.STATUS);
                     }
                     break;
             }
+
         }
     }
 
@@ -568,6 +571,8 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
             }
         }
     }
+
+
 
     private void setChangePassword(){
         mTvChangePassword.setOnClickListener(new View.OnClickListener() {
