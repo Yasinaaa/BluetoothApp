@@ -23,6 +23,8 @@ import android.view.View;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -136,20 +138,40 @@ public class BluetoothModule {
         //checkPermission();
         setHandler();
         //bluetoothOn();
-        mBTAdapter.enable();
         try {
-            while(!mBTAdapter.isEnabled()) {
-                synchronized (this) {
-                    wait(1000);
-                }
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            mBTAdapter.enable();
+            discover();
+        }catch (NullPointerException e){
+            /*Intent enableBluetoothIntent = new Intent(
+                    BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            mActivity.startActivityForResult(enableBluetoothIntent, 0);*/
+            accessLocationPermission();
         }
-        discover();
         //mBTAdapter.getProfileProxy(mContext, mProfileListener, BluetoothProfile.HEADSET);
+    }
+
+    private void accessLocationPermission() {
+        int accessCoarseLocation = ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION);
+        int accessFineLocation   = ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION);
+
+        List<String> listRequestPermission = new ArrayList<String>();
+
+        if (accessCoarseLocation != PackageManager.PERMISSION_GRANTED) {
+            listRequestPermission.add(android.Manifest.permission.ACCESS_COARSE_LOCATION);
+        }
+        if (accessFineLocation != PackageManager.PERMISSION_GRANTED) {
+            listRequestPermission.add(android.Manifest.permission.ACCESS_FINE_LOCATION);
+        }
+
+        if (!listRequestPermission.isEmpty()) {
+            String[] strRequestPermission = listRequestPermission.toArray(new String[listRequestPermission.size()]);
+            ActivityCompat.requestPermissions(mActivity, strRequestPermission, 1);
+        }
+    }
 
 
+    public void setEnableBluetooth(){
+        mBTAdapter.enable();
     }
 
     private void setHandler(){
@@ -190,7 +212,7 @@ public class BluetoothModule {
 
     public void unregister(){
         mActivity.unregisterReceiver(blReceiver);
-        mBTAdapter.disable();
+        //mBTAdapter.disable();
     }
 
     private void listPairedDevices(){
@@ -257,6 +279,7 @@ public class BluetoothModule {
                     try {
                         mBTSocket.connect();
                     } catch (final IOException e) {
+                        Log.e("TAG", e.getMessage());
                         /*try {
                             fail = true;
                             mBTSocket.close();
@@ -267,12 +290,17 @@ public class BluetoothModule {
 
                         }*/
                         fail = true;
-                        /*mActivity.runOnUiThread(new Runnable() {
+                        mActivity.runOnUiThread(new Runnable() {
                             public void run() {
                                 chooseDeviceView.error(e.getMessage());
                             }
-                        });*/
-                        //
+                        });
+                        try {
+                            mBTSocket.close();
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        }
+
                     }
                     if(fail == false) {
                         mConnectedThread = ConnectedThread.createConnectedThread(mBTSocket, mHandler);

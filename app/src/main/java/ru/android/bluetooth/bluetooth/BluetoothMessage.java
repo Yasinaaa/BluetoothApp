@@ -50,7 +50,7 @@ public class BluetoothMessage {
 
             }
 
-        }, 90000);
+        }, 1000000);
     }
 
     public static BluetoothMessage createBluetoothMessage(){

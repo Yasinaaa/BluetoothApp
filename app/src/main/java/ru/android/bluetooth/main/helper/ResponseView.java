@@ -3,9 +3,12 @@ package ru.android.bluetooth.main.helper;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
+import ru.android.bluetooth.R;
 import ru.android.bluetooth.bluetooth.BluetoothCommands;
 
 /**
@@ -30,18 +33,22 @@ public class ResponseView {
     public static final String MANUAL_ON = "Переход на ручной режим";
     public static final String MANUAL_OFF = "Переход на автоматический режим";
 
-    public static void showSnackbar(View view, String message){
+    public static void showSnackbar(RelativeLayout view, String message){
         Snackbar snackbar = Snackbar.make(view, message, Snackbar.LENGTH_LONG);
 
         final View snackBarView = snackbar.getView();
-        final FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) snackBarView.getLayoutParams();
+        /*final FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) snackBarView.getLayoutParams();
 
         params.setMargins(params.leftMargin,
                 params.topMargin,
                 params.rightMargin,
                 params.bottomMargin + 80);
 
-        snackBarView.setLayoutParams(params);
+        snackBarView.setLayoutParams(params);*/
+        /*RelativeLayout relativeLayout = (RelativeLayout) view.findViewById(R.id.rl);
+        RelativeLayout.LayoutParams params=(RelativeLayout.LayoutParams)view.getLayoutParams();
+        params.g = Gravity.TOP;
+        view.setLayoutParams(params);*/
         snackbar.show();
     }
 }

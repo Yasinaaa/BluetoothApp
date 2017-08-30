@@ -3,6 +3,8 @@ package ru.android.bluetooth.start;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.view.MenuItemCompat;
@@ -152,7 +154,7 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceVi
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
-    private AlertDialog dialog;
+    public static AlertDialog dialog;
     public void setPasswordDialog(){
         final Activity activity = this;
         mBtnConnect.setOnClickListener(new View.OnClickListener() {
@@ -162,6 +164,7 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceVi
                     dialog = ActivityHelper.showProgressBar(activity);
                     mBluetoothModule.connectDevice(mDeviceTitle, ChooseDeviceActivity.this);
                 }
+
             }
         });
     }
@@ -200,6 +203,7 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceVi
     public void goNext(){
 
         ActivityHelper.startActivity(ChooseDeviceActivity.this, MainActivity.class);
+        mBluetoothModule.unregister();
     }
 
     @Override
@@ -215,8 +219,34 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceVi
                     }
                 });
         dialog.show();
+        mBluetoothModule.unregister();
     }
 
+   /* @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
+    }*/
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 1:
+                if (grantResults.length > 0) {
+                    for (int gr : grantResults) {
+                        // Check if request is granted or not
+                        if (gr != PackageManager.PERMISSION_GRANTED) {
+                            mBluetoothModule.setEnableBluetooth();
+                            return;
+                        }
+                    }
+
+                    //TODO - Add your code here to start Discovery
+
+                }
+                break;
+            default:
+                return;
+        }
+    }
 }

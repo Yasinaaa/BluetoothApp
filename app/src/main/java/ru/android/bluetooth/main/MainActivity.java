@@ -29,16 +29,22 @@ import android.widget.TimePicker;
 import android.widget.ToggleButton;
 
 import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.Response;
 import ru.android.bluetooth.R;
 import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
 import ru.android.bluetooth.main.helper.ResponseView;
 import ru.android.bluetooth.root.RootActivity;
 import ru.android.bluetooth.schedule.helper.ScheduleGenerator;
+import ru.android.bluetooth.start.ChooseDeviceActivity;
 import ru.android.bluetooth.utils.ActivityHelper;
 import ru.android.bluetooth.utils.BluetoothHelper;
 import ru.android.bluetooth.view.CalendarActivity;
@@ -128,7 +134,11 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+        try {
+            ChooseDeviceActivity.dialog.cancel();
+        }catch (java.lang.NullPointerException e){
 
+        }
         //((App) getApplication()).getComponent().inject(this);
         ButterKnife.bind(this);
         ActivityHelper.setVisibleIcon(this);
@@ -374,8 +384,16 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
                         int year = datePicker.getYear();
                         int month = datePicker.getMonth();
                         int day = datePicker.getDayOfMonth();
+                        String i1s = String.valueOf(i1);
+                        if(i1s.length() == 1){
+                            i1s = "0" + i1s;
+                        }
+                        String i2s = String.valueOf(i2);
+                        if(i2s.length() == 1){
+                            i2s = "0" + (i2 + 1);
+                        }
                         thisTextNeedToSetTextView = String.format("%s-%s-%s", new String[]{
-                                i2+"", i1+"", i+""
+                                i2s+"", i1s, i+""
                         });
                         setMessage(BluetoothCommands.SET_DATE, BluetoothCommands.setDate(year, month+1, day));
 
@@ -440,61 +458,65 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
                     break;
                 case BluetoothCommands.RESET:
                     //mTvReset.setText(answer);
-                    ResponseView.showSnackbar(getWindow().getDecorView().getRootView(),
+                    ResponseView.showSnackbar(mRl,
                             ResponseView.RESET);
                     break;
                 case BluetoothCommands.STATUS:
                     mTvStatus.setText(answer);
                     parseStatus(answer);
-                    ResponseView.showSnackbar(getWindow().getDecorView().getRootView(),
+                    ResponseView.showSnackbar(mRl,
                             ResponseView.STATUS);
                     break;
                 case BluetoothCommands.VERSION:
                     mTvVersion.setText(answer.substring(0, answer.indexOf("\n")));
-                    ResponseView.showSnackbar(getWindow().getDecorView().getRootView(),
+                    ResponseView.showSnackbar(mRl,
                             ResponseView.VERSION);
                     break;
                 case BluetoothCommands.GET_TIME:
                     if(answer.contains(" ")){
                         String[] time = answer.split(" ");
                         mTvDate.setText(time[0]);
-                        mTvTime.setText(time[1]);
-                        ResponseView.showSnackbar(getWindow().getDecorView().getRootView(),
+                        mTvTime.setText(time[1].substring(0, time[1].indexOf("\r")));
+                        ResponseView.showSnackbar(mRl,
                                 ResponseView.GET_TIME);
                     }
                     break;
                 case BluetoothCommands.ON:
                     setDeviceModeColor(false);
-                    ResponseView.showSnackbar(getWindow().getDecorView().getRootView(),
+                    ResponseView.showSnackbar(mRl,
                             ResponseView.ON);
+                    setMessage(BluetoothCommands.STATUS);
 
                     break;
                 case BluetoothCommands.OFF:
                     setDeviceModeColor(true);
-                    ResponseView.showSnackbar(getWindow().getDecorView().getRootView(),
+                    ResponseView.showSnackbar(mRl,
                             ResponseView.OFF);
+                    setMessage(BluetoothCommands.STATUS);
                     break;
+
                 case BluetoothCommands.SET_DATA:
 
                     break;
                 case BluetoothCommands.SET_DATE:
                     if(answer.contains("Ok")){
                         mTvDate.setText(thisTextNeedToSetTextView);
-                        ResponseView.showSnackbar(getWindow().getDecorView().getRootView(),
+                        ResponseView.showSnackbar(mRl,
                                 ResponseView.SET_DATE);
                     }
                     break;
                 case BluetoothCommands.SET_TIME:
                     if(answer.contains("Ok")){
                         mTvTime.setText(thisTextNeedToSetTextView);
-                        ResponseView.showSnackbar(getWindow().getDecorView().getRootView(),
+                        ResponseView.showSnackbar(mRl,
                                 ResponseView.SET_TIME);
 
                     }
                     break;
                 case BluetoothCommands.MANUAL_ON:
                     if(answer.contains("Ok")){
-                        ResponseView.showSnackbar(getWindow().getDecorView().getRootView(),
+                        //ResponseView.showSnackbar(getWindow().getDecorView().getRootView(),
+                        ResponseView.showSnackbar(mRl,
                                 ResponseView.MANUAL_ON);
                         setMessage(BluetoothCommands.STATUS);
                     }
@@ -502,7 +524,7 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
 
                 case BluetoothCommands.MANUAL_OFF:
                     if(answer.contains("Ok")){
-                        ResponseView.showSnackbar(getWindow().getDecorView().getRootView(),
+                        ResponseView.showSnackbar(mRl,
                                 ResponseView.MANUAL_OFF);
                         //setMessage(BluetoothCommands.DEBUG);
                        // mAutoModePresenter.createDatesView(mRvOnOffInfo);
@@ -562,16 +584,33 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
     private void parseStatus(String status){
         String[] parameters = status.replaceAll("\r","").split("\n");
         for(String s: parameters){
+
             if (s.contains("Manual")){
                 setMode(s.split(" ")[1]);
-            }
+            }else
             if (s.contains("Rele")){
-                //setMode(s.split(" ")[1]);
                 setOnOff(s.split(" ")[1]);
+            }else if(!s.contains("s") && !s.contains(" ")){
+                getTime(s);
             }
         }
     }
 
+    private void getTime(String data){
+        String[] allData = data.split(" ");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yy hh:mm:ss", Locale.ENGLISH);
+        try {
+            Date result = dateFormat.parse(data);
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(result);
+            mTvDate.setText(calendar.get(Calendar.DAY_OF_MONTH) + "-" +
+                    (calendar.get(Calendar.MONTH) + 1)+ "-" + calendar.get(Calendar.YEAR));
+            mTvTime.setText(result.getHours() + ":" + result.getMinutes() + ":" + result.getMinutes());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+    }
 
 
     private void setChangePassword(){
