@@ -97,7 +97,7 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceVi
         }*/
         setContentView(R.layout.activity_choose_device);
         ButterKnife.bind(this);
-        mBluetoothModule = BluetoothModule.createBluetoohModule(this, this);
+
 
         init();
     }
@@ -155,14 +155,20 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceVi
     }
 
     public static AlertDialog dialog;
+    private boolean isFirstOpen = true;
     public void setPasswordDialog(){
         final Activity activity = this;
+        final ChooseDeviceView viewC = this;
         mBtnConnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(!isFirstOpen){
+                    mBluetoothModule = BluetoothModule.createBluetoohModule(activity, viewC);
+                }
                 if(mDeviceTitle != null) {
                     dialog = ActivityHelper.showProgressBar(activity);
                     mBluetoothModule.connectDevice(mDeviceTitle, ChooseDeviceActivity.this);
+                    isFirstOpen = false;
                 }
 
             }
@@ -203,13 +209,27 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceVi
     public void goNext(){
 
         ActivityHelper.startActivity(ChooseDeviceActivity.this, MainActivity.class);
+        Activity a = this;
+       // mBluetoothModule.unregister(a);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mBluetoothModule = BluetoothModule.createBluetoohModule(this, this);
+        mBluetoothModule.register();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
         mBluetoothModule.unregister();
     }
 
     @Override
     public void error(String message){
         dialog.cancel();
-        AlertDialog.Builder dialog = new AlertDialog.Builder(this)
+        AlertDialog.Builder dialogB = new AlertDialog.Builder(this)
                 .setTitle("Ошибка")
                 .setMessage("Устройство не находится в сети")
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -218,8 +238,8 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceVi
                         dialog.cancel();
                     }
                 });
-        dialog.show();
-        mBluetoothModule.unregister();
+        dialogB.show();
+       // mBluetoothModule.unregister();
     }
 
    /* @Override
@@ -227,7 +247,12 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceVi
         super.onActivityResult(requestCode, resultCode, data);
 
     }*/
-
+  /* @Override
+   public void onResume()
+   {  // After a pause OR at startup
+       super.onResume();
+       mBluetoothModule = BluetoothModule.createBluetoohModule(this, this);
+   }*/
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {

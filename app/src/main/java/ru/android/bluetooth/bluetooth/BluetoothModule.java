@@ -199,21 +199,45 @@ public class BluetoothModule {
             }
         }*/
         //mBTAdapter.enable();
-        mBTAdapter.startDiscovery();
+
         //Toast.makeText(mContext, "Discovery started", Toast.LENGTH_SHORT).show();
+        mBTAdapter.startDiscovery();
         IntentFilter filter = new IntentFilter();
         filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
         filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED);
         filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
         filter.addAction(BluetoothDevice.ACTION_FOUND);
         mActivity.registerReceiver(blReceiver, filter);
+
         listPairedDevices();
     }
 
     public void unregister(){
-        mActivity.unregisterReceiver(blReceiver);
+       // try {
+            mActivity.unregisterReceiver(blReceiver);
+        //}catch (java.lang.IllegalArgumentException e){
+
+        //}
         //mBTAdapter.disable();
     }
+
+    public void register(){
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
+        filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED);
+        filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
+        filter.addAction(BluetoothDevice.ACTION_FOUND);
+        mActivity.registerReceiver(blReceiver, filter);
+    }
+
+    /*public void unregister(Activity a){
+        //try {
+            a.unregisterReceiver(blReceiver);
+       // }catch (java.lang.IllegalArgumentException e){
+
+        //}
+        //mBTAdapter.disable();
+    }*/
 
     private void listPairedDevices(){
         mPairedDevices = mBTAdapter.getBondedDevices();
@@ -233,9 +257,9 @@ public class BluetoothModule {
         }else{
            // Toast.makeText(mActivity, "Bluetooth not on", Toast.LENGTH_SHORT).show();
         }
-
-
     }
+
+
 
     public final BroadcastReceiver blReceiver = new BroadcastReceiver() {
         @Override
@@ -277,7 +301,10 @@ public class BluetoothModule {
                         //Toast.makeText(mContext, "Socket creation failed", Toast.LENGTH_SHORT).show();
                     }
                     try {
-                        mBTSocket.connect();
+
+                        if(!mBTSocket.isConnected()){
+                            mBTSocket.connect();
+                        }
                     } catch (final IOException e) {
                         Log.e("TAG", e.getMessage());
                         /*try {
@@ -292,7 +319,10 @@ public class BluetoothModule {
                         fail = true;
                         mActivity.runOnUiThread(new Runnable() {
                             public void run() {
+                              //
+                                //  mActivity.unregisterReceiver(blReceiver);
                                 chooseDeviceView.error(e.getMessage());
+
                             }
                         });
                         try {
@@ -303,6 +333,7 @@ public class BluetoothModule {
 
                     }
                     if(fail == false) {
+                        //mActivity.unregisterReceiver(blReceiver);
                         mConnectedThread = ConnectedThread.createConnectedThread(mBTSocket, mHandler);
                         mConnectedThread.start();
                         mBluetoothMessage.setConnectedThread(mConnectedThread);
@@ -312,6 +343,7 @@ public class BluetoothModule {
 
                         chooseDeviceView.goNext();
                         BluetoothHelper.saveBluetoothUser(mContext, address, name);
+
 
                     }
                 }

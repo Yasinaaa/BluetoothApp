@@ -182,7 +182,7 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
         finishDate.add(Calendar.YEAR, 1);
         generateSchedule(Calendar.getInstance(), finishDate, 55.75, 37.50);
         mBluetoothMessage.writeMessage(onList, offList);
-        mBluetoothMessage.writeMessage();
+
        // mBluetoothMessage.writeMessage();
     }
 
@@ -208,11 +208,13 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
         }
     }
 
+
+
     private void init(){
 
         mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
         mBluetoothMessage.setBluetoothMessageListener(this);
-        setMessage(BluetoothCommands.STATUS);
+       // setMessage(BluetoothCommands.STATUS);
 
         mRlLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -371,8 +373,9 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
         mIbSyncDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setMessage(BluetoothCommands.GET_TIME);
+                //setMessage(BluetoothCommands.GET_TIME);
                // testSetData();
+                setMessage("get table\r\n");
             }
         });
         mBtnSetDate.setOnClickListener(new View.OnClickListener() {
@@ -448,6 +451,10 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
     @Override
     public void onResponse(String answer) {
         Log.d(TAG, " " + answer);
+       /* if(count !=2){
+            mBluetoothMessage.writeMessage();
+            count++;
+        }*/
 
         if(mStatus!= null) {
             //Log.d(TAG, "mStatus=" + mStatus + " " + answer);
@@ -560,7 +567,8 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
         mIbSyncVersion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setMessage(BluetoothCommands.VERSION);
+                //setMessage(BluetoothCommands.VERSION);
+                testSetData();
             }
         });
         mBtnResetController.setOnClickListener(new View.OnClickListener() {
@@ -590,9 +598,9 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
             }else
             if (s.contains("Rele")){
                 setOnOff(s.split(" ")[1]);
-            }else if(!s.contains("s") && !s.contains(" ")){
+            }/*else if(!s.contains("s") && !s.contains(" ")){
                 getTime(s);
-            }
+            }*/
         }
     }
 

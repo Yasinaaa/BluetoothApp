@@ -5,6 +5,8 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
 
+import org.apache.commons.io.IOUtils;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,23 +59,37 @@ public class ConnectedThread extends Thread {
     }
 
     public void run() {
-        byte[] buffer = new byte[1024];
+
         int bytes;
+        byte[] buffer = new byte[1024];
+        String text = "";
         while (true) {
             try {
                 bytes = mmInStream.available();
                 if(bytes != 0) {
-                    SystemClock.sleep(100);
+                    SystemClock.sleep(1000);
                     bytes = mmInStream.available();
                     bytes = mmInStream.read(buffer, 0, bytes);
+                    // java.lang.ArrayIndexOutOfBoundsException: invalid offset or length
+                 //   text = IOUtils.toString(buffer, "utf-8");
+                  //  Log.d("TAG", text);
                     mHandler.obtainMessage(BluetoothCommands.MESSAGE_READ, bytes, -1, buffer)
                             .sendToTarget();
+                }else {
+
+                    //
+                   /* Log.d("TAG", text);
+                    text = "";*/
+
                 }
             } catch (IOException e) {
                 e.printStackTrace();
 
                 break;
             }
+           // Log.d("TAG", text);
+           /* mHandler.obtainMessage(BluetoothCommands.MESSAGE_READ, bytes, -1, buffer)
+                    .sendToTarget();*/
         }
     }
 
@@ -118,22 +134,49 @@ public class ConnectedThread extends Thread {
 
         }*/
         try {
-            byte[] answer = new byte[]{2,1,0,3};
-            byte[] answer2 = new byte[]{2,2,0,4};
+            //byte[] answer = new byte[]{3,(byte)128, (byte)128, 0,4}; //2,1,5,8 is=0,920,1281
+            //byte[] answer = new byte[]{3,(byte)128, (byte)128, (byte)128, (byte)132}; //2,1,5,8 is=0,920,1281  {1,1,2} is=0,920,65281 is=1,921,65535
+            // is=1,921,65280
+
 
             mmOutStream.write(answer);
-            mmOutStream.write(answer2);
+           // mmOutStream.write(answer2);
             //mmOutStream.write(answer2);
+           /* mmOutStream.write(answer2);*/
+
 
         } catch (IOException e) {
             Log.e("TAG", e.getMessage());
         }
+    }
 
+    private byte[] get128Array(int count){
+        byte[] data = new byte[count];
+        data[0] = (byte)(data.length - 2);
+        int crc = data.length - 2;
+        //int num = 129;
+        for (int i=1; i<data.length-1; i=i+2){
+            data[i] = 1;
+            data[i+1] = 0;
+            crc += 1;
+            if (crc > 255) {
+                crc = crc - 255;
+            }
+        }
+       // data = new byte[]{8, 0, 1, 0, 1, 0, 1, 0, 1, 12};
+        data[data.length-1]=(byte)crc;
+        return data;
     }
 
     String p;
+    byte[] answer, answer2, answer3;
+
     public void write(int[] listOn, int[] listOff){
         S2 s = new S2();
+
+        answer = get128Array(130);
+        answer2  = get128Array(130);
+        answer3  = new byte[]{8, 0, 1, 0, 1, 0, 1, 0, 1, 12};
         p = s.write(mmOutStream, listOn, listOff);
         /*Log.d("iiiiiii", "seeeeeeeeeeeeeeeeenddd package 1");
 

@@ -34,8 +34,10 @@ public class BluetoothMessage {
                             //if(readMessage.length() > 2) readMessage.replace("OK","");
                             //if (readMessage.contains("3")) readMessage = "3";
                             //Log.d("bm", readMessage);
-                            mBluetoothMessageListener.onResponse(readMessage);
 
+                            mBluetoothMessageListener.onResponse(readMessage);
+                            readMessage = null;
+                            r = null;
                         } catch (IOException e) {
                             e.printStackTrace();
                         }

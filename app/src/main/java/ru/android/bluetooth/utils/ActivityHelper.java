@@ -40,6 +40,7 @@ public class ActivityHelper {
         Intent intent = new Intent(from, to);
         //sendToAppDestroyListener(from, true, to);
         from.startActivity(intent);
+        //from.finish();
 
     }
 

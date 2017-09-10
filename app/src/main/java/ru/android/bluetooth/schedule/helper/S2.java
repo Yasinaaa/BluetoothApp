@@ -1,5 +1,6 @@
 package ru.android.bluetooth.schedule.helper;
 
+import android.os.SystemClock;
 import android.util.Log;
 
 import java.io.IOException;
@@ -52,12 +53,22 @@ public class S2 {
 
         try {
 
-           // byte[] array = new byte[]{2, 5, (byte)184, (byte)191};
-            array = strToPackCRC(mmOutStream,numToStr(p.length()));
+            byte[] array = new byte[]{2, 5, (byte)184, (byte)191};
+           // byte[] array = new byte[]{2, 6, 0, 8};
+           // array = strToPackCRC(mmOutStream,numToStr(p.length()));
+            byte[] answer = get128Array(130);
+            byte[] answer2  = get128Array(130);
+            byte[] answer3  = get128Array(58);
+
             mmOutStream.write("Set Data\r".getBytes());
             mmOutStream.write(array);
 
-
+            for (int i=0; i<11;i++) {
+                SystemClock.sleep(1000);
+                mmOutStream.write(answer);
+            }
+            SystemClock.sleep(1000);
+            mmOutStream.write(answer3);
 
         } catch (IOException e) {
             Log.e("TAG", e.getMessage());
@@ -65,7 +76,23 @@ public class S2 {
         return p;
     }
 
-
+    private byte[] get128Array(int count){
+        byte[] data = new byte[count];
+        data[0] = (byte)(data.length - 2);
+        int crc = data.length - 2;
+        //int num = 129;
+        for (int i=1; i<data.length-1; i=i+2){
+            data[i] = 1;
+            data[i+1] = 0;
+            crc += 1;
+            if (crc > 255) {
+                crc = crc - 255;
+            }
+        }
+        // data = new byte[]{8, 0, 1, 0, 1, 0, 1, 0, 1, 12};
+        data[data.length-1]=(byte)crc;
+        return data;
+    }
     /*public void write(OutputStream mmOutStream, int count) {
 
             String p = "";
