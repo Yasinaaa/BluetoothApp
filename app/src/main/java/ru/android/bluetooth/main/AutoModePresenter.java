@@ -48,7 +48,7 @@ public class AutoModePresenter {
             List<OneDayModel> oneDayModelList = dbHelper.getAllOneDayModels();
         }else {
             mScheduleBluetoothReader = new ScheduleBluetoothReader(mBluetoothMessage, mContext);
-            //mScheduleBluetoothReader.readSchedule();
+            mScheduleBluetoothReader.readSchedule();
         }
         return null;
     }

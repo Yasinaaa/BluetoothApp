@@ -73,6 +73,31 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceVi
                 scrollView.setVisibility(View.VISIBLE);
             }
         }, 1000);
+        test();
+
+    }
+
+    public void test(){
+        ArrayList<String> testItems = new ArrayList<String>();
+        testItems.add("is=352,1,12");
+        testItems.add("352,1,,11, 12");
+        //testItems.add("   ");
+        testItems.add("is=353,13,14");
+        testItems.add("is=354,5,6");
+        testItems.add("is=355,17,18");
+        testItems.add("is=356,19,21");
+        // is=353,1,1
+        for (String item: testItems){
+            if (item.matches("(.*)=\\d+,\\d+,\\d+")) {
+                try {
+                    Log.d("f", "item1= " + item.substring(item.indexOf("=") + 1, item.indexOf(",")));
+                    Log.d("f", "item2= " + item.substring(item.indexOf(",") + 1, item.lastIndexOf(",")));
+                    Log.d("f", "item3= " + item.substring(item.lastIndexOf(",") + 1, item.length()));
+                } catch (java.lang.Exception e) {
+
+                }
+            }
+        }
 
 
     }

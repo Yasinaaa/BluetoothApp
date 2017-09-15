@@ -10,6 +10,7 @@ public class BluetoothCommands {
 
     private static final String TAG = "BluetoothCommands";
 
+    public static final String GET_TABLE="get table\r\n";
     public static final String RESET = "Reset\r\n";
     public static final String STATUS = "Read Status\r\n";
     public static final String VERSION = "Get Version BT\r\n";

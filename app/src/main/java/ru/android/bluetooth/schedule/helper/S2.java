@@ -81,7 +81,10 @@ public class S2 {
         data[0] = (byte)(data.length - 2);
         int crc = data.length - 2;
         //int num = 129;
-        for (int i=1; i<data.length-1; i=i+2){
+        data[1]= 5;
+        data[2]= 0;
+        crc +=5;
+        for (int i=3; i<data.length-1; i=i+2){
             data[i] = 1;
             data[i+1] = 0;
             crc += 1;

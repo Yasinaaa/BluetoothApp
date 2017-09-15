@@ -1,6 +1,7 @@
 package ru.android.bluetooth.schedule.helper;
 
 import android.os.Environment;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -37,6 +38,18 @@ public class ScheduleFileReader {
         beginDate.set(Calendar.DAY_OF_MONTH, Integer.parseInt(stringTokenizer.nextToken()));
         beginDate.set(Calendar.MONTH, Integer.parseInt(stringTokenizer.nextToken()) - 1);
         beginDate.set(Calendar.YEAR, Integer.parseInt(stringTokenizer.nextToken()));
+
+    }
+
+    public static void test(){
+        ArrayList<String> testItems = new ArrayList<String>();
+        // is=353,1,1
+        for (String item: testItems){
+            Log.d("f", "item1= " + item.substring(item.indexOf("="), item.indexOf(",")));
+            Log.d("f", "item2= " + item.substring(item.indexOf(","), item.lastIndexOf(",")));
+            Log.d("f", "item3= " + item.substring(item.lastIndexOf(","), item.length() - 1));
+        }
+
 
     }
 

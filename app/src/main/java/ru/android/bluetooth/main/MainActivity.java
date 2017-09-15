@@ -31,8 +31,10 @@ import android.widget.ToggleButton;
 import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import butterknife.BindView;
@@ -134,6 +136,7 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+
         try {
             ChooseDeviceActivity.dialog.cancel();
         }catch (java.lang.NullPointerException e){
@@ -151,6 +154,7 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
             public void onClick(View view) {
                 if(!mTbSwitchModeDevice.getText().equals(getResources().getString(R.string.manual_mode))){
                     setMessage(BluetoothCommands.MANUAL_OFF);
+
                     mAutoModePresenter = new AutoModePresenter(getApplicationContext(), mBluetoothMessage);
                     mAutoModePresenter.createDatesView(mRvOnOffInfo);
 
@@ -214,7 +218,7 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
 
         mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
         mBluetoothMessage.setBluetoothMessageListener(this);
-       // setMessage(BluetoothCommands.STATUS);
+        //setMessage(BluetoothCommands.STATUS);
 
         mRlLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -241,9 +245,6 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
                 startActivity(intent);
             }
         });
-
-
-
 
         setDeviceTitle();
         setGenerationType();
@@ -375,7 +376,7 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
             public void onClick(View view) {
                 //setMessage(BluetoothCommands.GET_TIME);
                // testSetData();
-                setMessage("get table\r\n");
+                setMessage(BluetoothCommands.GET_TABLE);
             }
         });
         mBtnSetDate.setOnClickListener(new View.OnClickListener() {
@@ -448,6 +449,7 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
     }
 
     int count = 0;
+    List<String> mTable = new ArrayList<String>();
     @Override
     public void onResponse(String answer) {
         Log.d(TAG, " " + answer);
@@ -459,6 +461,9 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
         if(mStatus!= null) {
             //Log.d(TAG, "mStatus=" + mStatus + " " + answer);
             switch (mStatus) {
+                case BluetoothCommands.GET_TABLE:
+                    mTable.add(answer);
+                    break;
                 case BluetoothCommands.DEBUG:
                     //TODO!!!
                     //mAutoModePresenter.add(answer);
