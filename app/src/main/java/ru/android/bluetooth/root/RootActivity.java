@@ -1,28 +1,21 @@
 package ru.android.bluetooth.root;
 
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
-import ru.android.bluetooth.utils.ActivityHelper;
+import butterknife.ButterKnife;
 
 /**
- * Created by yasina on 21.08.17.
+ * Created by yasina on 24.08.17.
  */
 
-public class RootActivity extends AppCompatActivity {
+public abstract class RootActivity extends AppCompatActivity implements RootModule.RootView{
 
-   /* @Override
-    protected void onPause() {
-        super.onPause();
-        ActivityHelper.sendToAppDestroyListener(this, false);
-    }*/
+    public String TAG = RootActivity.class.getSimpleName();
 
     @Override
     protected void onStop() {
         super.onStop();
-        //ActivityHelper.sendToAppDestroyListener(this, false);
     }
 
     @Override
@@ -30,5 +23,15 @@ public class RootActivity extends AppCompatActivity {
         onBackPressed();
         return true;
     }
+
+    @Override
+    public void start(){
+        ButterKnife.bind(this);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        init();
+        setClickListeners();
+    }
+
+    public abstract void setTag();
 
 }

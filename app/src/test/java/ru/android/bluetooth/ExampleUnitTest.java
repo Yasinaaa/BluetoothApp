@@ -1,24 +1,15 @@
 package ru.android.bluetooth;
 
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.os.Handler;
-import android.widget.Toast;
 
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.UUID;
 
-import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
-import ru.android.bluetooth.bluetooth.BluetoothModule;
 import ru.android.bluetooth.bluetooth.ConnectedThread;
-import ru.android.bluetooth.start.ChooseDeviceView;
-import ru.android.bluetooth.utils.BluetoothHelper;
-
-import static org.junit.Assert.*;
 
 /**
  * Example local unit test, which will execute on the development machine (host).

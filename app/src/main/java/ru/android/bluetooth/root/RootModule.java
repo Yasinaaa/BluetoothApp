@@ -4,9 +4,11 @@ package ru.android.bluetooth.root;
  * Created by yasina on 24.08.17.
  */
 
-public interface RootModule {
+public class RootModule {
 
     interface RootView{
+        void setTag();
+        void start();
         void init();
         void setClickListeners();
     }

@@ -1,6 +1,5 @@
 package ru.android.bluetooth.bluetooth;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -9,18 +8,13 @@ import android.bluetooth.BluetoothProfile;
 import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,10 +23,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import ru.android.bluetooth.Manifest;
-import ru.android.bluetooth.start.ChooseDeviceView;
+import ru.android.bluetooth.start.ChooseDeviceModule;
 import ru.android.bluetooth.utils.BluetoothHelper;
-
-import static ru.android.bluetooth.bluetooth.BluetoothCommands.REQUEST_ENABLE_BT;
 
 /**
  * Created by yasina on 07.08.17.
@@ -48,7 +40,7 @@ public class BluetoothModule {
 
     private Context mContext;
     private Activity mActivity;
-    private ChooseDeviceView mView;
+    private ChooseDeviceModule.ChooseDeviceView mView;
     private static BluetoothModule bluetoothModule = null;
     private BluetoothAdapter mBTAdapter;
     private BluetoothMessage mBluetoothMessage;
@@ -74,14 +66,14 @@ public class BluetoothModule {
     };
 
 
-    private BluetoothModule(Activity mActivity, ChooseDeviceView view) {
+    private BluetoothModule(Activity mActivity, ChooseDeviceModule.ChooseDeviceView view) {
         this.mActivity = mActivity;
         this.mContext = mActivity.getBaseContext();
         this.mView = view;
         connect();
     }
 
-    public static BluetoothModule createBluetoohModule(Activity activity, ChooseDeviceView view){
+    public static BluetoothModule createBluetoohModule(Activity activity, ChooseDeviceModule.ChooseDeviceView view){
         if (bluetoothModule == null){
             bluetoothModule = new BluetoothModule(activity, view);
         }
@@ -277,7 +269,7 @@ public class BluetoothModule {
         }
     };
 
-    public void connectDevice(String info, final ChooseDeviceView chooseDeviceView){
+    public void connectDevice(String info, final ChooseDeviceModule.ChooseDeviceView chooseDeviceView){
 
             if(!mBTAdapter.isEnabled()) {
                 //Toast.makeText(mContext, "Bluetooth not on", Toast.LENGTH_SHORT).show();

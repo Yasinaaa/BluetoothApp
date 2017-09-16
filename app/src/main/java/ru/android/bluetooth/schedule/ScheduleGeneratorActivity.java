@@ -124,7 +124,8 @@ public class ScheduleGeneratorActivity extends RootActivity implements Bluetooth
 
     }
 
-    private void init() {
+    @Override
+    public void init() {
         ButterKnife.bind(this);
         mCbSetCoordinatesByHand.setSelected(false);
         mCbSetTimezoneByHand.setSelected(false);
@@ -155,6 +156,11 @@ public class ScheduleGeneratorActivity extends RootActivity implements Bluetooth
         TimeZone mTimeZone = mCalendar.getTimeZone();
         int mGMTOffset = mTimeZone.getRawOffset();
         mActvTimezone.setText(TimeUnit.HOURS.convert(mGMTOffset, TimeUnit.MILLISECONDS) + "");
+    }
+
+    @Override
+    public void setClickListeners() {
+
     }
 
     private void generateSchedule(Calendar startDate, Calendar endDate, double latitude, double longitude) {
@@ -307,5 +313,10 @@ public class ScheduleGeneratorActivity extends RootActivity implements Bluetooth
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    public void setTag() {
+
     }
 }

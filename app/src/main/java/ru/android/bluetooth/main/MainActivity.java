@@ -213,8 +213,8 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
     }
 
 
-
-    private void init(){
+    @Override
+    public void init(){
 
         mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
         mBluetoothMessage.setBluetoothMessageListener(this);
@@ -330,6 +330,11 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
     public boolean onOptionsItemSelected(MenuItem item) {
         onBackPressed();
         return true;
+    }
+
+    @Override
+    public void setTag() {
+
     }
 
     private void setGenerationType(){
@@ -547,8 +552,8 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
 
         }
     }
-
-    private void setClickListeners(){
+    @Override
+    public void setClickListeners(){
 
         mIbSyncStatus.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -57,7 +57,8 @@ public class CalendarActivity extends RootActivity {
        }
     }
 
-    private void init(){
+    @Override
+    public void init(){
         final FrameLayout frameLayout = (FrameLayout) findViewById(R.id.frame_layout);
         frameLayout.getBackground().setAlpha(0);
         final FloatingActionsMenu fabMenu = (FloatingActionsMenu) findViewById(R.id.fab_menu);
@@ -131,9 +132,19 @@ public class CalendarActivity extends RootActivity {
     }
 
     @Override
+    public void setClickListeners() {
+
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         onBackPressed();
         return true;
+    }
+
+    @Override
+    public void setTag() {
+
     }
 
     @Override

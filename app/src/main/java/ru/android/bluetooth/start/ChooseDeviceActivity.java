@@ -39,7 +39,7 @@ import ru.android.bluetooth.utils.ActivityHelper;
  * Created by itisioslab on 01.08.17.
  */
 
-public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceView, DeviceAdapter.OnItemClicked {
+public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceModule.ChooseDeviceView, DeviceAdapter.OnItemClicked {
 
     @BindView(R.id.rv_devices)
     RecyclerView mRvDevicesList;
@@ -47,8 +47,8 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceVi
     Button mBtnConnect;
     @BindView(R.id.scrollView)
     ScrollView scrollView;
-    @BindView(R.id.frame_layout)
-    FrameLayout frameLayout;
+    //@BindView(R.id.frame_layout)
+   // FrameLayout frameLayout;
 
     private DeviceAdapter mDeviceAdapter;
     private List<String> mDeviceList = new ArrayList<String>();
@@ -61,9 +61,9 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceVi
        Fabric.with(this, new Crashlytics());
        checkBluetoothUser();
 
-       getSupportActionBar().hide();
 
-        Handler handler = new Handler();
+
+      /*  Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             public void run() {
                 frameLayout.setVisibility(View.INVISIBLE);
@@ -72,7 +72,9 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceVi
                 ActivityHelper.setVisibleIcon(ChooseDeviceActivity.this);
                 scrollView.setVisibility(View.VISIBLE);
             }
-        }, 1000);
+        }, 1000);*/
+        ActivityHelper.setVisibleIcon(ChooseDeviceActivity.this);
+        scrollView.setVisibility(View.VISIBLE);
         test();
 
     }
@@ -114,7 +116,7 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceVi
     private void checkBluetoothUser(){
         /*if(!BluetoothHelper.isFirstLaunch(getApplicationContext())){
             goNext();
-        }else {
+        }else {      setContentView(R.layout.activity_choose_device);
             setContentView(R.layout.activity_choose_device);
             ButterKnife.bind(this);
             mBluetoothModule = BluetoothModule.createBluetoohModule(this, this);
@@ -127,11 +129,17 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceVi
         init();
     }
 
-    private void init(){
+    @Override
+    public void init(){
         mRvDevicesList.setItemAnimator(new DefaultItemAnimator());
         mRvDevicesList.setHasFixedSize(true);
         mRvDevicesList.setLayoutManager(new LinearLayoutManager(this));
         setPasswordDialog();
+    }
+
+    @Override
+    public void setClickListeners() {
+
     }
 
     @Override
@@ -183,7 +191,7 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceVi
     private boolean isFirstOpen = true;
     public void setPasswordDialog(){
         final Activity activity = this;
-        final ChooseDeviceView viewC = this;
+        final ChooseDeviceModule.ChooseDeviceView viewC = this;
         mBtnConnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -204,6 +212,11 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceVi
     protected void onStop() {
         super.onStop();
         //dialog.cancel();
+    }
+
+    @Override
+    public void setTag() {
+
     }
 
     @Override

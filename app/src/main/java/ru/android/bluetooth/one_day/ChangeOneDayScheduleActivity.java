@@ -48,7 +48,8 @@ public class ChangeOneDayScheduleActivity extends RootActivity {
         init();
     }
 
-    private void init() {
+    @Override
+    public void init() {
         mChangeOneDaySchedulePresenter = new ChangeOneDaySchedulePresenter(this);
         mChangeOneDaySchedulePresenter.setOnClickListenerImageButton(mIbSunrise, mTvSunrise, mTvSunriseMin, mStatusSunrise);
         mChangeOneDaySchedulePresenter.setOnClickListenerImageButton(mIbSunset, mTvSunset, mTvSunsetMin, mStatusSunset);
@@ -56,9 +57,19 @@ public class ChangeOneDayScheduleActivity extends RootActivity {
     }
 
     @Override
+    public void setClickListeners() {
+
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         onBackPressed();
         return true;
+    }
+
+    @Override
+    public void setTag() {
+
     }
 
 

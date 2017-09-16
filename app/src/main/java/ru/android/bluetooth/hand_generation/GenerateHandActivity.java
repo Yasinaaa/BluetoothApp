@@ -76,7 +76,8 @@ public class GenerateHandActivity  extends RootActivity  {
         init();
     }
 
-    private void init() {
+    @Override
+    public void init() {
        /* mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -96,9 +97,20 @@ public class GenerateHandActivity  extends RootActivity  {
         mGenerateHandPresenter.setCheckBoxLocation(mCbSetTimezoneByHand, mTilTimezone);
         mGenerateHandPresenter.setNotAvailableDialog(mFab);
     }
+
+    @Override
+    public void setClickListeners() {
+
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         onBackPressed();
         return true;
+    }
+
+    @Override
+    public void setTag() {
+
     }
 }

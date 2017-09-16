@@ -10,11 +10,11 @@ import android.util.Log;
  * Created by yasina on 07.08.17.
  */
 
-public class ChooseDevicePresenter {
+public class ChooseDevicePresenter implements ChooseDeviceModule.ChooseDevicePresenter{
 
-    private ChooseDeviceView mChooseDeviceView;
+    private ChooseDeviceModule.ChooseDeviceView mChooseDeviceView;
 
-    public ChooseDevicePresenter(ChooseDeviceView mChooseDeviceView) {
+    public ChooseDevicePresenter(ChooseDeviceModule.ChooseDeviceView mChooseDeviceView) {
         this.mChooseDeviceView = mChooseDeviceView;
     }
 
