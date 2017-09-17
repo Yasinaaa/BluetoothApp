@@ -1,8 +1,13 @@
 package ru.android.bluetooth.view;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Environment;
+import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
+import android.support.v4.widget.NestedScrollView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,12 +37,15 @@ import ru.android.bluetooth.bluetooth.BluetoothMessage;
 public class CalendarPresenter implements CalendarModule.Presenter,
         BluetoothMessage.BluetoothMessageListener {
 
+    public static final String PREF_BEGIN_DAY = "begin_day_pref";
+
     private Context mContext;
     private BluetoothMessage mBluetoothMessage;
     private Writer output = null;
     private CalendarModule.View mView;
     private Calendar mCurrentDay = null;
     private int selectedItem = 999;
+
 
     public CalendarPresenter(Context mContext, BluetoothMessage mBluetoothMessage, CalendarModule.View view) {
         this.mContext = mContext;
@@ -113,12 +121,15 @@ public class CalendarPresenter implements CalendarModule.Presenter,
         //Calendar newCalendar = mCurrentDay;
         if(mCurrentDay == null){
             mCurrentDay = Calendar.getInstance();
+            String result = setCorrectDateView(mCurrentDay);
+            saveBeginDay(result);
+            return result;
             //newCalendar = mCurrentDay;
         }else {
             //newCalendar.add(Calendar.DATE, Integer.parseInt(dayNum));
             mCurrentDay.add(Calendar.DATE, 1);
+            return setCorrectDateView(mCurrentDay);
         }
-        return setCorrectDateView(mCurrentDay);
     }
 
     private String setCorrectDateView(Calendar calendar){
@@ -190,4 +201,48 @@ public class CalendarPresenter implements CalendarModule.Presenter,
             //Toast.makeText(getBaseContext(), e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
+
+    @Override
+    public void searchDay(String date, TableLayout tableLayout, NestedScrollView nestedScrollView) {
+
+        for (int i = 0; i < 365; i++){
+            View child = tableLayout.getChildAt(i);
+            TextView textView = (TextView) child.findViewById(R.id.tv_day);
+            if(textView.getText().equals(date)){
+                nestedScrollView.scrollTo(0, child.getTop());
+                child.setBackgroundColor(mContext.getResources().getColor(R.color.silver));
+            }
+        }
+    }
+
+    /*public Calendar setStringToDate(String date){
+        String parts[] = date.split("\\.");
+
+        int day = Integer.parseInt(parts[0]);
+        int month = Integer.parseInt(parts[1]);
+        int year = Integer.parseInt(parts[2]);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, year);
+        calendar.set(Calendar.MONTH, month-1);
+        calendar.set(Calendar.DAY_OF_MONTH, day);
+        return calendar;
+    }*/
+
+    @Nullable
+    public String getBeginDate() {
+        if (mContext == null) return null;
+
+        SharedPreferences sp =
+                PreferenceManager.getDefaultSharedPreferences(mContext.getApplicationContext());
+        return sp.getString(PREF_BEGIN_DAY, "");
+    }
+
+    public void saveBeginDay(@Nullable String date) {
+        if (mContext == null || date == null) return;
+        SharedPreferences sp =
+                PreferenceManager.getDefaultSharedPreferences(mContext.getApplicationContext());
+        sp.edit().putString(PREF_BEGIN_DAY, date).apply();
+    }
+
 }

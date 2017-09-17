@@ -3,6 +3,7 @@ package ru.android.bluetooth.view;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -40,6 +41,8 @@ public class CalendarActivity extends RootActivity implements CalendarModule.Vie
 
     @BindView(R.id.tableLayout)
     TableLayout mTableLayout;
+    @BindView(R.id.nested_scroll_view)
+    NestedScrollView mNestedScrollView;
 
     private CalendarPresenter mCalendarPresenter;
     private BluetoothMessage mBluetoothMessage;
@@ -76,8 +79,8 @@ public class CalendarActivity extends RootActivity implements CalendarModule.Vie
         mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
 
         mCalendarPresenter = new CalendarPresenter(this, mBluetoothMessage, this);
-        mCalendarPresenter.getSchedule();
-        //mCalendarPresenter.setTable(mTableLayout);
+        //mCalendarPresenter.getSchedule();
+        mCalendarPresenter.setTable(mTableLayout);
 
         final FrameLayout frameLayout = (FrameLayout) findViewById(R.id.frame_layout);
         frameLayout.getBackground().setAlpha(0);
@@ -94,12 +97,12 @@ public class CalendarActivity extends RootActivity implements CalendarModule.Vie
                         return true;
                     }
                 });
-                /*frameLayout.setOnClickListener(new View.OnClickListener() {
+                frameLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         fabClicked(view);
                     }
-                });*/
+                });
             }
 
 
@@ -110,37 +113,6 @@ public class CalendarActivity extends RootActivity implements CalendarModule.Vie
 
             }
         });
-        Calendar currentDay = Calendar.getInstance();
-       /* mCalendarViewSchedule.setDate(currentDay.getTimeInMillis());
-
-
-        mCalendarViewSchedule.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                System.out.print(mCalendarViewSchedule.getDate());
-            }
-        });
-
-
-        mCalendarViewSchedule.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
-
-            @Override
-            public void onSelectedDayChange(CalendarView view, int year, int month,
-                                            int dayOfMonth) {
-                //Toast.makeText(getApplicationContext(), ""+dayOfMonth, Toast.LENGTH_LONG).show();// TODO Auto-generated method stub
-                //ActivityHelper.startActivity(CalendarActivity.this, ChangeOneDayScheduleActivity.class);
-            }
-        });
-
-        mCalendarViewSchedule.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                //Toast.makeText(getApplicationContext(), "touch="+mCalendarViewSchedule.getDate(), Toast.LENGTH_LONG).show();// TODO Auto-generated method stub
-
-                return false;
-            }
-        });*/
-
     }
 
     @Override
@@ -174,12 +146,13 @@ public class CalendarActivity extends RootActivity implements CalendarModule.Vie
                 int month = Integer.parseInt(parts[1]);
                 int year = Integer.parseInt(parts[2]);
 
-                Calendar calendar = Calendar.getInstance();
+                /*Calendar calendar = Calendar.getInstance();
                 calendar.set(Calendar.YEAR, year);
                 calendar.set(Calendar.MONTH, month-1);
-                calendar.set(Calendar.DAY_OF_MONTH, day);
+                calendar.set(Calendar.DAY_OF_MONTH, day);*/
+                mCalendarPresenter.searchDay(date, mTableLayout, mNestedScrollView);
 
-                long milliTime = calendar.getTimeInMillis();
+
                // mCalendarViewSchedule.setDate(milliTime, true, true);
                 return false;
             }

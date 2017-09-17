@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -39,8 +40,10 @@ import butterknife.BindView;
 import ru.android.bluetooth.R;
 import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
+import ru.android.bluetooth.hand_generation.GenerateHandActivity;
 import ru.android.bluetooth.main.helper.ResponseView;
 import ru.android.bluetooth.root.RootActivity;
+import ru.android.bluetooth.schedule.ScheduleGeneratorActivity;
 import ru.android.bluetooth.start.ChooseDeviceActivity;
 import ru.android.bluetooth.utils.ActivityHelper;
 import ru.android.bluetooth.utils.BluetoothHelper;
@@ -85,7 +88,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
     @BindView(R.id.btn_sync_version)
     Button mIbSyncVersion;
     @BindView(R.id.ib_change_name)
-    Button mIbChangeName;
+    Button mBtnChangeName;
     @BindView(R.id.tv_change_password)
     TextView mTvChangePassword;
     @BindView(R.id.btn_change_password)
@@ -115,9 +118,15 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
     Button mBtnSetTime;
     @BindView(R.id.btn_sync_date)
     Button mIbSyncDate;
-
     @BindView(R.id.et_schedule_name)
     EditText mEtScheduleName;
+
+    @BindView(R.id.btn_generate_schedule)
+    Button mBtnGenerateSchedule;
+    @BindView(R.id.btn_edit_schedule)
+    Button mBtnEditSchedule;
+    @BindView(R.id.btn_load_schedule)
+    Button mBtnLoadSchedule;
 
     private String thisTextNeedToSetTextView;
     private RelativeLayout.LayoutParams mRlLayoutParams;
@@ -181,7 +190,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
         ActivityHelper.setVisibleLogoIcon(this);
         //mTbSwitchModeDevice.setChecked(true);
 
-        setModeVisiblity(View.INVISIBLE);
+        //setModeVisiblity(View.INVISIBLE);
         mRlLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
         mRlLayoutParams.addRule(RelativeLayout.BELOW, R.id.cv_controller_functions);
@@ -213,19 +222,19 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
         }
     }
 
-    private void setModeVisiblity(int visiblity){
+   /* private void setModeVisiblity(int visiblity){
         if(visiblity == View.INVISIBLE){
             setScheduleModeVisiblity(View.GONE);
         }else {
             setScheduleModeVisiblity(View.VISIBLE);
         }
-    }
+    }*/
 
-    private void setScheduleModeVisiblity(int visiblity){
+   /* private void setScheduleModeVisiblity(int visiblity){
         mEtScheduleName.setVisibility(visiblity);
         mTvEditSchedule.setVisibility(visiblity);
         mRvOnOffInfo.setVisibility(visiblity);
-    }
+    }*/
 
     // arguing for it
     private int setOppositeVisiblity(int visiblity){
@@ -248,34 +257,8 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
         mTvGenerateSchedule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ActivityHelper.startActivity(MainActivity.this, CalendarActivity.class);
-                /*LayoutInflater inflater = activity.getLayoutInflater();
-                View dialogView = inflater.inflate(R.layout.dialog_choose_generation_schedule_type, null);
-                TextView handGeneration = dialogView.findViewById(R.id.tv_generate_schedule_hand);
-                handGeneration.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        ActivityHelper.startActivity(MainActivity.this, GenerateHandActivity.class);
 
-                    }
-                });
-                TextView sunRiseSetGeneration = dialogView.findViewById(R.id.tv_generate_schedule_sunrise_set);
-                sunRiseSetGeneration.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        ActivityHelper.startActivity(MainActivity.this, ScheduleGeneratorActivity.class);
-                    }
-                });
 
-                AlertDialog.Builder passwordDialogBuilder = new AlertDialog.Builder(activity)
-                        .setTitle(getString(R.string.generate_dialog_title))
-                        .setView(dialogView)
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                //Toast.makeText(getBaseContext(), "Cancel", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                passwordDialogBuilder.show();*/
             }
         });
     }
@@ -462,6 +445,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
     @Override
     public void setClickListeners(){
 
+        setScheduleButtons();
         setDateCliskListeners();
 
         mTvEditSchedule.setOnClickListener(new View.OnClickListener() {
@@ -495,7 +479,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
                     setModeVisiblity(View.INVISIBLE);
                     setMessage(BluetoothCommands.MANUAL_ON);
                 }*/
-                setModeVisiblity(View.INVISIBLE);
+                //setModeVisiblity(View.INVISIBLE);
                 setMessage(BluetoothCommands.MANUAL_ON);
             }
         });
@@ -507,7 +491,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
 
                 mAutoModePresenter = new AutoModePresenter(getApplicationContext(), mBluetoothMessage);
                 mAutoModePresenter.createDatesView(mRvOnOffInfo);
-                setModeVisiblity(View.VISIBLE);
+                //setModeVisiblity(View.VISIBLE);
 
             }
         });
@@ -589,7 +573,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
 
 
     private void setChangePassword(){
-        mTvChangePassword.setOnClickListener(new View.OnClickListener() {
+        mBtnChangePassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                  LayoutInflater inflater = getLayoutInflater();
@@ -616,7 +600,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
                 passwordDialogBuilder.show();
             }
         });
-        mIbChangeName.setOnClickListener(new View.OnClickListener() {
+        mBtnChangeName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 LayoutInflater inflater = getLayoutInflater();
@@ -660,5 +644,81 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
     @Override
     public void addItemToDateRecyclerView() {
 
+    }
+
+
+    private void setScheduleButtons(){
+        mBtnEditSchedule.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ActivityHelper.startActivity(MainActivity.this, CalendarActivity.class);
+            }
+        });
+        final Activity activity = this;
+        mBtnGenerateSchedule.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LayoutInflater inflater = activity.getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.dialog_choose_generation_schedule_type, null);
+                TextView handGeneration = dialogView.findViewById(R.id.tv_generate_schedule_hand);
+                handGeneration.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        ActivityHelper.startActivity(MainActivity.this, GenerateHandActivity.class);
+
+                    }
+                });
+                TextView sunRiseSetGeneration = dialogView.findViewById(R.id.tv_generate_schedule_sunrise_set);
+                sunRiseSetGeneration.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        ActivityHelper.startActivity(MainActivity.this, ScheduleGeneratorActivity.class);
+                    }
+                });
+
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity)
+                        .setTitle(getString(R.string.generate_dialog_title))
+                        .setView(dialogView)
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        });
+                dialogBuilder.show();
+            }
+        });
+
+        mBtnLoadSchedule.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity)
+                        .setTitle(getString(R.string.generate_dialog_title))
+                        .setMessage("Каждый день рассписания должен выглядеть так: \n" +
+                                "is=1,134,256")
+                        .setPositiveButton("Загрузить", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent intent = new Intent()
+                                        .setType("*/*")
+                                        .setAction(Intent.ACTION_GET_CONTENT);
+
+                                startActivityForResult(Intent.createChooser(intent, "Select a file"), 123);
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        });
+                dialogBuilder.show();
+            }
+        });
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==123 && resultCode==RESULT_OK) {
+            Uri selectedfile = data.getData();
+            String title = selectedfile.getLastPathSegment();
+            mEtScheduleName.setText(title.substring(title.indexOf("/") + 1));
+            File file = new File(selectedfile.getPath());
+        }
     }
 }
