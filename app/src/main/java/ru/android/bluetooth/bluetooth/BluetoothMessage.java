@@ -20,22 +20,24 @@ public class BluetoothMessage {
     private ConnectedThread mConnectedThread;
 
     private BluetoothMessage() {
-
+        final String[] response = {""};
         this.mHandler = new Handler(){
-            public void handleMessage(android.os.Message msg){
-                if(msg.what == BluetoothCommands.MESSAGE_READ){
-                    String readMessage = null;
+            public void handleMessage(android.os.Message msg) {
+                if (msg.what != BluetoothCommands.CONNECTING_STATUS) {
                     byte[] r = (byte[]) msg.obj;
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                         try {
-                            readMessage =  IOUtils.toString(r, "utf-8");
-                            //Log.d("bm", readMessage);
-                            readMessage = readMessage.trim().replaceAll("�", "");
+                            String readMessage = null;
+                            readMessage = IOUtils.toString(r, "utf-8");
+
+                            response[0] += readMessage.trim().replaceAll("�", "");
+
                             //if(readMessage.length() > 2) readMessage.replace("OK","");
                             //if (readMessage.contains("3")) readMessage = "3";
-                            //Log.d("bm", readMessage);
-
+                            Log.d("bm", readMessage);
                             mBluetoothMessageListener.onResponse(readMessage);
+
+                            //mBluetoothMessageListener.onResponse(readMessage);
                             readMessage = null;
                             r = null;
                         } catch (IOException e) {
@@ -91,8 +93,9 @@ public class BluetoothMessage {
     public void writeMessage(){
         mConnectedThread.writeeeeeeeeeeeeeeeeeee();
     }
+
     public void writeMessage(String message){
-        mConnectedThread.writeData(message);
+        mConnectedThread.writeData(BluetoothCommands.getStatusNum(message), message);
     }
     public void writeMessage(int[] listOn, int[] listOff){
         mConnectedThread.write(listOn, listOff);

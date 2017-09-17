@@ -20,6 +20,7 @@ import java.util.Calendar;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.android.bluetooth.R;
+import ru.android.bluetooth.bluetooth.BluetoothMessage;
 import ru.android.bluetooth.hand_generation.GenerateHandActivity;
 import ru.android.bluetooth.one_day.ChangeOneDayScheduleActivity;
 import ru.android.bluetooth.root.RootActivity;
@@ -32,10 +33,16 @@ import android.widget.TextView;
  * Created by itisioslab on 03.08.17.
  */
 
-public class CalendarActivity extends RootActivity {
+public class CalendarActivity extends RootActivity implements CalendarModule.View {
 
     //@BindView(R.id.calendar_view_schedule)
     //CalendarView mCalendarViewSchedule;
+
+    @BindView(R.id.tableLayout)
+    TableLayout mTableLayout;
+
+    private CalendarPresenter mCalendarPresenter;
+    private BluetoothMessage mBluetoothMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +73,12 @@ public class CalendarActivity extends RootActivity {
 
     @Override
     public void init(){
-        setTable();
+        mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
+
+        mCalendarPresenter = new CalendarPresenter(this, mBluetoothMessage, this);
+        mCalendarPresenter.getSchedule();
+       // mCalendarPresenter.setTable(mTableLayout);
+
         final FrameLayout frameLayout = (FrameLayout) findViewById(R.id.frame_layout);
         frameLayout.getBackground().setAlpha(0);
         final FloatingActionsMenu fabMenu = (FloatingActionsMenu) findViewById(R.id.fab_menu);
@@ -190,18 +202,9 @@ public class CalendarActivity extends RootActivity {
         return true;
     }
 
-    private void setTable(){
-        TableLayout tableLayout = (TableLayout) findViewById(R.id.tableLayout);
 
-        for (int i = 0; i < 3; i++) {
-
-            TableRow tableRow = new TableRow(this);
-            tableRow.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,
-                    LayoutParams.WRAP_CONTENT));
-
-            LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View view = inflater.inflate(R.layout.item_schedule_day, null);
-            tableLayout.addView(view, i);
-        }
+    @Override
+    public void onLoadingScheduleFinished() {
+        mCalendarPresenter.setTable(mTableLayout);
     }
 }

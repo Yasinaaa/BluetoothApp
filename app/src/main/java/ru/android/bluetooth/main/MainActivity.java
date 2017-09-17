@@ -22,11 +22,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.ToggleButton;
 
 import java.io.File;
 import java.text.ParseException;
@@ -53,7 +51,7 @@ import ru.android.bluetooth.view.CalendarActivity;
  * Created by itisioslab on 01.08.17.
  */
 
-public class MainActivity extends RootActivity implements MainModel.ManualModeView, MainModel.AutoModeView,
+public class MainActivity extends RootActivity implements MainModule.ManualModeView, MainModule.AutoModeView,
         BluetoothMessage.BluetoothMessageListener{
 
     @BindView(R.id.tv_device_title)
@@ -194,7 +192,7 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
 
         mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
         mBluetoothMessage.setBluetoothMessageListener(this);
-        setMessage(BluetoothCommands.STATUS);
+       // setMessage(BluetoothCommands.STATUS);
 
         setDeviceTitle();
         setGenerationType();
@@ -393,7 +391,8 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
                             ResponseView.STATUS);
                     break;
                 case BluetoothCommands.VERSION:
-                    mTvVersion.setText(answer.substring(0, answer.indexOf("\n")));
+                   // mTvVersion.setText(answer.substring(0, answer.indexOf("\n")));
+                    mTvVersion.setText(answer);
                     ResponseView.showSnackbar(mRl,
                             ResponseView.VERSION);
                     break;

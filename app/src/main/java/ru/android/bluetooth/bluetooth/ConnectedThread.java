@@ -2,6 +2,7 @@ package ru.android.bluetooth.bluetooth;
 
 import android.bluetooth.BluetoothSocket;
 import android.os.Handler;
+import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -32,11 +33,12 @@ public class ConnectedThread extends Thread {
     private static ConnectedThread mConnectedThread;
 
     public static ConnectedThread createConnectedThread(BluetoothSocket socket,Handler handler){
-        if (mConnectedThread == null){
+        /*if (mConnectedThread == null){
             return new ConnectedThread(socket, handler);
         }else {
             return mConnectedThread;
-        }
+        }*/
+        return new ConnectedThread(socket, handler);
     }
 
     public static ConnectedThread createConnectedThread(){
@@ -61,22 +63,43 @@ public class ConnectedThread extends Thread {
     public void run() {
 
         int bytes;
-        byte[] buffer = new byte[1024];
+        //byte[] buffer = new byte[1024];
+        byte[] buffer;
         String text = "";
+        boolean prev = false;
+
         while (true) {
             try {
                 bytes = mmInStream.available();
+
+                buffer = new byte[bytes];
+
                 if(bytes != 0) {
                     SystemClock.sleep(1000);
-                    bytes = mmInStream.available();
-                    bytes = mmInStream.read(buffer, 0, bytes);
+                    try {
+                        bytes = mmInStream.read(buffer, 0, bytes);
+                        //int g = mmInStream.read();
+                        mHandler.obtainMessage(STATUS, bytes, -1, buffer)
+                                .sendToTarget();
+                        Log.e("fff", "bytes=" + bytes);
+                    }catch (java.lang.ArrayIndexOutOfBoundsException e){
+                        Log.e("fff", "bytes=" + bytes);
+                    }
                     // java.lang.ArrayIndexOutOfBoundsException: invalid offset or length
                  //   text = IOUtils.toString(buffer, "utf-8");
                   //  Log.d("TAG", text);
-                    mHandler.obtainMessage(BluetoothCommands.MESSAGE_READ, bytes, -1, buffer)
-                            .sendToTarget();
-                }else {
 
+
+                    /*Message m = mHandler.obtainMessage(BluetoothCommands.MESSAGE_READ, bytes, -1, buffer);
+                    mHandler.sendMessage(m);
+                    prev = true;*/
+
+                }else {
+                    //Log.e("a", "bytes=" + bytes);
+                   // prev = false;
+                   /* if(bytes == 0){
+                        mHandler.sendEmptyMessage(3);
+                    }*/
                     //
                    /* Log.d("TAG", text);
                     text = "";*/
@@ -90,7 +113,9 @@ public class ConnectedThread extends Thread {
            // Log.d("TAG", text);
            /* mHandler.obtainMessage(BluetoothCommands.MESSAGE_READ, bytes, -1, buffer)
                     .sendToTarget();*/
+
         }
+
     }
 
 
@@ -234,8 +259,10 @@ public class ConnectedThread extends Thread {
         s.part2(mmOutStream, data);*/
     }
 
-    public String writeData(String data) {
+    private int STATUS;
+    public String writeData(int status, String data) {
         try {
+            STATUS = status;
             mmOutStream.write(data.getBytes());
         } catch (IOException e) {
             Log.d("T", e.getMessage());
