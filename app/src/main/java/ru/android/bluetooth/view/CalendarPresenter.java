@@ -1,6 +1,7 @@
 package ru.android.bluetooth.view;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,6 +37,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
     private Writer output = null;
     private CalendarModule.View mView;
     private Calendar mCurrentDay = null;
+    private int selectedItem = 999;
 
     public CalendarPresenter(Context mContext, BluetoothMessage mBluetoothMessage, CalendarModule.View view) {
         this.mContext = mContext;
@@ -46,10 +48,9 @@ public class CalendarPresenter implements CalendarModule.Presenter,
 
     private void init(){
         mBluetoothMessage.setBluetoothMessageListener(this);
-        writeFile();
     }
 
-    private void readFile(TableLayout tableLayout){
+    private void readFile(final TableLayout tableLayout){
         File file = new File(Environment.getExternalStorageDirectory(),"schedule.txt");
 
         try {
@@ -61,10 +62,6 @@ public class CalendarPresenter implements CalendarModule.Presenter,
             while ((item = br.readLine()) != null) {
                 if (item.matches("(.*)=\\d+,\\d+,\\d+")) {
                     try {
-                        TableRow tableRow = new TableRow(mContext);
-                        tableRow.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                ViewGroup.LayoutParams.WRAP_CONTENT));
-
                         LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                         View view = inflater.inflate(R.layout.item_schedule_day, null);
                         TextView day = (TextView) view.findViewById(R.id.tv_day);
@@ -76,6 +73,27 @@ public class CalendarPresenter implements CalendarModule.Presenter,
                         off.setText(getTime(item.substring(item.indexOf(",") + 1, item.lastIndexOf(","))));
 
                         tableLayout.addView(view, i);
+                        final int finalI = i;
+                        final Resources resource = mContext.getResources();
+                        view.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                if(selectedItem == finalI){
+                                    view.setBackgroundColor(resource.getColor(R.color.white));
+                                    selectedItem = 999;
+
+                                }else{
+                                    view.setBackgroundColor(resource.getColor(R.color.silver));
+                                    if(selectedItem != 999){
+                                        tableLayout.getChildAt(selectedItem).setBackgroundColor(resource.getColor(R.color.white));
+                                    }
+                                    selectedItem = finalI;
+                                }
+
+
+                            }
+                        });
                         i++;
 
                     } catch (java.lang.Exception e) {
@@ -100,11 +118,15 @@ public class CalendarPresenter implements CalendarModule.Presenter,
             //newCalendar.add(Calendar.DATE, Integer.parseInt(dayNum));
             mCurrentDay.add(Calendar.DATE, 1);
         }
-        return setZeros(mCurrentDay.get(Calendar.DAY_OF_MONTH)) + "."
-                + setZeros(mCurrentDay.get(Calendar.MONTH)) + "."
-                + setZeros(mCurrentDay.get(Calendar.YEAR));
+        return setCorrectDateView(mCurrentDay);
     }
 
+    private String setCorrectDateView(Calendar calendar){
+        int month = mCurrentDay.get(Calendar.MONTH) + 1;
+        return setZeros(mCurrentDay.get(Calendar.DAY_OF_MONTH)) + "."
+                + setZeros(month) + "."
+                + setZeros(mCurrentDay.get(Calendar.YEAR));
+    }
 
     private String getTime(String time){
         int timeMin = Integer.parseInt(time);
@@ -131,6 +153,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
 
     @Override
     public void getSchedule() {
+        writeFile();
         mBluetoothMessage.writeMessage(BluetoothCommands.GET_TABLE);
     }
 

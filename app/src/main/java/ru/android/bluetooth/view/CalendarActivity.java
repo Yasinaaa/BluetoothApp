@@ -77,7 +77,7 @@ public class CalendarActivity extends RootActivity implements CalendarModule.Vie
 
         mCalendarPresenter = new CalendarPresenter(this, mBluetoothMessage, this);
         mCalendarPresenter.getSchedule();
-       // mCalendarPresenter.setTable(mTableLayout);
+        //mCalendarPresenter.setTable(mTableLayout);
 
         final FrameLayout frameLayout = (FrameLayout) findViewById(R.id.frame_layout);
         frameLayout.getBackground().setAlpha(0);
