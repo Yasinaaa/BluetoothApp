@@ -63,7 +63,7 @@ public class StartActivity extends AppCompatActivity{
                     // accessLocationPermission();
                 }
             }
-        }, 1000);
+        }, 100);
     }
 
     @Override

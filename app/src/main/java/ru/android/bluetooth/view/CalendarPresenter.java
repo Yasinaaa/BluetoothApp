@@ -35,6 +35,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
     private BluetoothMessage mBluetoothMessage;
     private Writer output = null;
     private CalendarModule.View mView;
+    private Calendar mCurrentDay = null;
 
     public CalendarPresenter(Context mContext, BluetoothMessage mBluetoothMessage, CalendarModule.View view) {
         this.mContext = mContext;
@@ -67,12 +68,12 @@ public class CalendarPresenter implements CalendarModule.Presenter,
                         LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                         View view = inflater.inflate(R.layout.item_schedule_day, null);
                         TextView day = (TextView) view.findViewById(R.id.tv_day);
-                        day.setText(item.substring(item.indexOf("=") + 1, item.indexOf(",")));
+                        day.setText(getDate(item.substring(item.indexOf("=") + 1, item.indexOf(","))));
                         TextView on = (TextView) view.findViewById(R.id.tv_on_time);
 
                         TextView off = (TextView) view.findViewById(R.id.tv_off_time);
-                        on.setText(item.substring(item.lastIndexOf(",") + 1, item.length()));
-                        off.setText(item.substring(item.indexOf(",") + 1, item.lastIndexOf(",")));
+                        on.setText(getTime(item.substring(item.lastIndexOf(",") + 1, item.length())));
+                        off.setText(getTime(item.substring(item.indexOf(",") + 1, item.lastIndexOf(","))));
 
                         tableLayout.addView(view, i);
                         i++;
@@ -89,6 +90,40 @@ public class CalendarPresenter implements CalendarModule.Presenter,
         }
 
     }
+
+    private String getDate(String dayNum){
+        //Calendar newCalendar = mCurrentDay;
+        if(mCurrentDay == null){
+            mCurrentDay = Calendar.getInstance();
+            //newCalendar = mCurrentDay;
+        }else {
+            //newCalendar.add(Calendar.DATE, Integer.parseInt(dayNum));
+            mCurrentDay.add(Calendar.DATE, 1);
+        }
+        return setZeros(mCurrentDay.get(Calendar.DAY_OF_MONTH)) + "."
+                + setZeros(mCurrentDay.get(Calendar.MONTH)) + "."
+                + setZeros(mCurrentDay.get(Calendar.YEAR));
+    }
+
+
+    private String getTime(String time){
+        int timeMin = Integer.parseInt(time);
+        String hour = setZeros(String.valueOf(timeMin / 60));
+        String min = setZeros(String.valueOf(timeMin % 60));
+        return hour + ":" + min;
+    }
+
+    private String setZeros(String time){
+        if(time.length() == 1){
+            time = "0" + time;
+        }
+        return time;
+    }
+
+    private String setZeros(int time){
+        return setZeros(String.valueOf(time));
+    }
+
     @Override
     public void setTable(TableLayout tableLayout){
        readFile(tableLayout);
@@ -122,6 +157,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
         try {
 
             File file = new File(Environment.getExternalStorageDirectory(),"schedule.txt");
+            file.createNewFile();
             output = new BufferedWriter(new FileWriter(file));
 
 
