@@ -1,15 +1,18 @@
 package ru.android.bluetooth.view;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.CalendarView;
 import android.widget.FrameLayout;
-
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
 import java.util.Calendar;
@@ -22,6 +25,8 @@ import ru.android.bluetooth.one_day.ChangeOneDayScheduleActivity;
 import ru.android.bluetooth.root.RootActivity;
 import ru.android.bluetooth.schedule.ScheduleGeneratorActivity;
 import ru.android.bluetooth.utils.ActivityHelper;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.TextView;
 
 /**
  * Created by itisioslab on 03.08.17.
@@ -29,18 +34,20 @@ import ru.android.bluetooth.utils.ActivityHelper;
 
 public class CalendarActivity extends RootActivity {
 
-    @BindView(R.id.calendar_view_schedule)
-    CalendarView mCalendarViewSchedule;
+    //@BindView(R.id.calendar_view_schedule)
+    //CalendarView mCalendarViewSchedule;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_calendar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //setContentView(R.layout.activity_calendar);
+        setContentView(R.layout.activity_schedule_neee);
+       // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //((App) getApplication()).getComponent().inject(this);
-        ButterKnife.bind(this);
-        init();
+        //ButterKnife.bind(this);
+       // init();
+        start();
     }
 
     public void fabClicked(View v){
@@ -59,6 +66,7 @@ public class CalendarActivity extends RootActivity {
 
     @Override
     public void init(){
+        setTable();
         final FrameLayout frameLayout = (FrameLayout) findViewById(R.id.frame_layout);
         frameLayout.getBackground().setAlpha(0);
         final FloatingActionsMenu fabMenu = (FloatingActionsMenu) findViewById(R.id.fab_menu);
@@ -91,7 +99,7 @@ public class CalendarActivity extends RootActivity {
             }
         });
         Calendar currentDay = Calendar.getInstance();
-        mCalendarViewSchedule.setDate(currentDay.getTimeInMillis());
+       /* mCalendarViewSchedule.setDate(currentDay.getTimeInMillis());
 
 
         mCalendarViewSchedule.setOnClickListener(new View.OnClickListener() {
@@ -119,16 +127,8 @@ public class CalendarActivity extends RootActivity {
 
                 return false;
             }
-        });
-        /*
-        calendarView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener(){
-            @Override
-            public void onGlobalLayout()
-            {
-            //your code here
-            }
-        });
-         */
+        });*/
+
     }
 
     @Override
@@ -168,7 +168,7 @@ public class CalendarActivity extends RootActivity {
                 calendar.set(Calendar.DAY_OF_MONTH, day);
 
                 long milliTime = calendar.getTimeInMillis();
-                mCalendarViewSchedule.setDate(milliTime, true, true);
+               // mCalendarViewSchedule.setDate(milliTime, true, true);
                 return false;
             }
 
@@ -188,5 +188,20 @@ public class CalendarActivity extends RootActivity {
             }
         });
         return true;
+    }
+
+    private void setTable(){
+        TableLayout tableLayout = (TableLayout) findViewById(R.id.tableLayout);
+
+        for (int i = 0; i < 3; i++) {
+
+            TableRow tableRow = new TableRow(this);
+            tableRow.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,
+                    LayoutParams.WRAP_CONTENT));
+
+            LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View view = inflater.inflate(R.layout.item_schedule_day, null);
+            tableLayout.addView(view, i);
+        }
     }
 }
