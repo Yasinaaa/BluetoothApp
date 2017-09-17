@@ -38,14 +38,11 @@ import java.util.List;
 import java.util.Locale;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
-import okhttp3.Response;
 import ru.android.bluetooth.R;
 import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
 import ru.android.bluetooth.main.helper.ResponseView;
 import ru.android.bluetooth.root.RootActivity;
-import ru.android.bluetooth.schedule.helper.ScheduleGenerator;
 import ru.android.bluetooth.start.ChooseDeviceActivity;
 import ru.android.bluetooth.utils.ActivityHelper;
 import ru.android.bluetooth.utils.BluetoothHelper;
@@ -59,7 +56,6 @@ import ru.android.bluetooth.view.CalendarActivity;
 public class MainActivity extends RootActivity implements MainModel.ManualModeView, MainModel.AutoModeView,
         BluetoothMessage.BluetoothMessageListener{
 
-    private final String TAG = MainActivity.class.getName();
     @BindView(R.id.tv_device_title)
     TextView mTvDeviceTitle;
     @BindView(R.id.tv_device_address)
@@ -84,16 +80,18 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
     Button mBtnResetController;
     @BindView(R.id.tv_status)
     TextView mTvStatus;
-    @BindView(R.id.ib_sync_status)
-    ImageButton mIbSyncStatus;
+    @BindView(R.id.btn_sync_status)
+    Button mIbSyncStatus;
     @BindView(R.id.tv_version)
     TextView mTvVersion;
-    @BindView(R.id.ib_sync_version)
-    ImageButton mIbSyncVersion;
+    @BindView(R.id.btn_sync_version)
+    Button mIbSyncVersion;
     @BindView(R.id.ib_change_name)
-    ImageButton mIbChangeName;
+    Button mIbChangeName;
     @BindView(R.id.tv_change_password)
     TextView mTvChangePassword;
+    @BindView(R.id.btn_change_password)
+    Button mBtnChangePassword;
     @BindView(R.id.tv_date)
     TextView mTvDate;
     @BindView(R.id.btn_set_date)
@@ -106,8 +104,10 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
     TextView mTvGenerateSchedule;
     /*@BindView(R.id.tv_new_schedule)
     TextView mTvNewSchedule;*/
-    @BindView(R.id.tb_mode_device)
-    ToggleButton mTbSwitchModeDevice;
+    @BindView(R.id.btn_mode_auto)
+    Button mBtnAutoMode;
+    @BindView(R.id.btn_mode_manual)
+    Button mBtnManualMode;
     @BindView(R.id.rl)
     RelativeLayout mRl;
 
@@ -115,8 +115,8 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
     TextView mTvTime;
     @BindView(R.id.btn_set_time)
     Button mBtnSetTime;
-    @BindView(R.id.ib_sync_date)
-    ImageButton mIbSyncDate;
+    @BindView(R.id.btn_sync_date)
+    Button mIbSyncDate;
 
     @BindView(R.id.et_schedule_name)
     EditText mEtScheduleName;
@@ -134,53 +134,11 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
-
-        try {
-            ChooseDeviceActivity.dialog.cancel();
-        }catch (java.lang.NullPointerException e){
-
-        }
-        //((App) getApplication()).getComponent().inject(this);
-        ButterKnife.bind(this);
-        ActivityHelper.setVisibleIcon(this);
-
-        init();
-
-        mTbSwitchModeDevice.setChecked(true);
-        mTbSwitchModeDevice.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(!mTbSwitchModeDevice.getText().equals(getResources().getString(R.string.manual_mode))){
-                    setMessage(BluetoothCommands.MANUAL_OFF);
-
-                    mAutoModePresenter = new AutoModePresenter(getApplicationContext(), mBluetoothMessage);
-                    mAutoModePresenter.createDatesView(mRvOnOffInfo);
-
-                    if(mAutoModePresenter.isHaveScheduleTxt()){
-                        setModeVisiblity(View.VISIBLE);
-                    }else {
-                        setModeVisiblity(View.INVISIBLE);
-                    }
-
-                }else {
-                    setModeVisiblity(View.INVISIBLE);
-                    setMessage(BluetoothCommands.MANUAL_ON);
-                }
-            }
-        });
-        setModeVisiblity(View.INVISIBLE);
-        mRlLayoutParams.addRule(RelativeLayout.BELOW, R.id.cv_controller_functions);
-        mRlLayoutParams.setMargins(0,10,0,0);
-        mCvSchedule.setLayoutParams(mRlLayoutParams);
-
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+        start();
     }
 
-    private void testSetData(){
+   /* private void testSetData(){
 
         Calendar finishDate = Calendar.getInstance();
         finishDate.add(Calendar.YEAR, 1);
@@ -211,48 +169,38 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
 
         }
     }
-
+*/
 
     @Override
     public void init(){
+        // close previous Dialog
+        try {
+            ChooseDeviceActivity.dialog.cancel();
+        }catch (java.lang.NullPointerException e){
+
+        }
+
+        ActivityHelper.setVisibleLogoIcon(this);
+        //mTbSwitchModeDevice.setChecked(true);
+
+        setModeVisiblity(View.INVISIBLE);
+        mRlLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        mRlLayoutParams.addRule(RelativeLayout.BELOW, R.id.cv_controller_functions);
+        mRlLayoutParams.setMargins(0,10,0,0);
+        mCvSchedule.setLayoutParams(mRlLayoutParams);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
         mBluetoothMessage.setBluetoothMessageListener(this);
-        //setMessage(BluetoothCommands.STATUS);
-
-        mRlLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT);
-
-        /*
-        mStatus = BluetoothCommands.GET_TIME;
-        mBluetoothMessage.writeMessage(BluetoothCommands.GET_TIME);*/
-
-        mTbSwitchModeDevice.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-               setMode(null);
-            }
-        });
-
-        mTvEditSchedule.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                File file = new File(Environment.getExternalStorageDirectory(), "schedule.txt");
-                Uri uri = Uri.parse("file://" + file.getAbsolutePath());
-
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(uri);
-                startActivity(intent);
-            }
-        });
+        setMessage(BluetoothCommands.STATUS);
 
         setDeviceTitle();
         setGenerationType();
-        setDate();
-        setClickListeners();
+
         setChangePassword();
     }
-
 
     private void setDeviceTitle(){
         mTvDeviceAddress.setText(BluetoothHelper.getBluetoothUser(getApplicationContext())[0].trim());
@@ -267,52 +215,12 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
         }
     }
 
-    private void setMode(String mode){
-
-       /* if (mode == null){
-            if(!mTbSwitchModeDevice.getText().equals(getResources().getString(R.string.manual_mode))){
-                setMessage(BluetoothCommands.MANUAL_OFF);
-            }else {
-                setMessage(BluetoothCommands.MANUAL_ON);
-            }
-
-        }else
-
-        if (mode.equals("On")){
-            mTbSwitchModeDevice.setChecked(true);
-            setModeVisiblity(View.INVISIBLE);
-
-        }else if (mode.equals("Off")){
-            mTbSwitchModeDevice.setChecked(false);
-            setModeVisiblity(View.VISIBLE);
-            setMessage(BluetoothCommands.MANUAL_OFF);
-
-            mAutoModePresenter = new AutoModePresenter(getApplicationContext(), mBluetoothMessage);
-            mAutoModePresenter.createDatesView(mRvOnOffInfo);
-
-            if(mAutoModePresenter.isHaveScheduleTxt()){
-                setModeVisiblity(View.VISIBLE);
-            }else {
-                setModeVisiblity(View.INVISIBLE);
-            }
-
-        }*/
-
-        /*if(mTbSwitchModeDevice.getText().equals(getResources().getString(R.string.manual_mode))){
-            setModeVisiblity(View.INVISIBLE);
-        }else {
-            setModeVisiblity(View.VISIBLE);
-        }*/
-
-    }
-
     private void setModeVisiblity(int visiblity){
         if(visiblity == View.INVISIBLE){
             setScheduleModeVisiblity(View.GONE);
         }else {
             setScheduleModeVisiblity(View.VISIBLE);
         }
-
     }
 
     private void setScheduleModeVisiblity(int visiblity){
@@ -334,7 +242,7 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
 
     @Override
     public void setTag() {
-
+        TAG = "MainActivity";
     }
 
     private void setGenerationType(){
@@ -374,14 +282,14 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
         });
     }
 
-    private void setDate(){
+    private void setDateCliskListeners(){
         final Calendar calendar = Calendar.getInstance();
         mIbSyncDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //setMessage(BluetoothCommands.GET_TIME);
+                setMessage(BluetoothCommands.GET_TIME);
                // testSetData();
-                setMessage(BluetoothCommands.GET_TABLE);
+               // setMessage(BluetoothCommands.GET_TABLE);
             }
         });
         mBtnSetDate.setOnClickListener(new View.OnClickListener() {
@@ -555,6 +463,56 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
     @Override
     public void setClickListeners(){
 
+        setDateCliskListeners();
+
+        mTvEditSchedule.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                File file = new File(Environment.getExternalStorageDirectory(), "schedule.txt");
+                Uri uri = Uri.parse("file://" + file.getAbsolutePath());
+
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(uri);
+                startActivity(intent);
+            }
+        });
+
+        mBtnManualMode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                /*if(!mTbSwitchModeDevice.getText().equals(getResources().getString(R.string.manual_mode))){
+                    setMessage(BluetoothCommands.MANUAL_OFF);
+
+                    mAutoModePresenter = new AutoModePresenter(getApplicationContext(), mBluetoothMessage);
+                    mAutoModePresenter.createDatesView(mRvOnOffInfo);
+
+                    if(mAutoModePresenter.isHaveScheduleTxt()){
+                        setModeVisiblity(View.VISIBLE);
+                    }else {
+                        setModeVisiblity(View.INVISIBLE);
+                    }
+
+                }else {
+                    setModeVisiblity(View.INVISIBLE);
+                    setMessage(BluetoothCommands.MANUAL_ON);
+                }*/
+                setModeVisiblity(View.INVISIBLE);
+                setMessage(BluetoothCommands.MANUAL_ON);
+            }
+        });
+
+        mBtnAutoMode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setMessage(BluetoothCommands.MANUAL_OFF);
+
+                mAutoModePresenter = new AutoModePresenter(getApplicationContext(), mBluetoothMessage);
+                mAutoModePresenter.createDatesView(mRvOnOffInfo);
+                setModeVisiblity(View.VISIBLE);
+
+            }
+        });
+
         mIbSyncStatus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -577,8 +535,8 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
         mIbSyncVersion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //setMessage(BluetoothCommands.VERSION);
-                testSetData();
+                setMessage(BluetoothCommands.VERSION);
+               // testSetData();
             }
         });
         mBtnResetController.setOnClickListener(new View.OnClickListener() {
@@ -604,7 +562,7 @@ public class MainActivity extends RootActivity implements MainModel.ManualModeVi
         for(String s: parameters){
 
             if (s.contains("Manual")){
-                setMode(s.split(" ")[1]);
+               // setMode(s.split(" ")[1]);
             }else
             if (s.contains("Rele")){
                 setOnOff(s.split(" ")[1]);

@@ -3,22 +3,18 @@ package ru.android.bluetooth.start;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ScrollView;
 
 import com.crashlytics.android.Crashlytics;
@@ -39,7 +35,8 @@ import ru.android.bluetooth.utils.ActivityHelper;
  * Created by itisioslab on 01.08.17.
  */
 
-public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceModule.ChooseDeviceView, DeviceAdapter.OnItemClicked {
+public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceModule.ChooseDeviceView,
+        DeviceAdapter.OnItemClicked {
 
     @BindView(R.id.rv_devices)
     RecyclerView mRvDevicesList;
@@ -47,39 +44,25 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceMo
     Button mBtnConnect;
     @BindView(R.id.scrollView)
     ScrollView scrollView;
-    //@BindView(R.id.frame_layout)
-   // FrameLayout frameLayout;
 
     private DeviceAdapter mDeviceAdapter;
     private List<String> mDeviceList = new ArrayList<String>();
     private BluetoothModule mBluetoothModule;
     private String mDeviceTitle;
 
+    public static AlertDialog dialog;
+    private boolean isFirstOpen = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-       super.onCreate(savedInstanceState);
-       Fabric.with(this, new Crashlytics());
-       checkBluetoothUser();
-
-
-
-      /*  Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                frameLayout.setVisibility(View.INVISIBLE);
-                getSupportActionBar().show();
-
-                ActivityHelper.setVisibleIcon(ChooseDeviceActivity.this);
-                scrollView.setVisibility(View.VISIBLE);
-            }
-        }, 1000);*/
-        ActivityHelper.setVisibleIcon(ChooseDeviceActivity.this);
-        scrollView.setVisibility(View.VISIBLE);
-        test();
-
+        super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
+        setContentView(R.layout.activity_choose_device);
+        start();
+        //test();
     }
 
-    public void test(){
+    /*public void test(){
         ArrayList<String> testItems = new ArrayList<String>();
         testItems.add("is=352,1,12");
         testItems.add("352,1,,11, 12");
@@ -102,44 +85,35 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceMo
         }
 
 
-    }
-
-    private int sum(String chars){
-        int sum = 0;
-        for (int i=0; i<chars.length();i++){
-            sum += chars.charAt(i);
-        }
-        Log.d("dd", "sum=" + sum);
-        return sum;
-    }
-
-    private void checkBluetoothUser(){
-        /*if(!BluetoothHelper.isFirstLaunch(getApplicationContext())){
-            goNext();
-        }else {      setContentView(R.layout.activity_choose_device);
-            setContentView(R.layout.activity_choose_device);
-            ButterKnife.bind(this);
-            mBluetoothModule = BluetoothModule.createBluetoohModule(this, this);
-            init();
-        }*/
-        setContentView(R.layout.activity_choose_device);
-        ButterKnife.bind(this);
-
-
-        init();
-    }
+    }*/
 
     @Override
     public void init(){
+
+        ActivityHelper.setVisibleLogoIcon(ChooseDeviceActivity.this);
+
         mRvDevicesList.setItemAnimator(new DefaultItemAnimator());
         mRvDevicesList.setHasFixedSize(true);
         mRvDevicesList.setLayoutManager(new LinearLayoutManager(this));
-        setPasswordDialog();
     }
 
     @Override
     public void setClickListeners() {
-
+        final Activity activity = this;
+        final ChooseDeviceModule.ChooseDeviceView viewC = this;
+        mBtnConnect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!isFirstOpen){
+                    mBluetoothModule = BluetoothModule.createBluetoohModule(activity, viewC);
+                }
+                if(mDeviceTitle != null) {
+                    dialog = ActivityHelper.showProgressBar(activity);
+                    mBluetoothModule.connectDevice(mDeviceTitle, ChooseDeviceActivity.this);
+                    isFirstOpen = false;
+                }
+            }
+        });
     }
 
     @Override
@@ -178,35 +152,14 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceMo
         return true;
     }
 
-    public void hideKeyboard() {
+    /*public void hideKeyboard() {
         InputMethodManager imm = (InputMethodManager) this.getSystemService(Activity.INPUT_METHOD_SERVICE);
         View view = this.getCurrentFocus();
         if (view == null) {
             view = new View(this);
         }
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-    }
-
-    public static AlertDialog dialog;
-    private boolean isFirstOpen = true;
-    public void setPasswordDialog(){
-        final Activity activity = this;
-        final ChooseDeviceModule.ChooseDeviceView viewC = this;
-        mBtnConnect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(!isFirstOpen){
-                    mBluetoothModule = BluetoothModule.createBluetoohModule(activity, viewC);
-                }
-                if(mDeviceTitle != null) {
-                    dialog = ActivityHelper.showProgressBar(activity);
-                    mBluetoothModule.connectDevice(mDeviceTitle, ChooseDeviceActivity.this);
-                    isFirstOpen = false;
-                }
-
-            }
-        });
-    }
+    }*/
 
     @Override
     protected void onStop() {
@@ -216,7 +169,7 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceMo
 
     @Override
     public void setTag() {
-
+        TAG = "ChooseDeviceActivity";
     }
 
     @Override
@@ -228,16 +181,6 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceMo
         mDeviceAdapter.add(text);
     }
 
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        /*AppDestroyService.createAppDestroyListener(getApplicationContext()).
-                onActivityModeListener(getLocalClassName(), true);*/
-        /*ActivityHelper.startBroadcastReceiver(this);
-        ActivityHelper.sendToAppDestroyListener(this, true);*/
-    }
-
     @Override
     public void onItemClick(String text) {
         mDeviceTitle = text;
@@ -245,7 +188,6 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceMo
 
     @Override
     public void goNext(){
-
         ActivityHelper.startActivity(ChooseDeviceActivity.this, MainActivity.class);
         Activity a = this;
        // mBluetoothModule.unregister(a);
@@ -254,7 +196,7 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceMo
     @Override
     protected void onResume() {
         super.onResume();
-        mBluetoothModule = BluetoothModule.createBluetoohModule(this, this);
+        mBluetoothModule = new BluetoothModule(this, this);
         mBluetoothModule.register();
     }
 
@@ -272,7 +214,6 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceMo
                 .setMessage("Устройство не находится в сети")
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        // Toast.makeText(getBaseContext(), "Cancel", Toast.LENGTH_SHORT).show();
                         dialog.cancel();
                     }
                 });
@@ -280,32 +221,17 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceMo
        // mBluetoothModule.unregister();
     }
 
-   /* @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-    }*/
-  /* @Override
-   public void onResume()
-   {  // After a pause OR at startup
-       super.onResume();
-       mBluetoothModule = BluetoothModule.createBluetoohModule(this, this);
-   }*/
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
             case 1:
                 if (grantResults.length > 0) {
                     for (int gr : grantResults) {
-                        // Check if request is granted or not
                         if (gr != PackageManager.PERMISSION_GRANTED) {
                             mBluetoothModule.setEnableBluetooth();
                             return;
                         }
                     }
-
-                    //TODO - Add your code here to start Discovery
-
                 }
                 break;
             default:

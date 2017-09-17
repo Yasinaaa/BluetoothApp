@@ -44,6 +44,13 @@ public class ActivityHelper {
 
     }
 
+    public static void startActivityAndFinishThis(Activity from, Class to){
+        Intent intent = new Intent(from, to);
+        from.startActivity(intent);
+        from.finish();
+
+    }
+
     public static void sendToAppDestroyListener(Activity from, boolean onOrOff){
         Intent intent = new Intent(from, AppDestroyService.class);
         intent.putExtra(AppDestroyService.ACTIVITY, from.getLocalClassName());
@@ -57,7 +64,7 @@ public class ActivityHelper {
         intent.putExtra(AppDestroyService.ACTIVITY_ON_OFF, onOrOff);
         from.startService(intent);
     }
-    public static void setVisibleIcon(AppCompatActivity activity){
+    public static void setVisibleLogoIcon(AppCompatActivity activity){
 
         activity.getSupportActionBar().setDisplayUseLogoEnabled(true);
         activity.getSupportActionBar().setLogo(activity.getResources().getDrawable(R.drawable.runline));

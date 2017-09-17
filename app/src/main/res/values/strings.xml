@@ -2,6 +2,7 @@
     <string name="app_name">Автореле</string>
     <string name="app_packages">ru.android.bluetooth</string>
 
+    <string name="change_device_name">Изменить</string>
     <string name="generate_hand_one_day">Изменить выбранный день</string>
     <string name="generate_hand">Сгенерировать в ручную на год</string>
     <string name="generate_sunrise_sunset">Генерация по Восходу/Закату солнца</string>

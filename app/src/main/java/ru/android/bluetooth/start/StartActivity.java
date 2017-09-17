@@ -31,9 +31,7 @@ public class StartActivity extends AppCompatActivity{
                         BluetoothAdapter.ERROR);
                 switch (bluetoothState) {
                     case BluetoothAdapter.STATE_ON:
-                        //Bluethooth is on, now you can perform your tasks
-                        ActivityHelper.startActivity(activity, ChooseDeviceActivity.class);
-                        finish();
+                        ActivityHelper.startActivityAndFinishThis(activity, ChooseDeviceActivity.class);
                         break;
                 }
             }
@@ -55,14 +53,17 @@ public class StartActivity extends AppCompatActivity{
             public void run() {
                 BluetoothAdapter mBTAdapter = BluetoothAdapter.getDefaultAdapter();
                 try {
-                    mBTAdapter.enable();
+                    if (mBTAdapter.isEnabled()){
+                        ActivityHelper.startActivityAndFinishThis(activity, ChooseDeviceActivity.class);
+                    }else {
+                        mBTAdapter.enable();
+                    }
 
                 }catch (NullPointerException e){
                     // accessLocationPermission();
                 }
             }
         }, 1000);
-
     }
 
     @Override

@@ -66,7 +66,7 @@ public class BluetoothModule {
     };
 
 
-    private BluetoothModule(Activity mActivity, ChooseDeviceModule.ChooseDeviceView view) {
+    public BluetoothModule(Activity mActivity, ChooseDeviceModule.ChooseDeviceView view) {
         this.mActivity = mActivity;
         this.mContext = mActivity.getBaseContext();
         this.mView = view;
@@ -308,7 +308,7 @@ public class BluetoothModule {
                         } catch (IOException ex) {
 
                         }*/
-                        fail = true;
+                        /*fail = true;
                         mActivity.runOnUiThread(new Runnable() {
                             public void run() {
                               //
@@ -321,7 +321,7 @@ public class BluetoothModule {
                             mBTSocket.close();
                         } catch (IOException e1) {
                             e1.printStackTrace();
-                        }
+                        }*/
 
                     }
                     if(fail == false) {
