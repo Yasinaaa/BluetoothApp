@@ -16,6 +16,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,7 +58,7 @@ import ru.android.bluetooth.view.CalendarActivity;
 public class MainActivity extends RootActivity implements MainModule.ManualModeView, MainModule.AutoModeView,
         BluetoothMessage.BluetoothMessageListener{
 
-    @BindView(R.id.tv_device_title)
+    /*@BindView(R.id.tv_device_title)
     TextView mTvDeviceTitle;
     @BindView(R.id.tv_device_address)
     TextView mTvDeviceAddress;
@@ -66,7 +67,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
     @BindView(R.id.btn_off_device)
     Button mBtnOffDevice;
     @BindView(R.id.rv_on_off_info)
-    RecyclerView mRvOnOffInfo;
+    RecyclerView mRvOnOffInfo;*/
    /* @BindView(R.id.tv_day)
     TextView mTvDay;
     @BindView(R.id.tv_on)
@@ -75,10 +76,10 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
     TextView mTvOff;*/
     @BindView(R.id.cv_controller_functions)
     CardView mCvControllerFunctions;
-    @BindView(R.id.tv_reset)
+    /*@BindView(R.id.tv_reset)
     TextView mTvReset;
     @BindView(R.id.btn_reset_controller)
-    Button mBtnResetController;
+    Button mBtnResetController;*/
     @BindView(R.id.tv_status)
     TextView mTvStatus;
     @BindView(R.id.btn_sync_status)
@@ -87,12 +88,12 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
     TextView mTvVersion;
     @BindView(R.id.btn_sync_version)
     Button mIbSyncVersion;
-    @BindView(R.id.ib_change_name)
+   /* @BindView(R.id.ib_change_name)
     Button mBtnChangeName;
     @BindView(R.id.tv_change_password)
     TextView mTvChangePassword;
     @BindView(R.id.btn_change_password)
-    Button mBtnChangePassword;
+    Button mBtnChangePassword;*/
     @BindView(R.id.tv_date)
     TextView mTvDate;
     @BindView(R.id.btn_set_date)
@@ -105,10 +106,10 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
     TextView mTvGenerateSchedule;
     /*@BindView(R.id.tv_new_schedule)
     TextView mTvNewSchedule;*/
-    @BindView(R.id.btn_mode_auto)
+    /*@BindView(R.id.btn_mode_auto)
     Button mBtnAutoMode;
     @BindView(R.id.btn_mode_manual)
-    Button mBtnManualMode;
+    Button mBtnManualMode;*/
     @BindView(R.id.rl)
     RelativeLayout mRl;
 
@@ -201,7 +202,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
 
         mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
         mBluetoothMessage.setBluetoothMessageListener(this);
-       // setMessage(BluetoothCommands.STATUS);
+        setMessage(BluetoothCommands.STATUS);
 
         setDeviceTitle();
         setGenerationType();
@@ -210,8 +211,8 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
     }
 
     private void setDeviceTitle(){
-        mTvDeviceAddress.setText(BluetoothHelper.getBluetoothUser(getApplicationContext())[0].trim());
-        mTvDeviceTitle.setText(BluetoothHelper.getBluetoothUser(getApplicationContext())[1].trim());
+       // mTvDeviceAddress.setText(BluetoothHelper.getBluetoothUser(getApplicationContext())[0].trim());
+       // mTvDeviceTitle.setText(BluetoothHelper.getBluetoothUser(getApplicationContext())[1].trim());
     }
 
     private void setOnOff(String onOf){
@@ -221,20 +222,6 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
             setDeviceModeColor(true);
         }
     }
-
-   /* private void setModeVisiblity(int visiblity){
-        if(visiblity == View.INVISIBLE){
-            setScheduleModeVisiblity(View.GONE);
-        }else {
-            setScheduleModeVisiblity(View.VISIBLE);
-        }
-    }*/
-
-   /* private void setScheduleModeVisiblity(int visiblity){
-        mEtScheduleName.setVisibility(visiblity);
-        mTvEditSchedule.setVisibility(visiblity);
-        mRvOnOffInfo.setVisibility(visiblity);
-    }*/
 
     // arguing for it
     private int setOppositeVisiblity(int visiblity){
@@ -322,7 +309,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
 
     @Override
     public void setDeviceTitle(String title) {
-        mTvDeviceTitle.setText(title);
+        //mTvDeviceTitle.setText(title);
     }
 
     @Override
@@ -333,13 +320,13 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
     private void setDeviceModeColor(boolean isOn){
         Drawable color1 = getResources().getDrawable(R.drawable.btn_off);
         Drawable color2 = getResources().getDrawable(R.drawable.btn_on);
-        if(isOn) {
+       /* if(isOn) {
             mBtnOnDevice.setBackground(color1);
             mBtnOffDevice.setBackground(color2);
         }else {
             mBtnOnDevice.setBackground(color2);
             mBtnOffDevice.setBackground(color1);
-        }
+        }*/
     }
 
     int count = 0;
@@ -460,7 +447,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
             }
         });
 
-        mBtnManualMode.setOnClickListener(new View.OnClickListener() {
+       /* mBtnManualMode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 /*if(!mTbSwitchModeDevice.getText().equals(getResources().getString(R.string.manual_mode))){
@@ -480,7 +467,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
                     setMessage(BluetoothCommands.MANUAL_ON);
                 }*/
                 //setModeVisiblity(View.INVISIBLE);
-                setMessage(BluetoothCommands.MANUAL_ON);
+         /*       setMessage(BluetoothCommands.MANUAL_ON);
             }
         });
 
@@ -494,7 +481,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
                 //setModeVisiblity(View.VISIBLE);
 
             }
-        });
+        });*/
 
         mIbSyncStatus.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -503,7 +490,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
                 mBluetoothMessage.writeMessage(mStatus);
             }
         });
-        mBtnOnDevice.setOnClickListener(new View.OnClickListener() {
+        /*mBtnOnDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 setMessage(BluetoothCommands.ON);
@@ -514,7 +501,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
             public void onClick(View view) {
                 setMessage(BluetoothCommands.OFF);
             }
-        });
+        });*/
         mIbSyncVersion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -522,12 +509,12 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
                // testSetData();
             }
         });
-        mBtnResetController.setOnClickListener(new View.OnClickListener() {
+       /* mBtnResetController.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 setMessage(BluetoothCommands.RESET);
             }
-        });
+        });*/
     }
 
     private void setMessage(String status){
@@ -570,10 +557,16 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
         }
 
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
 
+        final MenuItem searchItem = menu.findItem(R.id.action_settings);
+        return true;
+    }
 
     private void setChangePassword(){
-        mBtnChangePassword.setOnClickListener(new View.OnClickListener() {
+        /*mBtnChangePassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                  LayoutInflater inflater = getLayoutInflater();
@@ -631,7 +624,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
                         });
                 passwordDialogBuilder.show();
             }
-        });
+        });*/
     }
 
 
@@ -646,7 +639,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
 
     }
 
-
+    final Activity activity = this;
     private void setScheduleButtons(){
         mBtnEditSchedule.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -654,7 +647,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
                 ActivityHelper.startActivity(MainActivity.this, CalendarActivity.class);
             }
         });
-        final Activity activity = this;
+
         mBtnGenerateSchedule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -717,8 +710,20 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
         if(requestCode==123 && resultCode==RESULT_OK) {
             Uri selectedfile = data.getData();
             String title = selectedfile.getLastPathSegment();
-            mEtScheduleName.setText(title.substring(title.indexOf("/") + 1));
-            File file = new File(selectedfile.getPath());
+            if(title.endsWith(".txt")){
+                mEtScheduleName.setText(title.substring(title.indexOf("/") + 1));
+                File file = new File(selectedfile.getPath());
+            }else {
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity)
+                        .setTitle(getString(R.string.generate_dialog_title))
+                        .setMessage("Не правильный формат файла")
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        });
+                dialogBuilder.show();
+            }
+
         }
     }
 }

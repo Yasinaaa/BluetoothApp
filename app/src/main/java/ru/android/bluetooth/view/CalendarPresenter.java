@@ -29,6 +29,7 @@ import java.util.List;
 import ru.android.bluetooth.R;
 import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
+import ru.android.bluetooth.common.DateParser;
 
 /**
  * Created by yasina on 17.09.17.
@@ -37,14 +38,13 @@ import ru.android.bluetooth.bluetooth.BluetoothMessage;
 public class CalendarPresenter implements CalendarModule.Presenter,
         BluetoothMessage.BluetoothMessageListener {
 
-    public static final String PREF_BEGIN_DAY = "begin_day_pref";
-
     private Context mContext;
     private BluetoothMessage mBluetoothMessage;
     private Writer output = null;
     private CalendarModule.View mView;
     private Calendar mCurrentDay = null;
     private int selectedItem = 999;
+    private DateParser mDateParser;
 
 
     public CalendarPresenter(Context mContext, BluetoothMessage mBluetoothMessage, CalendarModule.View view) {
@@ -56,6 +56,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
 
     private void init(){
         mBluetoothMessage.setBluetoothMessageListener(this);
+        mDateParser = new DateParser(mCurrentDay, mContext);
     }
 
     private void readFile(final TableLayout tableLayout){
@@ -73,12 +74,12 @@ public class CalendarPresenter implements CalendarModule.Presenter,
                         LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                         View view = inflater.inflate(R.layout.item_schedule_day, null);
                         TextView day = (TextView) view.findViewById(R.id.tv_day);
-                        day.setText(getDate(item.substring(item.indexOf("=") + 1, item.indexOf(","))));
+                        day.setText(mDateParser.getDate(item.substring(item.indexOf("=") + 1, item.indexOf(","))));
                         TextView on = (TextView) view.findViewById(R.id.tv_on_time);
 
                         TextView off = (TextView) view.findViewById(R.id.tv_off_time);
-                        on.setText(getTime(item.substring(item.lastIndexOf(",") + 1, item.length())));
-                        off.setText(getTime(item.substring(item.indexOf(",") + 1, item.lastIndexOf(","))));
+                        on.setText(mDateParser.getTime(item.substring(item.lastIndexOf(",") + 1, item.length())));
+                        off.setText(mDateParser.getTime(item.substring(item.indexOf(",") + 1, item.lastIndexOf(","))));
 
                         tableLayout.addView(view, i);
                         final int finalI = i;
@@ -117,46 +118,6 @@ public class CalendarPresenter implements CalendarModule.Presenter,
 
     }
 
-    private String getDate(String dayNum){
-        //Calendar newCalendar = mCurrentDay;
-        if(mCurrentDay == null){
-            mCurrentDay = Calendar.getInstance();
-            String result = setCorrectDateView(mCurrentDay);
-            saveBeginDay(result);
-            return result;
-            //newCalendar = mCurrentDay;
-        }else {
-            //newCalendar.add(Calendar.DATE, Integer.parseInt(dayNum));
-            mCurrentDay.add(Calendar.DATE, 1);
-            return setCorrectDateView(mCurrentDay);
-        }
-    }
-
-    private String setCorrectDateView(Calendar calendar){
-        int month = mCurrentDay.get(Calendar.MONTH) + 1;
-        return setZeros(mCurrentDay.get(Calendar.DAY_OF_MONTH)) + "."
-                + setZeros(month) + "."
-                + setZeros(mCurrentDay.get(Calendar.YEAR));
-    }
-
-    private String getTime(String time){
-        int timeMin = Integer.parseInt(time);
-        String hour = setZeros(String.valueOf(timeMin / 60));
-        String min = setZeros(String.valueOf(timeMin % 60));
-        return hour + ":" + min;
-    }
-
-    private String setZeros(String time){
-        if(time.length() == 1){
-            time = "0" + time;
-        }
-        return time;
-    }
-
-    private String setZeros(int time){
-        return setZeros(String.valueOf(time));
-    }
-
     @Override
     public void setTable(TableLayout tableLayout){
        readFile(tableLayout);
@@ -170,6 +131,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
 
     @Override
     public void onResponse(String answer) {
+        Log.d("d", answer);
         if(answer != " ") {
             try {
                 output.write(answer);
@@ -177,6 +139,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
                 e.printStackTrace();
             }
         }
+        //SEND NOT COMMAND
         if (answer.contains("is=365")){
             try {
                 output.close();
@@ -215,34 +178,6 @@ public class CalendarPresenter implements CalendarModule.Presenter,
         }
     }
 
-    /*public Calendar setStringToDate(String date){
-        String parts[] = date.split("\\.");
 
-        int day = Integer.parseInt(parts[0]);
-        int month = Integer.parseInt(parts[1]);
-        int year = Integer.parseInt(parts[2]);
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.YEAR, year);
-        calendar.set(Calendar.MONTH, month-1);
-        calendar.set(Calendar.DAY_OF_MONTH, day);
-        return calendar;
-    }*/
-
-    @Nullable
-    public String getBeginDate() {
-        if (mContext == null) return null;
-
-        SharedPreferences sp =
-                PreferenceManager.getDefaultSharedPreferences(mContext.getApplicationContext());
-        return sp.getString(PREF_BEGIN_DAY, "");
-    }
-
-    public void saveBeginDay(@Nullable String date) {
-        if (mContext == null || date == null) return;
-        SharedPreferences sp =
-                PreferenceManager.getDefaultSharedPreferences(mContext.getApplicationContext());
-        sp.edit().putString(PREF_BEGIN_DAY, date).apply();
-    }
 
 }

@@ -8,6 +8,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.TextView;
 
 import ru.android.bluetooth.R;
 
@@ -17,15 +18,40 @@ import ru.android.bluetooth.R;
 
 public class ActivityHelper {
 
-    public static AlertDialog showProgressBar(Activity activity){
+    private static View createView(Activity activity){
         LayoutInflater inflater = activity.getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.dialog_loading, null);
+        return inflater.inflate(R.layout.dialog_loading, null);
+    }
 
+    private static AlertDialog createDialog(Activity activity, View view){
         AlertDialog.Builder dialog = new AlertDialog.Builder(activity)
-                .setView(dialogView);
+                .setView(view);
         AlertDialog dialog1 = dialog.create();
         dialog1.show();
         return dialog1;
+    }
+
+    public static AlertDialog showProgressBar(Activity activity){
+        View dialogView = createView(activity);
+        return createDialog(activity, dialogView);
+    }
+
+    public static AlertDialog showProgressBar(Activity activity, String text){
+        View dialogView = createView(activity);
+        TextView textView = (TextView) dialogView.findViewById(R.id.tv_loading);
+        textView.setText(text);
+        return createDialog(activity, dialogView);
+    }
+
+    public static AlertDialog changeProgressBarText(AlertDialog alertDialog, String text){
+        TextView textView = (TextView) alertDialog.findViewById(R.id.tv_loading);
+        textView.setText(text);
+        return alertDialog;
+    }
+
+    public static void hideProgressBar(AlertDialog alertDialog){
+        alertDialog.dismiss();
+        alertDialog.cancel();
     }
 
     public static void startBroadcastReceiver(Activity from){

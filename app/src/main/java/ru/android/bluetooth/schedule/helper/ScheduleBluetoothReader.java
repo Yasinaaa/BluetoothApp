@@ -4,7 +4,9 @@ import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -15,6 +17,8 @@ import java.util.regex.Pattern;
 import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
 import ru.android.bluetooth.db.DBHelper;
+import ru.android.bluetooth.schedule.ScheduleModule;
+import ru.android.bluetooth.utils.ActivityHelper;
 
 /**
  * Created by yasina on 18.08.17.
@@ -25,15 +29,17 @@ public class ScheduleBluetoothReader {
     private final String TAG = ScheduleBluetoothReader.class.getCanonicalName();
     private BluetoothMessage mBluetoothMessage;
     private List<String> mValues;
-    private PrintWriter writer;
+    private BufferedWriter writer;
     private Calendar startDate;
     private Calendar finishDate;
     private DBHelper mDbHelper;
+    private ScheduleModule.View mView;
 
-    public ScheduleBluetoothReader(BluetoothMessage mBluetoothMessage,Context context) {
+    public ScheduleBluetoothReader(BluetoothMessage mBluetoothMessage, Context context, ScheduleModule.View view) {
         this.mBluetoothMessage = mBluetoothMessage;
         mValues = new ArrayList<String>();
         mDbHelper = new DBHelper(context);
+        mView = view;
     }
 
     private String getDate(Calendar calendar){
@@ -60,10 +66,11 @@ public class ScheduleBluetoothReader {
         this.finishDate = finishDate;
 
         try{
-            writer = new PrintWriter(Environment.getExternalStorageDirectory() + "/" + "schedule.txt", "UTF-8");
-            Log.d(TAG, "path=" + Environment.getExternalStorageDirectory() + "/" + "schedule.txt");
-            writer.println(createFileName(startDate, finishDate));
-            mBluetoothMessage.writeMessage(BluetoothCommands.DEBUG);
+            File file = new File(Environment.getExternalStorageDirectory(),"schedule.txt");
+            file.createNewFile();
+            writer = new BufferedWriter(new FileWriter(file));
+
+           // mBluetoothMessage.writeMessage(BluetoothCommands.DEBUG);
 
         } catch (IOException e) {
             Log.e(TAG, e.getMessage());
@@ -80,18 +87,27 @@ public class ScheduleBluetoothReader {
 
     public void addItem(String item){
 
-        if(item.contains(" ")) {
+        /*if(item.contains(" ")) {
             item = item.substring(0, item.indexOf(" "));
+        }*/
+        try {
+            writer.write(item);
+            if(item.contains("is=365")){
+                writer.close();
+                mView.closeProgressBar();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        writer.println(item);
-        mDbHelper.addContact(new OneDayModel(startDate, item));
+//        mDbHelper.addContact(new OneDayModel(startDate, item));
         Log.d(TAG, item);
 
-        if (!isFinish()){
+        /*if (!isFinish()){
             mBluetoothMessage.writeMessage(BluetoothCommands.DEBUG);
         }else {
             writer.close();
-        }
+        }*/
+
 
     }
 

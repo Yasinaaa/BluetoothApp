@@ -30,11 +30,11 @@ public class BluetoothMessage {
                             String readMessage = null;
                             readMessage = IOUtils.toString(r, "utf-8");
 
-                            response[0] += readMessage.trim().replaceAll("�", "");
+                            readMessage = readMessage.trim().replaceAll("�", "");
 
                             //if(readMessage.length() > 2) readMessage.replace("OK","");
                             //if (readMessage.contains("3")) readMessage = "3";
-                            Log.d("bm", readMessage);
+                            //Log.d("bm", readMessage);
                             mBluetoothMessageListener.onResponse(readMessage);
 
                             //mBluetoothMessageListener.onResponse(readMessage);

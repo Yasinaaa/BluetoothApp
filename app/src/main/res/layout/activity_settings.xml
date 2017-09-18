@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:fab="http://schemas.android.com/tools">
+    <android.support.design.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <RelativeLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_device_title"
+                android:gravity="center"
+                android:text="yasina"
+                android:layout_centerHorizontal="true"
+                android:textSize="30sp"
+                android:layout_alignParentTop="true"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_device_address"
+                android:gravity="center"
+                android:text="Runtime"
+                android:textSize="20sp"
+                android:layout_below="@+id/tv_device_title"
+                android:layout_centerHorizontal="true" />
+
+            <Button
+                android:id="@+id/btn_on_device"
+                android:layout_width="60dp"
+                android:layout_height="40dp"
+                android:text="ON"
+                android:background="@drawable/btn_off"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_below="@+id/tv_device_address"/>
+
+            <Button
+                android:id="@+id/btn_off_device"
+                android:layout_width="60dp"
+                android:layout_height="40dp"
+                android:text="OFF"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/btn_off"
+                android:layout_below="@+id/btn_on_device"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"/>
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/cb_manual_mode"
+                android:layout_below="@+id/tv_device_address"
+                android:text="Ручной режим"/>
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/cb_auto_mode"
+                android:text="Авто режим"
+                android:layout_marginLeft="10dp"
+                android:layout_below="@+id/tv_device_address"
+                android:layout_toRightOf="@+id/cb_manual_mode"/>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/cv_controller_functions"
+                android:layout_gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                card_view:cardCornerRadius="4dp"
+                android:layout_marginTop="10dp"
+                android:layout_below="@+id/btn_off_device"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp">
+
+                    <TextView
+                        android:id="@+id/tv_status_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="11dp"
+                        android:layout_marginStart="11dp"
+                        android:layout_marginTop="10dp"
+                        android:padding="5dp"
+                        android:textSize="15sp"
+                        android:text="Изменить название устройства" />
+                    <Button
+                        android:layout_width="60dp"
+                        android:layout_height="40dp"
+                        android:id="@+id/ib_change_name"
+                        android:text="Ok"
+                        android:layout_above="@+id/btn_change_password"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true" />
+
+                    <TextView
+                        android:id="@+id/tv_change_password"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Изменить пароль"
+                        android:padding="5dp"
+                        android:layout_marginLeft="11dp"
+                        android:layout_marginTop="10dp"
+                        android:textSize="15sp"
+                        android:layout_below="@+id/tv_status_title"/>
+
+                    <Button
+                        android:layout_width="60dp"
+                        android:layout_height="40dp"
+                        android:id="@+id/btn_change_password"
+                        android:text="OK"
+                        android:layout_alignTop="@+id/tv_change_password"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true" />
+
+                    <TextView
+                        android:id="@+id/tv_reset"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="10dp"
+                        android:padding="5dp"
+                        android:textSize="15sp"
+                        android:layout_below="@+id/tv_change_password"
+                        android:text="Сброс контроллера" />
+
+                    <Button
+                        android:id="@+id/btn_reset_controller"
+                        android:layout_width="60dp"
+                        android:layout_height="40dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_below="@+id/btn_change_password"
+                        android:text="OK" />
+
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/til_latitude"
+                        android:layout_below="@+id/btn_reset_controller"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="5dp"
+                        android:padding="5dp">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/actv_latitude"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Широта"
+                            android:inputType="numberDecimal"
+                            android:maxLines="1"
+                            android:enabled="false"
+                            android:text="55,75"
+                            android:singleLine="true" />
+
+                    </android.support.design.widget.TextInputLayout>
+
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/til_longitude"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/til_latitude"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="10dp"
+                        android:padding="5dp">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/actv_longitude"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Долгота"
+                            android:inputType="numberDecimal"
+                            android:maxLines="1"
+                            android:enabled="false"
+                            android:text="37,5"
+                            android:singleLine="true" />
+
+                    </android.support.design.widget.TextInputLayout>
+
+                    <CheckBox
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/cb_set_coordinates_by_hand"
+                        android:text="Ввести координаты вручную"
+                        android:layout_below="@+id/til_longitude"
+                        android:layout_marginLeft="11dp"
+                        android:layout_marginStart="11dp"
+                        android:layout_marginTop="10dp"
+                        android:padding="5dp"/>
+
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/til_timezone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_below="@+id/cb_set_coordinates_by_hand"
+                        android:layout_marginLeft="11dp"
+                        android:layout_marginStart="11dp"
+                        android:padding="5dp">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/actv_timezone"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Временная зона"
+                            android:inputType="number"
+                            android:maxLines="1"
+                            android:enabled="false"
+                            android:text="3"
+                            android:singleLine="true" />
+
+                    </android.support.design.widget.TextInputLayout>
+
+                    <CheckBox
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/cb_set_timezone_by_hand"
+                        android:text="Ввести временную зону вручную"
+                        android:layout_below="@+id/til_timezone"
+                        android:layout_marginLeft="11dp"
+                        android:layout_marginStart="11dp"
+                        android:layout_marginTop="10dp"
+                        android:padding="5dp"/>
+
+                </RelativeLayout>
+            </android.support.v7.widget.CardView>
+
+
+            <!-- <ToggleButton
+                 android:id="@+id/tb_mode_device"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:textOn="@string/manual_mode"
+                 android:textOff="@string/auto_mode"
+                 android:showText="true"
+                 android:layout_below="@+id/tv_device_address"
+                 android:layout_centerHorizontal="true" /> -->
+
+            <!--  <Button
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:id="@+id/btn_mode_manual"
+                  android:text="@string/manual_mode"
+                  android:layout_below="@+id/tv_device_address"/>
+
+              <Button
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:id="@+id/btn_mode_auto"
+                  android:text="@string/auto_mode"
+                  android:layout_toRightOf="@+id/btn_mode_manual"
+                  android:layout_below="@+id/tv_device_address"/>-->
+
+        </RelativeLayout>
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="10dp"
+            android:src="@android:drawable/ic_dialog_email" />
+    </android.support.design.widget.CoordinatorLayout>
+</ScrollView>

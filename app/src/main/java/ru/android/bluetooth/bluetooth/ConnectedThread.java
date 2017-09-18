@@ -12,6 +12,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.zip.CRC32;
@@ -81,7 +82,7 @@ public class ConnectedThread extends Thread {
                         //int g = mmInStream.read();
                         mHandler.obtainMessage(STATUS, bytes, -1, buffer)
                                 .sendToTarget();
-                        Log.e("fff", "bytes=" + bytes);
+                       // Log.e("fff", "bytes=" + bytes);
                     }catch (java.lang.ArrayIndexOutOfBoundsException e){
                         Log.e("fff", "bytes=" + bytes);
                     }
@@ -193,6 +194,17 @@ public class ConnectedThread extends Thread {
         return data;
     }
 
+    /*public byte[] getValuesArray(int[] listOn, int[] listOff){
+        int[] combine = combineBytes(listOn, listOff);
+        byte[] result = new byte[listOn.length + listOff.length];
+
+        for (int i=0; i<result.length; i++){
+            byte[] f = BigInteger.valueOf(combine[i]).toByteArray();
+
+        }
+    }*/
+
+
     String p;
     byte[] answer, answer2, answer3;
 
@@ -202,7 +214,7 @@ public class ConnectedThread extends Thread {
         answer = get128Array(130);
         answer2  = get128Array(130);
         answer3  = new byte[]{8, 0, 1, 0, 1, 0, 1, 0, 1, 12};
-        p = s.write(mmOutStream, listOn, listOff);
+        s.write(mmOutStream, listOn, listOff);
         /*Log.d("iiiiiii", "seeeeeeeeeeeeeeeeenddd package 1");
 
         /*for (int i=0; i<732;i++) {
@@ -349,6 +361,12 @@ public class ConnectedThread extends Thread {
         return combined;
     }
 
+    public int[] combineBytes(int[] one, int[] two) {
+        int[] combined = new int[one.length + two.length];
+        System.arraycopy(one,0,combined,0,one.length);
+        System.arraycopy(two,0,combined,one.length,two.length);
+        return combined;
+    }
    /* private byte[] crc(byte[] numAtBytes){
         byte[] newByteArray = new byte[8];
         System.arraycopy(numAtBytes,0,newByteArray, newByteArray.length - 8, numAtBytes.length);

@@ -1,5 +1,6 @@
 package ru.android.bluetooth.schedule;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -16,6 +17,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 
 import android.util.Log;
+import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
@@ -36,16 +38,22 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.android.bluetooth.Manifest;
 import ru.android.bluetooth.R;
+import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
+import ru.android.bluetooth.common.DateParser;
 import ru.android.bluetooth.root.RootActivity;
 import ru.android.bluetooth.schedule.helper.ScheduleBluetoothReader;
 import ru.android.bluetooth.schedule.helper.ScheduleGenerator;
+import ru.android.bluetooth.utils.ActivityHelper;
 
 /**
  * Created by itisioslab on 08.08.17.
  */
 
-public class ScheduleGeneratorActivity extends RootActivity implements BluetoothMessage.BluetoothMessageListener,
+public class ScheduleGeneratorActivity extends RootActivity
+        implements
+        ScheduleModule.View,
+        BluetoothMessage.BluetoothMessageListener,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
@@ -92,20 +100,36 @@ public class ScheduleGeneratorActivity extends RootActivity implements Bluetooth
     private BluetoothMessage mBluetoothMessage;
     private ScheduleBluetoothReader mScheduleBluetoothReader;
     private SchedulePresenter mSchedulePresenter;
+    private DateParser mDateParser;
+    private int[] onList = new int[366];
+    private int[] offList = new int[366];
+    private String mStatus;
+    private Activity mActivity;
+    private AlertDialog mAlertDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sunrise_set);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        start();
         /*mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
         mBluetoothMessage.setBluetoothMessageListener(this);
-        mScheduleBluetoothReader = new ScheduleBluetoothReader(mBluetoothMessage, getApplicationContext());
+
         Calendar finishDate = Calendar.getInstance();
         finishDate.add(Calendar.YEAR, 1);*/
 
 
         // mScheduleBluetoothReader.readSchedule(Calendar.getInstance(), finishDate);
+
+    }
+
+    @Override
+    public void init() {
+
+        mActivity = this;
+        mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
+        mBluetoothMessage.setBluetoothMessageListener(this);
+        mScheduleBluetoothReader = new ScheduleBluetoothReader(mBluetoothMessage, getApplicationContext(), this);
 
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -120,17 +144,12 @@ public class ScheduleGeneratorActivity extends RootActivity implements Bluetooth
                 .setInterval(10 * 1000)
                 .setFastestInterval(1 * 1000);
 
-        init();
 
-    }
-
-    @Override
-    public void init() {
-        ButterKnife.bind(this);
         mCbSetCoordinatesByHand.setSelected(false);
         mCbSetTimezoneByHand.setSelected(false);
         Calendar calendar = Calendar.getInstance();
-        mTvSunrise.setText(calendar.get(Calendar.DAY_OF_MONTH) + ".0" +
+        mDateParser = new DateParser(calendar, getApplicationContext());
+                mTvSunrise.setText(calendar.get(Calendar.DAY_OF_MONTH) + ".0" +
                 (calendar.get(Calendar.MONTH) + 1) + "." +
                 calendar.get(Calendar.YEAR));
         calendar.add(Calendar.YEAR, 1);
@@ -143,7 +162,7 @@ public class ScheduleGeneratorActivity extends RootActivity implements Bluetooth
         mSchedulePresenter.setOnClickListenerImageButton(mIbChangeFinishTime, mTvSunset);
         mSchedulePresenter.setCheckBoxLocation(mCbSetCoordinatesByHand, mTilLatitude, mTilLongitude);
         mSchedulePresenter.setCheckBoxLocation(mCbSetTimezoneByHand, mTilTimezone);
-        mSchedulePresenter.setNotAvailableDialog(mFab);
+        //mSchedulePresenter.setOnFabClickListener(mFab);
 
         /*Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"),
                 Locale.getDefault());
@@ -160,7 +179,19 @@ public class ScheduleGeneratorActivity extends RootActivity implements Bluetooth
 
     @Override
     public void setClickListeners() {
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Calendar finishDate = Calendar.getInstance();
+                finishDate.add(Calendar.YEAR, 1);
+                generateSchedule(Calendar.getInstance(), finishDate, currentLatitude, currentLongitude);
+                mScheduleBluetoothReader.readSchedule(Calendar.getInstance(), finishDate);
+                mStatus = BluetoothCommands.SET_DATA;
+                mAlertDialog = ActivityHelper.showProgressBar(mActivity, getString(R.string.generate_schedule));
+                mBluetoothMessage.writeMessage(onList, offList);
 
+            }
+        });
     }
 
     private void generateSchedule(Calendar startDate, Calendar endDate, double latitude, double longitude) {
@@ -176,22 +207,44 @@ public class ScheduleGeneratorActivity extends RootActivity implements Bluetooth
             sunSet = ScheduleGenerator.calcSunSetUTC(JD, latitude, longitude);
 
 
-            d++;
+
             /*Log.d(TAG,"day=" + d + " " +
                     ScheduleGenerator.getTimeString(false,sunRise, TimeZone.getDefault(), JD, dst) + " " +
                     ScheduleGenerator.getTimeString(false,sunSet, zone, JD, dst)+ " " +
                     ScheduleGenerator.getTimeString(true,sunRise, zone, JD, dst)+ " " +
                     ScheduleGenerator.getTimeString(true,sunSet, zone, JD, dst)
             );*/
+            int zone = Integer.parseInt(mActvTimezone.getText().toString());
+            /*onList[d] = Integer.parseInt(ScheduleGenerator.getTimeString(true, sunRise, zone, JD, dst));
+            offList[d] = Integer.parseInt(ScheduleGenerator.getTimeString(true, sunSet, zone, JD, dst));*/
+            onList[d] = 779;
+            offList[d] = 779;
+            d++;
+
             startDate.add(Calendar.DAY_OF_YEAR, 1);
 
         }
+
     }
 
     @Override
     public void onResponse(String answer) {
-        //  Log.d(TAG, answer);
-        mScheduleBluetoothReader.addItem(answer);
+        Log.d(TAG, answer);
+        if(answer.contains("Not command") && answer.contains("Ok\n") && mStatus == BluetoothCommands.SET_DATA){
+            ActivityHelper.changeProgressBarText(mAlertDialog, getString(R.string.loading_schedule));
+            writeMessage(BluetoothCommands.GET_TABLE);
+            String result = mDateParser.setCorrectDateView(Calendar.getInstance());
+            mDateParser.saveBeginDay(result);
+        }
+        if(mStatus == BluetoothCommands.GET_TABLE){
+            mScheduleBluetoothReader.addItem(answer);
+        }
+
+    }
+
+    private void writeMessage(String status){
+        mStatus = status;
+        mBluetoothMessage.writeMessage(status);
     }
 
     @Override
@@ -212,8 +265,8 @@ public class ScheduleGeneratorActivity extends RootActivity implements Bluetooth
     protected void onPause() {
         super.onPause();
         Log.v(this.getClass().getSimpleName(), "onPause()");
-        alertDialog.dismiss();
-        alertDialog.cancel();
+//        alertDialog.dismiss();
+      //  alertDialog.cancel();
 
         if (mGoogleApiClient.isConnected()) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
@@ -258,9 +311,6 @@ public class ScheduleGeneratorActivity extends RootActivity implements Bluetooth
             mActvLatitude.setText(String.valueOf(currentLatitude));
             mActvLongitude.setText(String.valueOf(currentLongitude));
 
-            Calendar finishDate = Calendar.getInstance();
-            finishDate.add(Calendar.YEAR, 1);
-            generateSchedule(Calendar.getInstance(), finishDate, currentLatitude, currentLongitude);
 
             //Toast.makeText(this, currentLatitude + " WORKS " + currentLongitude + "", Toast.LENGTH_LONG).show();
         }
@@ -318,5 +368,10 @@ public class ScheduleGeneratorActivity extends RootActivity implements Bluetooth
     @Override
     public void setTag() {
 
+    }
+
+    @Override
+    public void closeProgressBar() {
+        ActivityHelper.hideProgressBar(alertDialog);
     }
 }

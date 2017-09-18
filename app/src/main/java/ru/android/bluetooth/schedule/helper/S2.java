@@ -5,85 +5,133 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- * Created by dinar on 20.08.17.
+ * Created by yasina on 20.08.17.
  */
 
 public class S2 {
-   /* public String doPart2(String p){
-        String _so = p.substring(0, 128);
-        p = p.substring(_so.length());
-        char c = 255;
-        do
-        {
-            _so = _so + c;
-        }
-        while (_so.length() < 128);
-        Log.e("TAG", "so=" + _so);
-        return strToPackCRC(_so);
-    }*/
 
-  /* public void writeData(OutputStream mmOutStream, int count) {
-
-       byte[] data = dataToBytes(count);
-       try {
-           mmOutStream.write(data);
-       } catch (IOException e) {
-           Log.e("TAG", e.getMessage());
-       }
-   }
-*/
-
-    public String write(OutputStream mmOutStream, int[] lisOn, int[] listOff) {
-
-        String p = "";
-        for (int i = 0; i < lisOn.length; i++) {
-            p += numToStrReverse(2);
-        }
-        for (int i = 0; i < listOff.length; i++) {
-            p += numToStrReverse(3);
-        }
-
-        Log.e("TAG", "p=" + p.length());
-        Log.e("TAG", "numToStr(p.length())=" + numToStr(p.length()));
+    byte b, b1;
+    //TODO: NEED
+    public void write(OutputStream mmOutStream, int[] lisOn, int[] listOff) {
 
         try {
 
             byte[] array = new byte[]{2, 5, (byte)184, (byte)191};
            // byte[] array = new byte[]{2, 6, 0, 8};
            // array = strToPackCRC(mmOutStream,numToStr(p.length()));
-            byte[] answer = get128Array(130);
-            byte[] answer2  = get128Array(130);
-            byte[] answer3  = get128Array(58);
+           // byte[] answer = get128Array(130);
+
+         //   byte[] answer2  = get128Array(130);
+          //  byte[] answer3  = get128Array(58);
+
+            ArrayList<int[]> numbers = divideTo128ByteElements(combineBytes(lisOn, listOff));
+            ArrayList<byte[]> numsToBytesArray = new ArrayList<byte[]>();
+            for (int i = 0; i< numbers.size(); i++){
+                numsToBytesArray.add(getValues(numbers.get(i)));
+            }
 
             mmOutStream.write("Set Data\r".getBytes());
             mmOutStream.write(array);
 
-            for (int i=0; i<11;i++) {
+            for (int i=0; i<numsToBytesArray.size();i++) {
                 SystemClock.sleep(1000);
-                mmOutStream.write(answer);
+                mmOutStream.write(numsToBytesArray.get(i));
             }
-            SystemClock.sleep(1000);
+           /* SystemClock.sleep(1000);
             mmOutStream.write(answer3);
+            mmOutStream.write("d\r\n".getBytes());*/
 
         } catch (IOException e) {
             Log.e("TAG", e.getMessage());
         }
-        return p;
+       // return p;
     }
 
+    public int[] combineBytes(int[] one, int[] two) {
+        int[] combined = new int[one.length + two.length];
+        System.arraycopy(one,0,combined,0,one.length);
+        System.arraycopy(two,0,combined,one.length,two.length);
+        return combined;
+    }
+
+    private ArrayList<int[]> divideTo128ByteElements(int[] array){
+        ArrayList<int[]> elements = new ArrayList<int[]>();
+        int num = 64;
+        int count = array.length / num; // 11
+        int mod = array.length - num * count;
+        int[] temp;
+        for (int i=0; i<= count; i++){
+            temp = new int[num];
+            if(i == 0){
+                System.arraycopy(array, 0, temp, 0, num);
+            }else if(i==count){
+                temp = new int[mod];
+                temp = Arrays.copyOfRange(array, elements.get(i-1).length, elements.get(i-1).length + mod);
+            }else {
+                temp = Arrays.copyOfRange(array, elements.get(i-1).length, elements.get(i-1).length + num);
+            }
+            elements.add(temp);
+        }
+
+        return elements;
+    }
+
+    private byte[] getValues(int[] a){
+        //count = 64
+        byte[] data = new byte[a.length*2  + 2];
+        data[0] = (byte)(data.length - 2);
+        int crc = data.length - 2;
+
+        byte[] value;
+        int j = 0;
+        for (int i=0; i<a.length; i++){
+
+            value = BigInteger.valueOf(a[i]).toByteArray();
+            if (value.length == 1){
+                data[j + 1] = 0;
+            }else {
+                data[j + 1] = value[1];
+            }
+            data[j + 2] = value[0];
+            crc += a[i];
+
+            if (crc > 255) {
+                crc = crc - 255;
+            }
+            j = j + 2;
+        }
+
+        data[data.length-1]=(byte)crc;
+        return data;
+    }
+    //TODO: NEED
     private byte[] get128Array(int count){
         byte[] data = new byte[count];
         data[0] = (byte)(data.length - 2);
         int crc = data.length - 2;
         //int num = 129;
-        data[1]= 5;
-        data[2]= 0;
-        crc +=5;
+        /*data[1]= 5;
+        data[2]= 0;*/
+        /*data[1] = 3;
+        data[2] = -94;
+        crc += 3;
+        crc += -94;*/
+
+        /*byte[] f = BigInteger.valueOf(930).toByteArray();
+        data[1] = -94;
+        data[2] = 3;
+        crc += 930;
+        if (crc > 255) {
+            crc = crc - 255;
+        }*/
+
         for (int i=3; i<data.length-1; i=i+2){
             data[i] = 1;
             data[i+1] = 0;
@@ -96,91 +144,8 @@ public class S2 {
         data[data.length-1]=(byte)crc;
         return data;
     }
-    /*public void write(OutputStream mmOutStream, int count) {
 
-            String p = "";
-            for (int i = 0; i < 366 * 2; i++) {
-                 p += numToStrReverse(i + 1);
-                //p += (i + 1);
-            }
-
-            Log.e("TAG", "p=" + p.length());
-             Log.e("TAG", "numToStr(p.length())=" + numToStr(p.length()));
-
-            //String text = strToPackCRC(mmOutStream,numToStr(p.length()));
-            //String text = strToPackCRC(null);
-            //Log.e("TAG", "text=" + text);
-            //String s = "Set Data\r" + text;
-            //Log.e("TAG", "sss=" + s);
-            //byte[] a = strToPackCRC(numToStr(p.length()), count);
-            try {
-
-                byte[] array = new byte[]{2, 5, (byte)184, (byte)191};
-                mmOutStream.write("Set Data\r".getBytes());
-                mmOutStream.write(array);
-
-                /**S s = new S();
-                s.part2(mmOutStream, p);*/
-                // mmOutStream.write(doPart2(p).getBytes());
-
-                // mmOutStream.close();
-           /* } catch (IOException e) {
-                Log.e("TAG", e.getMessage());
-            }
-
-    }
-
-    private byte[] dataToBytes(int count){
-        byte one = (byte)128;
-
-        byte[] two = new byte[128];
-        Arrays.fill(two, (byte)1);
-        //two[0] = (byte)count;
-        //byte three = crc(two);
-        byte three = (byte)count;
-
-        byte[] combined = new byte[2 + two.length];
-        System.arraycopy(two,0,combined,1,two.length);
-        combined[0] = one;
-        combined[combined.length - 1] = three;
-        return combined;
-    }
-
-    private byte crc(byte[] two){
-        int crc = 1;
-
-        for (int i=0; i<two.length; i++){
-            crc += two[i];
-            if(crc > 255){
-                crc -= 255;
-            }
-        }
-        Log.d("S2", "crc=" + (int)crc);
-       //crc += two[0];
-        return (byte)crc;
-    }
-
-    private byte[] dataToBytes(int count, String data, int crc){
-        byte one = (byte)(count - 128);
-
-        int d1 = (int)data.charAt(0);
-        int d2 = (int)data.charAt(1);
-        byte[] two = new byte[2];
-        two[0] = (byte)5;
-        two[1] = (byte)5;
-
-
-        byte three = (byte) (two[0] + two[1] + 2);
-
-
-        byte[] combined = new byte[2 + two.length];
-        System.arraycopy(two,0,combined,1,two.length);
-        combined[0] = one;
-        combined[combined.length - 1] = three;
-        return combined;
-    }*/
-
-    byte[] array;
+   /* byte[] array;
     private byte[] strToPackCRC(OutputStream mmOutStream, String s)
     {
         char[] _so = null;
@@ -210,7 +175,7 @@ public class S2 {
         array = new byte[]{2, 5, (byte)180, (byte)187};
         //array = new byte[]{2, 5, 0, 7};
         return array;
-    }
+    }*/
 
     private String numToStrReverse(int n){
        String s = String.valueOf((char)(n%256));

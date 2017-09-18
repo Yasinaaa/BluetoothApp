@@ -60,11 +60,11 @@ public class SchedulePresenter {
     }
 
     public void setNotAvailableDialog(FloatingActionButton floatingActionButton){
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+        /*floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                AlertDialog.Builder dialog = new AlertDialog.Builder(mActivity)
+                /*AlertDialog.Builder dialog = new AlertDialog.Builder(mActivity)
                         .setTitle("Автореле")
                         .setMessage("Данная функция не доступна в данной версии")
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -73,9 +73,10 @@ public class SchedulePresenter {
                                 dialog.cancel();
                             }
                         });
-                dialog.show();
-            }
-        });
+                dialog.show();*/
+          //      mBluetoothMessage.writeMessage(onList, offList);
+         //   }
+      //  });
     }
 
     public void setCheckBoxLocation(final CheckBox checkButton, final TextInputLayout latitude, final TextInputLayout longitude){
