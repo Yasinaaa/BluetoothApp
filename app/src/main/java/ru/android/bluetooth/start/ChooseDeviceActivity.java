@@ -117,6 +117,11 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceMo
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return true;
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_search, menu);
 

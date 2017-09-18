@@ -8,6 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <RelativeLayout
+            android:id="@+id/rl"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -100,7 +101,7 @@
                     <Button
                         android:layout_width="60dp"
                         android:layout_height="40dp"
-                        android:id="@+id/ib_change_name"
+                        android:id="@+id/btn_change_name"
                         android:text="Ok"
                         android:layout_above="@+id/btn_change_password"
                         android:layout_alignParentRight="true"
@@ -155,6 +156,8 @@
                         android:layout_marginLeft="10dp"
                         android:layout_marginStart="10dp"
                         android:layout_marginTop="5dp"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
                         android:padding="5dp">
 
                         <AutoCompleteTextView
@@ -178,6 +181,8 @@
                         android:layout_marginLeft="10dp"
                         android:layout_marginStart="10dp"
                         android:layout_marginTop="10dp"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
                         android:padding="5dp">
 
                         <AutoCompleteTextView
@@ -212,6 +217,8 @@
                         android:layout_below="@+id/cb_set_coordinates_by_hand"
                         android:layout_marginLeft="11dp"
                         android:layout_marginStart="11dp"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
                         android:padding="5dp">
 
                         <AutoCompleteTextView
@@ -241,39 +248,7 @@
                 </RelativeLayout>
             </android.support.v7.widget.CardView>
 
-
-            <!-- <ToggleButton
-                 android:id="@+id/tb_mode_device"
-                 android:layout_width="wrap_content"
-                 android:layout_height="wrap_content"
-                 android:textOn="@string/manual_mode"
-                 android:textOff="@string/auto_mode"
-                 android:showText="true"
-                 android:layout_below="@+id/tv_device_address"
-                 android:layout_centerHorizontal="true" /> -->
-
-            <!--  <Button
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:id="@+id/btn_mode_manual"
-                  android:text="@string/manual_mode"
-                  android:layout_below="@+id/tv_device_address"/>
-
-              <Button
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:id="@+id/btn_mode_auto"
-                  android:text="@string/auto_mode"
-                  android:layout_toRightOf="@+id/btn_mode_manual"
-                  android:layout_below="@+id/tv_device_address"/>-->
-
         </RelativeLayout>
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="10dp"
-            android:src="@android:drawable/ic_dialog_email" />
+
     </android.support.design.widget.CoordinatorLayout>
 </ScrollView>

@@ -6,6 +6,7 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -29,6 +30,7 @@ import android.widget.TimePicker;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,6 +40,13 @@ import java.util.List;
 import java.util.Locale;
 
 import butterknife.BindView;
+import jxl.Workbook;
+import jxl.WorkbookSettings;
+import jxl.write.Label;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
+import jxl.write.WriteException;
+import jxl.write.biff.RowsExceededException;
 import ru.android.bluetooth.R;
 import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
@@ -45,6 +54,7 @@ import ru.android.bluetooth.hand_generation.GenerateHandActivity;
 import ru.android.bluetooth.main.helper.ResponseView;
 import ru.android.bluetooth.root.RootActivity;
 import ru.android.bluetooth.schedule.ScheduleGeneratorActivity;
+import ru.android.bluetooth.settings.SettingsActivity;
 import ru.android.bluetooth.start.ChooseDeviceActivity;
 import ru.android.bluetooth.utils.ActivityHelper;
 import ru.android.bluetooth.utils.BluetoothHelper;
@@ -58,28 +68,10 @@ import ru.android.bluetooth.view.CalendarActivity;
 public class MainActivity extends RootActivity implements MainModule.ManualModeView, MainModule.AutoModeView,
         BluetoothMessage.BluetoothMessageListener{
 
-    /*@BindView(R.id.tv_device_title)
-    TextView mTvDeviceTitle;
-    @BindView(R.id.tv_device_address)
-    TextView mTvDeviceAddress;
-    @BindView(R.id.btn_on_device)
-    Button mBtnOnDevice;
-    @BindView(R.id.btn_off_device)
-    Button mBtnOffDevice;
-    @BindView(R.id.rv_on_off_info)
-    RecyclerView mRvOnOffInfo;*/
-   /* @BindView(R.id.tv_day)
-    TextView mTvDay;
-    @BindView(R.id.tv_on)
-    TextView mTvOn;
-    @BindView(R.id.tv_off)
-    TextView mTvOff;*/
+
     @BindView(R.id.cv_controller_functions)
     CardView mCvControllerFunctions;
-    /*@BindView(R.id.tv_reset)
-    TextView mTvReset;
-    @BindView(R.id.btn_reset_controller)
-    Button mBtnResetController;*/
+
     @BindView(R.id.tv_status)
     TextView mTvStatus;
     @BindView(R.id.btn_sync_status)
@@ -88,12 +80,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
     TextView mTvVersion;
     @BindView(R.id.btn_sync_version)
     Button mIbSyncVersion;
-   /* @BindView(R.id.ib_change_name)
-    Button mBtnChangeName;
-    @BindView(R.id.tv_change_password)
-    TextView mTvChangePassword;
-    @BindView(R.id.btn_change_password)
-    Button mBtnChangePassword;*/
+
     @BindView(R.id.tv_date)
     TextView mTvDate;
     @BindView(R.id.btn_set_date)
@@ -104,8 +91,8 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
     TextView mTvEditSchedule;
     @BindView(R.id.tv_generate_schedule)
     TextView mTvGenerateSchedule;
-    /*@BindView(R.id.tv_new_schedule)
-    TextView mTvNewSchedule;*/
+    @BindView(R.id.tv_new_schedule)
+    TextView mTvNewSchedule;
     /*@BindView(R.id.btn_mode_auto)
     Button mBtnAutoMode;
     @BindView(R.id.btn_mode_manual)
@@ -203,16 +190,6 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
         mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
         mBluetoothMessage.setBluetoothMessageListener(this);
         setMessage(BluetoothCommands.STATUS);
-
-        setDeviceTitle();
-        setGenerationType();
-
-        setChangePassword();
-    }
-
-    private void setDeviceTitle(){
-       // mTvDeviceAddress.setText(BluetoothHelper.getBluetoothUser(getApplicationContext())[0].trim());
-       // mTvDeviceTitle.setText(BluetoothHelper.getBluetoothUser(getApplicationContext())[1].trim());
     }
 
     private void setOnOff(String onOf){
@@ -237,17 +214,6 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
     @Override
     public void setTag() {
         TAG = "MainActivity";
-    }
-
-    private void setGenerationType(){
-        final Activity activity = this;
-        mTvGenerateSchedule.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-
-            }
-        });
     }
 
     private void setDateCliskListeners(){
@@ -490,18 +456,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
                 mBluetoothMessage.writeMessage(mStatus);
             }
         });
-        /*mBtnOnDevice.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setMessage(BluetoothCommands.ON);
-            }
-        });
-        mBtnOffDevice.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setMessage(BluetoothCommands.OFF);
-            }
-        });*/
+
         mIbSyncVersion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -509,12 +464,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
                // testSetData();
             }
         });
-       /* mBtnResetController.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setMessage(BluetoothCommands.RESET);
-            }
-        });*/
+
     }
 
     private void setMessage(String status){
@@ -562,71 +512,17 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
         getMenuInflater().inflate(R.menu.main_menu, menu);
 
         final MenuItem searchItem = menu.findItem(R.id.action_settings);
-        return true;
-    }
-
-    private void setChangePassword(){
-        /*mBtnChangePassword.setOnClickListener(new View.OnClickListener() {
+        searchItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
-            public void onClick(View view) {
-                 LayoutInflater inflater = getLayoutInflater();
-                View dialogView = inflater.inflate(R.layout.dialog_password, null);
-
-                final EditText mPasswordView = (EditText) dialogView.findViewById(R.id.et_password);
-
-
-                AlertDialog.Builder passwordDialogBuilder = new AlertDialog.Builder(MainActivity.this)
-                        .setTitle(getString(R.string.input_password))
-                        .setView(dialogView)
-
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                               // Toast.makeText(getBaseContext(), "Pressed OK", Toast.LENGTH_SHORT).show();
-                                setMessage(BluetoothCommands.setPassword(mPasswordView.getText().toString()));
-                            }
-                        })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                               // Toast.makeText(getBaseContext(), "Cancel", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                passwordDialogBuilder.show();
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                //ActivityHelper.startActivity(activity, SettingsActivity.class);
+                Intent intent = new Intent(activity,SettingsActivity.class);
+                startActivity(intent);
+                return false;
             }
         });
-        mBtnChangeName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                LayoutInflater inflater = getLayoutInflater();
-                View dialogView = inflater.inflate(R.layout.dialog_password, null);
-
-
-                TextInputLayout textInputLayout = dialogView.findViewById(R.id.til_password);
-                textInputLayout.setHint("Новое название устройства");
-                final EditText mPasswordView = (EditText) dialogView.findViewById(R.id.et_password);
-                mPasswordView.setInputType(InputType.TYPE_CLASS_TEXT);
-
-
-                AlertDialog.Builder passwordDialogBuilder = new AlertDialog.Builder(MainActivity.this)
-                       // .setTitle(getString(R.string.input_password))
-                        .setView(dialogView)
-
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                // Toast.makeText(getBaseContext(), "Pressed OK", Toast.LENGTH_SHORT).show();
-                                setMessage(BluetoothCommands.setName(mPasswordView.getText().toString()));
-                                mTvDeviceTitle.setText(mPasswordView.getText().toString());
-                            }
-                        })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                //Toast.makeText(getBaseContext(), "Cancel", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                passwordDialogBuilder.show();
-            }
-        });*/
+        return true;
     }
-
 
     @Override
     protected void onDestroy() {
@@ -689,11 +585,12 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
                                 "is=1,134,256")
                         .setPositiveButton("Загрузить", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                Intent intent = new Intent()
-                                        .setType("*/*")
-                                        .setAction(Intent.ACTION_GET_CONTENT);
+                                //Intent intent = new Intent()
+                                        //.setType("*/*")
+                                        //.setAction(Intent.ACTION_GET_CONTENT);
 
-                                startActivityForResult(Intent.createChooser(intent, "Select a file"), 123);
+                               // startActivityForResult(Intent.createChooser(intent, "Select a file"), 123);
+                                exportToExcel();
                             }
                         })
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -724,6 +621,46 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
                 dialogBuilder.show();
             }
 
+        }
+    }
+
+
+    private void exportToExcel() {
+        final String fileName = "TodoList.xls";
+        File file = new File(Environment.getExternalStorageDirectory(), fileName);
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        WorkbookSettings wbSettings = new WorkbookSettings();
+        wbSettings.setLocale(new Locale("en", "EN"));
+        WritableWorkbook workbook;
+
+        try {
+            workbook = Workbook.createWorkbook(file, wbSettings);
+            //Excel sheet name. 0 represents first sheet
+            WritableSheet sheet = workbook.createSheet("MyShoppingList", 0);
+
+            try {
+                sheet.addCell(new Label(0, 0, "Subject")); // column and row
+                sheet.addCell(new Label(1, 0, "Description"));
+
+
+            } catch (RowsExceededException e) {
+                e.printStackTrace();
+            } catch (WriteException e) {
+                e.printStackTrace();
+            }
+            workbook.write();
+            try {
+                workbook.close();
+            } catch (WriteException e) {
+                e.printStackTrace();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

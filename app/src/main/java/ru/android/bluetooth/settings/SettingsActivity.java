@@ -1,0 +1,546 @@
+package ru.android.bluetooth.settings;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentSender;
+import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
+import android.location.Location;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.widget.RecyclerView;
+import android.text.InputType;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+
+import java.util.Calendar;
+import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
+
+import butterknife.BindView;
+import io.fabric.sdk.android.services.settings.SettingsRequest;
+import ru.android.bluetooth.R;
+import ru.android.bluetooth.bluetooth.BluetoothCommands;
+import ru.android.bluetooth.bluetooth.BluetoothMessage;
+import ru.android.bluetooth.main.MainActivity;
+import ru.android.bluetooth.main.helper.ResponseView;
+import ru.android.bluetooth.root.RootActivity;
+import ru.android.bluetooth.utils.ActivityHelper;
+import ru.android.bluetooth.utils.BluetoothHelper;
+
+/**
+ * Created by yasina on 18.09.17.
+ */
+
+public class SettingsActivity extends RootActivity
+        implements GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener,
+        LocationListener, BluetoothMessage.BluetoothMessageListener {
+
+    @BindView(R.id.tv_device_title)
+    TextView mTvDeviceTitle;
+    @BindView(R.id.tv_device_address)
+    TextView mTvDeviceAddress;
+    @BindView(R.id.btn_on_device)
+    Button mBtnOnDevice;
+    @BindView(R.id.btn_off_device)
+    Button mBtnOffDevice;
+    @BindView(R.id.btn_change_name)
+    Button mBtnChangeName;
+
+    @BindView(R.id.tv_change_password)
+    TextView mTvChangePassword;
+    @BindView(R.id.btn_change_password)
+    Button mBtnChangePassword;
+    @BindView(R.id.tv_reset)
+    TextView mTvReset;
+    @BindView(R.id.btn_reset_controller)
+    Button mBtnResetController;
+    @BindView(R.id.cb_auto_mode)
+    CheckBox mCbAutoMode;
+    @BindView(R.id.cb_manual_mode)
+    CheckBox mCbManualMode;
+    @BindView(R.id.til_latitude)
+    TextInputLayout mTilLatitude;
+    @BindView(R.id.actv_latitude)
+    AutoCompleteTextView mActvLatitude;
+    @BindView(R.id.til_longitude)
+    TextInputLayout mTilLongitude;
+    @BindView(R.id.actv_longitude)
+    AutoCompleteTextView mActvLongitude;
+    @BindView(R.id.cb_set_coordinates_by_hand)
+    CheckBox mCbSetCoordinatesByHand;
+    @BindView(R.id.til_timezone)
+    TextInputLayout mTilTimezone;
+    @BindView(R.id.actv_timezone)
+    AutoCompleteTextView mActvTimezone;
+    @BindView(R.id.cb_set_timezone_by_hand)
+    CheckBox mCbSetTimezoneByHand;
+    @BindView(R.id.rl)
+    RelativeLayout mRl;
+
+    private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
+    private GoogleApiClient mGoogleApiClient;
+    private LocationRequest mLocationRequest;
+    private double currentLatitude;
+    private double currentLongitude;
+
+    private Activity mActivity;
+    private SettingsPresenter mSettingsPresenter;
+    private BluetoothMessage mBluetoothMessage;
+    private String mStatus;
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_settings);
+        start();
+    }
+
+    @Override
+    public void init() {
+        //hideKeyboard();
+       /* View view = this.getCurrentFocus();
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);*/
+
+        mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
+        mBluetoothMessage.setBluetoothMessageListener(this);
+        setMessage(BluetoothCommands.STATUS);
+
+        mCbSetCoordinatesByHand.setSelected(false);
+        mCbSetTimezoneByHand.setSelected(false);
+
+        mActivity = this;
+        mSettingsPresenter = new SettingsPresenter(this);
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+
+
+        mLocationRequest = LocationRequest.create()
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                .setInterval(10 * 1000)
+                .setFastestInterval(1 * 1000);
+
+        Calendar mCalendar = Calendar.getInstance();
+        TimeZone mTimeZone = mCalendar.getTimeZone();
+        int mGMTOffset = mTimeZone.getRawOffset();
+        mActvTimezone.setText(TimeUnit.HOURS.convert(mGMTOffset, TimeUnit.MILLISECONDS) + "");
+
+    }
+
+    @Override
+    public void setClickListeners() {
+        mBtnOnDevice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setMessage(BluetoothCommands.ON);
+            }
+        });
+        mBtnOffDevice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setMessage(BluetoothCommands.OFF);
+            }
+        });
+        setChangePasswordAndUsername();
+        mCbAutoMode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setOnModeCheckBoxClicked(mCbAutoMode, mCbManualMode, false);
+            }
+        });
+        mCbManualMode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setOnModeCheckBoxClicked(mCbAutoMode, mCbManualMode, true);
+            }
+        });
+        mBtnResetController.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setMessage(BluetoothCommands.RESET);
+            }
+        });
+        mSettingsPresenter.setCheckBoxLocation(mCbSetCoordinatesByHand, mTilLatitude, mTilLongitude);
+        mSettingsPresenter.setCheckBoxTimezone(mCbSetTimezoneByHand, mTilTimezone);
+    }
+
+    private void setOnModeCheckBoxClicked(CheckBox checkBox, CheckBox checkBox2, boolean isManual){
+        if(!isManual){
+            if(checkBox.isChecked()){
+                checkBox.setChecked(false);
+                checkBox2.setChecked(true);
+                setMessage(BluetoothCommands.MANUAL_ON);
+            }else {
+                checkBox.setChecked(true);
+                checkBox2.setChecked(false);
+                setMessage(BluetoothCommands.MANUAL_OFF);
+            }
+        }else {
+            if(checkBox.isChecked()){
+                checkBox.setChecked(true);
+                checkBox2.setChecked(false);
+                setMessage(BluetoothCommands.MANUAL_OFF);
+            }else {
+                checkBox.setChecked(false);
+                checkBox2.setChecked(true);
+                setMessage(BluetoothCommands.MANUAL_ON);
+            }
+        }
+    }
+
+    private void setChangePasswordAndUsername(){
+        mBtnChangePassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LayoutInflater inflater = getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.dialog_password, null);
+
+                final EditText mPasswordView = (EditText) dialogView.findViewById(R.id.et_password);
+
+
+                AlertDialog.Builder passwordDialogBuilder = new AlertDialog.Builder(SettingsActivity.this)
+                        .setTitle(getString(R.string.input_password))
+                        .setView(dialogView)
+
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                               // Toast.makeText(getBaseContext(), "Pressed OK", Toast.LENGTH_SHORT).show();
+                                setMessage(BluetoothCommands.setPassword(mPasswordView.getText().toString()));
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                               // Toast.makeText(getBaseContext(), "Cancel", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                passwordDialogBuilder.show();
+            }
+        });
+        mBtnChangeName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LayoutInflater inflater = getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.dialog_password, null);
+
+
+                TextInputLayout textInputLayout = dialogView.findViewById(R.id.til_password);
+                textInputLayout.setHint("Новое название устройства");
+                final EditText mPasswordView = (EditText) dialogView.findViewById(R.id.et_password);
+                mPasswordView.setInputType(InputType.TYPE_CLASS_TEXT);
+
+
+                AlertDialog.Builder passwordDialogBuilder = new AlertDialog.Builder(SettingsActivity.this)
+                       // .setTitle(getString(R.string.input_password))
+                        .setView(dialogView)
+
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // Toast.makeText(getBaseContext(), "Pressed OK", Toast.LENGTH_SHORT).show();
+                                setMessage(BluetoothCommands.setName(mPasswordView.getText().toString()));
+                                mTvDeviceTitle.setText(mPasswordView.getText().toString());
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                //Toast.makeText(getBaseContext(), "Cancel", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                passwordDialogBuilder.show();
+            }
+        });
+    }
+
+    private void setMessage(String status){
+        mStatus = status;
+        mBluetoothMessage.writeMessage(status);
+    }
+
+    private void setMessage(String status, String text){
+        mStatus = status;
+        mBluetoothMessage.writeMessage(text);
+    }
+
+
+    @Override
+    public void setTag() {
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+
+        final MenuItem searchItem = menu.findItem(R.id.action_settings);
+        searchItem.setTitle("Сохранить");
+        searchItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                mSettingsPresenter.setCoordinatesAndTimezone(currentLongitude, currentLatitude,
+                        mActvTimezone.getText().toString());
+
+                finish();
+                return false;
+            }
+        });
+        return true;
+    }
+
+    public void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager) this.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        View view = getCurrentFocus();
+        if (view == null) {
+            view = new View(this);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.v(this.getClass().getSimpleName(), "onResume");
+
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.v(this.getClass().getSimpleName(), "onPause()");
+//        alertDialog.dismiss();
+        //  alertDialog.cancel();
+
+        if (mGoogleApiClient.isConnected()) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+            mGoogleApiClient.disconnect();
+        }
+
+    }
+
+
+    AlertDialog alertDialog;
+    @Override
+    public void onConnected(Bundle bundle) {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+
+        if (location == null) {
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+
+            AlertDialog.Builder dialog = new AlertDialog.Builder(this)
+                    .setTitle("Местопложение")
+                    .setMessage("Разрешите включить ваше местоположение")
+                    .setNegativeButton("Ок", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                            alertDialog.dismiss();
+                        }
+                    });
+            alertDialog = dialog.create();
+            dialog.show();
+
+
+        } else {
+
+            currentLatitude = location.getLatitude();
+            currentLongitude = location.getLongitude();
+            mActvLatitude.setText(String.valueOf(currentLatitude));
+            mActvLongitude.setText(String.valueOf(currentLongitude));
+
+
+            //Toast.makeText(this, currentLatitude + " WORKS " + currentLongitude + "", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case 1: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {}
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        if (connectionResult.hasResolution()) {
+            try {
+                connectionResult.startResolutionForResult(this, CONNECTION_FAILURE_RESOLUTION_REQUEST);
+            } catch (IntentSender.SendIntentException e) {
+                e.printStackTrace();
+            }
+        } else {
+            Log.e("Error", "Location services connection failed with code " + connectionResult.getErrorCode());
+        }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        currentLatitude = location.getLatitude();
+        currentLongitude = location.getLongitude();
+        mActvLatitude.setText(String.valueOf(currentLatitude));
+        mActvLongitude.setText(String.valueOf(currentLongitude));
+        //Toast.makeText(this, currentLatitude + " WORKS " + currentLongitude + "", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    public void onResponse(String answer) {
+        Log.d(TAG, " " + answer);
+
+        if(mStatus!= null) {
+
+            switch (mStatus) {
+                case BluetoothCommands.STATUS:
+
+                    parseStatus(answer);
+                    ResponseView.showSnackbar(mRl,
+                            ResponseView.STATUS);
+                    break;
+
+                case BluetoothCommands.RESET:
+                    //mTvReset.setText(answer);
+                    ResponseView.showSnackbar(mRl, ResponseView.RESET);
+                    break;
+
+                case BluetoothCommands.ON:
+                    setDeviceModeColor(false);
+                    ResponseView.showSnackbar(mRl,
+                            ResponseView.ON);
+                    setMessage(BluetoothCommands.STATUS);
+
+                    break;
+                case BluetoothCommands.OFF:
+                    setDeviceModeColor(true);
+                    ResponseView.showSnackbar(mRl, ResponseView.OFF);
+                    setMessage(BluetoothCommands.STATUS);
+                    break;
+
+                case BluetoothCommands.MANUAL_ON:
+                    if(answer.contains("Ok")){
+                        //ResponseView.showSnackbar(getWindow().getDecorView().getRootView(),
+                        ResponseView.showSnackbar(mRl,
+                                ResponseView.MANUAL_ON);
+                        setMessage(BluetoothCommands.STATUS);
+                    }
+                    break;
+
+                case BluetoothCommands.MANUAL_OFF:
+                    if(answer.contains("Ok")){
+                        ResponseView.showSnackbar(mRl,
+                                ResponseView.MANUAL_OFF);
+                        //setMessage(BluetoothCommands.DEBUG);
+                        // mAutoModePresenter.createDatesView(mRvOnOffInfo);
+                        setMessage(BluetoothCommands.STATUS);
+                    }
+                    break;
+            }
+
+        }
+    }
+
+    private void parseStatus(String status){
+        String[] parameters = status.replaceAll("\r","").split("\n");
+        for(String s: parameters){
+
+            if (s.contains("Manual")){
+                 setMode(s.split(" ")[1]);
+            }else
+            if (s.contains("Rele")){
+                setOnOff(s.split(" ")[1]);
+            }/*else if(!s.contains("s") && !s.contains(" ")){
+                getTime(s);
+            }*/
+        }
+    }
+
+    private void setMode(String text){
+        if(text.equals("Off")){
+            mCbAutoMode.setChecked(true);
+            mCbManualMode.setChecked(false);
+        }else {
+            mCbAutoMode.setChecked(false);
+            mCbManualMode.setChecked(true);
+        }
+    }
+    private void setDeviceTitle(){
+        mTvDeviceAddress.setText(BluetoothHelper.getBluetoothUser(getApplicationContext())[0].trim());
+        mTvDeviceTitle.setText(BluetoothHelper.getBluetoothUser(getApplicationContext())[1].trim());
+    }
+
+    private void setOnOff(String onOf){
+        if (onOf.equals("On")){
+            setDeviceModeColor(false);
+        }else if (onOf.equals("Off")){
+            setDeviceModeColor(true);
+        }
+    }
+
+    private void setDeviceModeColor(boolean isOn){
+        Drawable color1 = getResources().getDrawable(R.drawable.btn_off);
+        Drawable color2 = getResources().getDrawable(R.drawable.btn_on);
+        if(isOn) {
+            mBtnOnDevice.setBackground(color1);
+            mBtnOffDevice.setBackground(color2);
+        }else {
+            mBtnOnDevice.setBackground(color2);
+            mBtnOffDevice.setBackground(color1);
+        }
+    }
+
+}
