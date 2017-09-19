@@ -1,6 +1,7 @@
 package ru.android.bluetooth.view;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -46,6 +47,7 @@ import ru.android.bluetooth.R;
 import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
 import ru.android.bluetooth.common.DateParser;
+import ru.android.bluetooth.utils.ActivityHelper;
 
 /**
  * Created by yasina on 17.09.17.
@@ -62,6 +64,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
     private int selectedItem = 999;
     private DateParser mDateParser;
     private Activity mActivity;
+    private AlertDialog mDialog;
 
 
     public CalendarPresenter(Activity a, BluetoothMessage mBluetoothMessage, CalendarModule.View view) {
@@ -117,7 +120,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
     }
 
     private void readFile(final TableLayout tableLayout){
-        File file = new File(Environment.getExternalStorageDirectory(),"schedule.xls");
+        File file = new File(Environment.getExternalStorageDirectory(),"Schedule.xls");
 
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
@@ -174,15 +177,16 @@ public class CalendarPresenter implements CalendarModule.Presenter,
                             i++;
                         }
 
+                        ActivityHelper.hideProgressBar(mDialog);
                     } catch (java.lang.Exception e) {
-
+                        ActivityHelper.hideProgressBar(mDialog);
                     }
                 }
             }
             br.close();
         }
         catch (IOException e) {
-
+            ActivityHelper.hideProgressBar(mDialog);
         }
 
     }
@@ -195,6 +199,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
     @Override
     public void getSchedule() {
         writeFile();
+        mDialog = ActivityHelper.showProgressBar(mActivity, "Считывание расписания");
         mBluetoothMessage.writeMessage(BluetoothCommands.GET_TABLE);
         mBluetoothMessage.writeMessage("ddd\r\n");
     }

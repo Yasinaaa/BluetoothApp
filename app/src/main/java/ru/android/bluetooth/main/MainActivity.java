@@ -29,6 +29,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -51,6 +53,7 @@ import jxl.write.biff.RowsExceededException;
 import ru.android.bluetooth.R;
 import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
+import ru.android.bluetooth.common.DateParser;
 import ru.android.bluetooth.hand_generation.GenerateHandActivity;
 import ru.android.bluetooth.main.helper.ResponseView;
 import ru.android.bluetooth.root.RootActivity;
@@ -190,7 +193,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
 
         mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
         mBluetoothMessage.setBluetoothMessageListener(this);
-        setMessage(BluetoothCommands.STATUS);
+        //setMessage(mTvStatus,BluetoothCommands.STATUS);
 
     }
 
@@ -223,7 +226,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
         mIbSyncDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setMessage(BluetoothCommands.GET_TIME);
+                setMessage(mTvTime, BluetoothCommands.GET_TIME);
                // testSetData();
                // setMessage(BluetoothCommands.GET_TABLE);
             }
@@ -248,7 +251,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
                         thisTextNeedToSetTextView = String.format("%s-%s-%s", new String[]{
                                 i2s+"", i1s, i+""
                         });
-                        setMessage(BluetoothCommands.SET_DATE, BluetoothCommands.setDate(year, month+1, day));
+                        setMessage(mTvDate, BluetoothCommands.SET_DATE, BluetoothCommands.setDate(year, month+1, day));
 
                     }
                 }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
@@ -266,7 +269,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
                         thisTextNeedToSetTextView = String.format("%s:%s", new String[]{
                                String.valueOf(i), String.valueOf(i1)
                         });
-                        setMessage(BluetoothCommands.SET_TIME, BluetoothCommands.setTime(i,i1));
+                        setMessage(mTvTime, BluetoothCommands.SET_TIME, BluetoothCommands.setTime(i,i1));
                     }
                 },Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), true);
                 timePickerDialog.show();
@@ -299,6 +302,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
 
     int count = 0;
     //String mTable = "";
+    AlertDialog mLoadingTableAlertDialog;
     @Override
     public void onResponse(String answer) {
         Log.d(TAG, " " + answer);
@@ -311,11 +315,14 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
             //Log.d(TAG, "mStatus=" + mStatus + " " + answer);
             switch (mStatus) {
                 case BluetoothCommands.GET_TABLE:
-                   /* if(answer.contains("Not") || mTable.contains("command")){
-                        //answer = answer.replaceAll("[Notcomand ]","");
+                    if(answer.contains("Not") || mTable.contains("command")){
+                        answer = answer.replaceAll("[Notcomand ]","");
                         exportToExcel(mTable);
                     }
-                    mTable +=answer;*/
+                    /*if(StringUtils.countMatches(answer, "i") == 2){
+                        String[] newArray = answer.split("i");
+                    }*/
+                    mTable +=answer;
 
 
 
@@ -330,7 +337,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
                             ResponseView.RESET);
                     break;
                 case BluetoothCommands.STATUS:
-                    mTvStatus.setText(answer);
+                    mTvStatus.setText(mTvStatus.getText() + answer);
                     parseStatus(answer);
                     ResponseView.showSnackbar(mRl,
                             ResponseView.STATUS);
@@ -354,14 +361,14 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
                     setDeviceModeColor(false);
                     ResponseView.showSnackbar(mRl,
                             ResponseView.ON);
-                    setMessage(BluetoothCommands.STATUS);
+                    setMessage(mTvStatus, BluetoothCommands.STATUS);
 
                     break;
                 case BluetoothCommands.OFF:
                     setDeviceModeColor(true);
                     ResponseView.showSnackbar(mRl,
                             ResponseView.OFF);
-                    setMessage(BluetoothCommands.STATUS);
+                    setMessage(mTvStatus, BluetoothCommands.STATUS);
                     break;
 
                 case BluetoothCommands.SET_DATA:
@@ -387,7 +394,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
                         //ResponseView.showSnackbar(getWindow().getDecorView().getRootView(),
                         ResponseView.showSnackbar(mRl,
                                 ResponseView.MANUAL_ON);
-                        setMessage(BluetoothCommands.STATUS);
+                        setMessage(mTvStatus, BluetoothCommands.STATUS);
                     }
                     break;
 
@@ -397,7 +404,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
                                 ResponseView.MANUAL_OFF);
                         //setMessage(BluetoothCommands.DEBUG);
                        // mAutoModePresenter.createDatesView(mRvOnOffInfo);
-                        setMessage(BluetoothCommands.STATUS);
+                        setMessage(mTvStatus, BluetoothCommands.STATUS);
                     }
                     break;
             }
@@ -462,15 +469,14 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
         mIbSyncStatus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mStatus = BluetoothCommands.STATUS;
-                mBluetoothMessage.writeMessage(mStatus);
+                setMessage(mTvStatus, BluetoothCommands.STATUS);
             }
         });
 
         mIbSyncVersion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setMessage(BluetoothCommands.VERSION);
+                setMessage(mTvVersion, BluetoothCommands.VERSION);
                // testSetData();
             }
         });
@@ -482,7 +488,19 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
         mBluetoothMessage.writeMessage(status);
     }
 
+    private void setMessage(TextView textView, String status){
+        textView.setText("");
+        mStatus = status;
+        mBluetoothMessage.writeMessage(status);
+    }
+
     private void setMessage(String status, String text){
+        mStatus = status;
+        mBluetoothMessage.writeMessage(text);
+    }
+
+    private void setMessage(TextView textView, String status, String text){
+        textView.setText("");
         mStatus = status;
         mBluetoothMessage.writeMessage(text);
     }
@@ -546,6 +564,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
 
     }
 
+    String mTable;
     Activity activity = this;
     private void setScheduleButtons(){
         mBtnEditSchedule.setOnClickListener(new View.OnClickListener() {
@@ -587,6 +606,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
             }
         });
 
+
         mBtnLoadSchedule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -601,7 +621,8 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
                                         //.setAction(Intent.ACTION_GET_CONTENT);
 
                                // startActivityForResult(Intent.createChooser(intent, "Select a file"), 123);
-                                //mTable = "";
+                                mTable = "";
+                                mLoadingTableAlertDialog = ActivityHelper.showProgressBar(activity);
                                 setMessage(BluetoothCommands.GET_TABLE);
                                 SystemClock.sleep(1000);
                                 setMessage(BluetoothCommands.GET_TABLE, "f\r\n");
@@ -639,6 +660,92 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
         }
     }
 
+    private void exportToExcel(String table) {
+        ActivityHelper.changeProgressBarText(mLoadingTableAlertDialog, "Запись расписания в файл");
+        final String fileName = "Schedule.xls";
+        File file = new File(Environment.getExternalStorageDirectory(), fileName);
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
+        WorkbookSettings wbSettings = new WorkbookSettings();
+        wbSettings.setLocale(new Locale("en", "EN"));
+        WritableWorkbook workbook;
+
+        try {
+            workbook = Workbook.createWorkbook(file, wbSettings);
+
+            WritableSheet sheet = workbook.createSheet("schedule", 0);
+            DateParser mDateParser = new DateParser(Calendar.getInstance(), getApplicationContext());
+
+            try {
+                String[] textArray = table.split("\n");
+                for (int i=0; i<textArray.length; i++){
+                    String[] underTextArray;
+                    if(StringUtils.countMatches(textArray[i], "i") == 2){
+                        underTextArray = textArray[i].split("i");
+                    }
+                    else {
+                        underTextArray = new String[1];
+                        underTextArray[0] = textArray[i];
+                    }
+
+                    for (int j=0; j<underTextArray.length; j++){
+                        try {
+                            sheet.addCell(new Label(0, i, mDateParser.getDate(underTextArray[j].
+                                    substring(underTextArray[j].indexOf("=") + 1,
+                                    underTextArray[j].indexOf(",")))));
+
+                        }catch (java.lang.StringIndexOutOfBoundsException e){
+
+                        }
+
+                        try {
+
+                        sheet.addCell(new Label(1, i, mDateParser.getTime(underTextArray[j].substring(
+                                underTextArray[j].lastIndexOf(",") + 1,
+                                underTextArray[j].length()))));
+                        }catch (java.lang.StringIndexOutOfBoundsException e){
+
+                        }
+
+                        try{
+                        sheet.addCell(new Label(2, i, mDateParser.getTime(underTextArray[j].substring(underTextArray[j].
+                                        indexOf(",") + 1,
+                                underTextArray[j].lastIndexOf(",")))));
+                        }catch (java.lang.StringIndexOutOfBoundsException e){
+
+                        }
+                    }
+
+                }
+
+            } catch (RowsExceededException e) {
+                e.printStackTrace();
+            } catch (WriteException e) {
+                e.printStackTrace();
+            }
+            workbook.write();
+            ActivityHelper.hideProgressBar(mLoadingTableAlertDialog);
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity)
+                    .setTitle("Файл сохранен")
+                    .setMessage("Сохранен в " + file.getPath())
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
+            dialogBuilder.show();
+            mEtScheduleName.setText(file.getPath());
+            try {
+                workbook.close();
+            } catch (WriteException e) {
+                e.printStackTrace();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 }

@@ -105,6 +105,7 @@ public class CalendarActivity extends RootActivity implements CalendarModule.Vie
         fabMenu.setOnFloatingActionsMenuUpdateListener(new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
             @Override
             public void onMenuExpanded() {
+
                 frameLayout.getBackground().setAlpha(240);
                 frameLayout.setOnTouchListener(new View.OnTouchListener() {
                     @Override
@@ -126,7 +127,7 @@ public class CalendarActivity extends RootActivity implements CalendarModule.Vie
             @Override
             public void onMenuCollapsed() {
                 frameLayout.getBackground().setAlpha(0);
-                frameLayout.setOnTouchListener(null);
+                //frameLayout.setOnTouchListener(null);
 
             }
         });

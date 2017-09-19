@@ -12,6 +12,7 @@
         android:id="@+id/tv_day"
         android:layout_weight="1"
         android:textSize="17sp"
+        android:textColor="@color/cardview_dark_background"
         android:background="@drawable/cell_shape"
         android:padding="5dp"
         android:text="  01.09.2017"/>
@@ -24,6 +25,7 @@
         android:textAlignment="center"
         android:textSize="17sp"
         android:padding="5dp"
+        android:textColor="@color/cardview_dark_background"
         android:background="@drawable/cell_shape"
         android:text="03:00"/>
 
@@ -35,6 +37,7 @@
         android:textAlignment="center"
         android:textSize="17sp"
         android:padding="5dp"
+        android:textColor="@color/cardview_dark_background"
         android:background="@drawable/cell_shape"
         android:text="21:00"/>
 </LinearLayout>

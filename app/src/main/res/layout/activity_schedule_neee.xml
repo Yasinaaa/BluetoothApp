@@ -2,10 +2,10 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/tools"
-    android:id="@+id/scrollView"
+    android:id="@+id/frame_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/white_overlay"
     android:layout_marginBottom="10dp">
 
     <android.support.v4.widget.NestedScrollView
@@ -22,12 +22,6 @@
 
 
     </android.support.v4.widget.NestedScrollView>
-
-    <FrameLayout
-        android:id="@+id/frame_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/white_overlay">
 
         <com.getbase.floatingactionbutton.FloatingActionsMenu
             android:id="@+id/fab_menu"
@@ -78,7 +72,7 @@
                 android:onClick="fabClicked"
                 fab:fab_title="Загрузить в Excel файл" />
         </com.getbase.floatingactionbutton.FloatingActionsMenu>
-    </FrameLayout>
+
 
     <!--<android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_3"

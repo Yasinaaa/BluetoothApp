@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.util.Calendar;
 
@@ -42,10 +43,17 @@ public class DateParser {
     }
 
     public String getTime(String time){
-        int timeMin = Integer.parseInt(time);
-        String hour = setZeros(String.valueOf(timeMin / 60));
-        String min = setZeros(String.valueOf(timeMin % 60));
-        return hour + ":" + min;
+        try {
+            time = time.replace("\r","");
+            time = time.replaceAll("[^\\d.]", "");
+            int timeMin = Integer.parseInt(time);
+            String hour = setZeros(String.valueOf(timeMin / 60));
+            String min = setZeros(String.valueOf(timeMin % 60));
+            return hour + ":" + min;
+        }catch (java.lang.NumberFormatException e){
+            Log.d("ddd", "time = " + time);
+        }
+        return null;
     }
 
     private String setZeros(String time){
