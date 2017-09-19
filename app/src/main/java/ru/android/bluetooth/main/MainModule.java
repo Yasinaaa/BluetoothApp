@@ -8,6 +8,7 @@ public interface MainModule {
 
 
     interface ManualModeView{
+        void dataCreated(int[] onList, int[] offList);
         void setDeviceTitle(String title);
         void setStatus(String status);
         void addItemToDateRecyclerView();

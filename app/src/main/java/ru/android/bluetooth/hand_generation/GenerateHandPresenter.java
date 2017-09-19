@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
@@ -59,7 +60,7 @@ public class GenerateHandPresenter {
 
     }
 
-    public void setOnDateClickListenerImageButton(final boolean isOnOrOff, ImageButton imageButton, final TextView tvTime){
+    public void setOnDateClickListenerImageButton(final boolean isOnOrOff, Button imageButton, final TextView tvTime){
         final Calendar calendar = Calendar.getInstance();
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -99,7 +100,7 @@ public class GenerateHandPresenter {
             @Override
             public void onClick(View view) {
 
-                /*AlertDialog.Builder dialog = new AlertDialog.Builder(mActivity)
+                AlertDialog.Builder dialog = new AlertDialog.Builder(mActivity)
                         .setTitle("Автореле")
                         .setMessage("Данная функция не доступна в данной версии")
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -108,7 +109,8 @@ public class GenerateHandPresenter {
                                 dialog.cancel();
                             }
                         });
-                dialog.show();*/
+                dialog.show();
+
                 int[] beginTime = new int[365];
                 int[] endTime = new int[365];
 

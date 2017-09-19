@@ -136,10 +136,6 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
     private String mStatus;
     private AutoModePresenter mAutoModePresenter;
 
-    public double JD = 0;
-    public int zone = +4;
-    public boolean dst = false;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -231,7 +227,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
 
         mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
         mBluetoothMessage.setBluetoothMessageListener(this);
-        //setMessage(mTvStatus,BluetoothCommands.STATUS);
+        setMessage(mTvStatus,BluetoothCommands.STATUS);
 
     }
 
@@ -264,7 +260,9 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
         mIbSyncDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setMessage(mTvTime, BluetoothCommands.GET_TIME);
+                mTvTime.setText("");
+                mTvDate.setText("");
+                setMessage(BluetoothCommands.GET_TIME);
                // testSetData();
                // setMessage(BluetoothCommands.GET_TABLE);
             }
@@ -278,7 +276,8 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
                         int year = datePicker.getYear();
                         int month = datePicker.getMonth();
                         int day = datePicker.getDayOfMonth();
-                        String i1s = String.valueOf(i1);
+
+                        String i1s = String.valueOf(i1+1);
                         if(i1s.length() == 1){
                             i1s = "0" + i1s;
                         }
@@ -304,8 +303,9 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
                 TimePickerDialog timePickerDialog = new TimePickerDialog(MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int i, int i1) {
+
                         thisTextNeedToSetTextView = String.format("%s:%s", new String[]{
-                               String.valueOf(i), String.valueOf(i1)
+                               setZeros(i), setZeros(i1)
                         });
                         setMessage(mTvTime, BluetoothCommands.SET_TIME, BluetoothCommands.setTime(i,i1));
                     }
@@ -315,6 +315,20 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
         });
     }
 
+    private String setZeros(int value){
+        String i1s = String.valueOf(value);
+        if(i1s.length() == 1){
+            i1s = "0" + i1s;
+        }
+        return i1s;
+    }
+
+
+    @Override
+    public void dataCreated(int[] onList, int[] offList) {
+        mStatus = BluetoothCommands.GET_TABLE;
+        mBluetoothMessage.writeMessage(onList, offList);
+    }
 
     @Override
     public void setDeviceTitle(String title) {
@@ -354,9 +368,6 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
             switch (mStatus) {
                 case BluetoothCommands.GET_TABLE:
 
-
-
-
                     break;
                 case BluetoothCommands.DEBUG:
                     //TODO!!!
@@ -364,41 +375,50 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
                     break;
                 case BluetoothCommands.RESET:
                     //mTvReset.setText(answer);
-                    ResponseView.showSnackbar(mRl,
-                            ResponseView.RESET);
+                    /*ResponseView.showSnackbar(mRl,
+                            ResponseView.RESET);*/
                     break;
                 case BluetoothCommands.STATUS:
                     mTvStatus.setText(mTvStatus.getText() + answer);
                     parseStatus(answer);
-                    ResponseView.showSnackbar(mRl,
-                            ResponseView.STATUS);
+                    /*ResponseView.showSnackbar(mRl,
+                            ResponseView.STATUS);*/
                     break;
                 case BluetoothCommands.VERSION:
                    // mTvVersion.setText(answer.substring(0, answer.indexOf("\n")));
-                    mTvVersion.setText(answer);
-                    ResponseView.showSnackbar(mRl,
-                            ResponseView.VERSION);
+                    mTvVersion.setText(mTvVersion.getText() + answer);
+                    /*ResponseView.showSnackbar(mRl,
+                            ResponseView.VERSION);*/
                     break;
                 case BluetoothCommands.GET_TIME:
-                    if(answer.contains(" ")){
-                        String[] time = answer.split(" ");
-                        mTvDate.setText(time[0]);
-                        mTvTime.setText(time[1].substring(0, time[1].indexOf("\r")));
-                        ResponseView.showSnackbar(mRl,
-                                ResponseView.GET_TIME);
+                    String[] time = answer.split(" ");
+                    try{
+                        mTvDate.setText(mTvDate.getText() + time[0]);
+                    }catch (java.lang.ArrayIndexOutOfBoundsException e){
+
                     }
+
+                    try{
+                        mTvTime.setText(mTvTime.getText() + time[1]);
+                    }catch (java.lang.ArrayIndexOutOfBoundsException e2){
+
+                    }
+
+                    //mTvTime.setText(time[1].substring(0, time[1].indexOf("\r")));
+
+
                     break;
                 case BluetoothCommands.ON:
                     setDeviceModeColor(false);
-                    ResponseView.showSnackbar(mRl,
-                            ResponseView.ON);
+                    /*ResponseView.showSnackbar(mRl,
+                            ResponseView.ON);*/
                     setMessage(mTvStatus, BluetoothCommands.STATUS);
 
                     break;
                 case BluetoothCommands.OFF:
                     setDeviceModeColor(true);
-                    ResponseView.showSnackbar(mRl,
-                            ResponseView.OFF);
+                    /*ResponseView.showSnackbar(mRl,
+                            ResponseView.OFF);*/
                     setMessage(mTvStatus, BluetoothCommands.STATUS);
                     break;
 
@@ -406,19 +426,23 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
 
                     break;
                 case BluetoothCommands.SET_DATE:
-                    if(answer.contains("Ok")){
-                        mTvDate.setText(thisTextNeedToSetTextView);
+                    mTvDate.setText(thisTextNeedToSetTextView);
+                    setMessage(mTvStatus, BluetoothCommands.STATUS);
+                   /* if(answer.contains("Ok")){
+
                         ResponseView.showSnackbar(mRl,
                                 ResponseView.SET_DATE);
-                    }
+                    }*/
                     break;
                 case BluetoothCommands.SET_TIME:
-                    if(answer.contains("Ok")){
-                        mTvTime.setText(thisTextNeedToSetTextView);
+                    mTvTime.setText(thisTextNeedToSetTextView);
+                    setMessage(mTvStatus, BluetoothCommands.STATUS);
+                    /*if(answer.contains("Ok")){
+
                         ResponseView.showSnackbar(mRl,
                                 ResponseView.SET_TIME);
 
-                    }
+                    }*/
                     break;
                 case BluetoothCommands.MANUAL_ON:
                     if(answer.contains("Ok")){
@@ -449,7 +473,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
         setScheduleButtons();
         setDateCliskListeners();
 
-        mTvEditSchedule.setOnClickListener(new View.OnClickListener() {
+        /*mTvEditSchedule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 File file = new File(Environment.getExternalStorageDirectory(), "schedule.txt");
@@ -459,7 +483,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
                 intent.setData(uri);
                 startActivity(intent);
             }
-        });
+        });*/
 
        /* mBtnManualMode.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -545,9 +569,10 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
             }else
             if (s.contains("Rele")){
                 setOnOff(s.split(" ")[1]);
-            }/*else if(!s.contains("s") && !s.contains(" ")){
+            }else
+                if(!s.matches("[a-zA-Z]*")){
                 getTime(s);
-            }*/
+            }
         }
     }
 
@@ -706,7 +731,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
 
     private void setScheduleFilePath(){
         String scheduleFile = CacheHelper.getSchedulePath(getApplicationContext());
-        if(scheduleFile != null){
+        if(!scheduleFile.equals("")){
             mEtScheduleName.setVisibility(View.VISIBLE);
             mEtScheduleName.setText(scheduleFile);
         }else {

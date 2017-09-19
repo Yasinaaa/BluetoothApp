@@ -95,11 +95,14 @@ public class S2 {
 
             value = BigInteger.valueOf(a[i]).toByteArray();
             if (value.length == 1){
-                data[j + 1] = 0;
+                //data[j + 1] = 0;
+                data[j + 1] = value[0];
+                data[j + 2] = 0;
             }else {
                 data[j + 1] = value[1];
+                data[j + 2] = value[0];
             }
-            data[j + 2] = value[0];
+
             crc += a[i];
 
             while (crc > 255) {

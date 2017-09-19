@@ -5,6 +5,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
 import android.view.MenuItem;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -36,12 +37,13 @@ public class GenerateHandActivity  extends RootActivity  {
     AutoCompleteTextView mActvRepeat;
     @BindView(R.id.tv_repeat_begin_day)
     TextView mTvRepeatBeginDay;
+
     @BindView(R.id.ib_set_begin_day)
-    ImageButton mIbSetBeginDay;
+    Button mIbSetBeginDay;
     @BindView(R.id.tv_repeat_end_day)
     TextView mTvRepeatEndDay;
     @BindView(R.id.ib_set_end_day)
-    ImageButton mIbSetEndDay;
+    Button mIbSetEndDay;
     @BindView(R.id.fab_save_one_day_schedule)
     FloatingActionButton mFab;
 
@@ -56,11 +58,7 @@ public class GenerateHandActivity  extends RootActivity  {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.generate_schedule);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        //((App) getApplication()).getComponent().inject(this);
-        ButterKnife.bind(this);
-        init();
+        start();
     }
 
     @Override
@@ -91,4 +89,9 @@ public class GenerateHandActivity  extends RootActivity  {
     public void setTag() {
 
     }
+
+    /*private void getValues(){
+        mTvSunrise.getText();
+        mTvSunset.getText();
+    }*/
 }

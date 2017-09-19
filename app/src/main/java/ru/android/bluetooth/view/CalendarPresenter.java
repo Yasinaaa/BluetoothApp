@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import jxl.Workbook;
 import jxl.WorkbookSettings;
@@ -49,6 +50,7 @@ import ru.android.bluetooth.R;
 import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
 import ru.android.bluetooth.common.DateParser;
+import ru.android.bluetooth.schedule.helper.ScheduleGenerator;
 import ru.android.bluetooth.utils.ActivityHelper;
 import ru.android.bluetooth.utils.CacheHelper;
 
@@ -69,7 +71,9 @@ public class CalendarPresenter implements CalendarModule.Presenter,
     private Activity mActivity;
     private AlertDialog mDialog;
     private String mTable;
-    final String fileName = "Schedule1.xls";
+    final String fileName = "Schedule.xls";
+    private int[] onList;
+    private int[] offList;
     //final String fileName = "Schedule.xls";
 
     public CalendarPresenter(Activity a, BluetoothMessage mBluetoothMessage, CalendarModule.View view) {
@@ -128,19 +132,19 @@ public class CalendarPresenter implements CalendarModule.Presenter,
                         }
 
                         try {
-                            sheet.addCell(new Label(1, i, "00:01"));
-                            /*sheet.addCell(new Label(1, i, mDateParser.getTime(underTextArray[j].substring(
+                            //sheet.addCell(new Label(1, i, "00:01"));
+                            sheet.addCell(new Label(1, i, mDateParser.getTime(underTextArray[j].substring(
                                     underTextArray[j].lastIndexOf(",") + 1,
-                                    underTextArray[j].length()))));*/
+                                    underTextArray[j].length()))));
                         }catch (java.lang.StringIndexOutOfBoundsException e){
 
                         }
 
                         try{
-                            sheet.addCell(new Label(2, i, "00:01"));
-                           /* sheet.addCell(new Label(2, i, mDateParser.getTime(underTextArray[j].substring(underTextArray[j].
+                            //sheet.addCell(new Label(2, i, "00:01"));
+                            sheet.addCell(new Label(2, i, mDateParser.getTime(underTextArray[j].substring(underTextArray[j].
                                             indexOf(",") + 1,
-                                    underTextArray[j].lastIndexOf(",")))));*/
+                                    underTextArray[j].lastIndexOf(",")))));
                         }catch (java.lang.StringIndexOutOfBoundsException e){
 
                         }
@@ -283,6 +287,47 @@ public class CalendarPresenter implements CalendarModule.Presenter,
                 child.setBackgroundColor(mContext.getResources().getColor(R.color.silver));
             }
         }
+    }
+
+    public boolean dst = false;
+
+    @Override
+    public void generateSchedule(Calendar startDate, Calendar endDate, double latitude, double longitude, int zone) {
+        Calendar currentDate = Calendar.getInstance();
+        double sunRise;
+        double sunSet;
+        int d = 0;
+        onList = new int[366];
+        offList = new int[366];
+
+        while (startDate.compareTo(endDate) <= 0) {
+            currentDate = startDate;
+
+            double JD = ScheduleGenerator.calcJD(startDate);  //OR   JD = Util.calcJD(2014, 6, 1);
+            sunRise = ScheduleGenerator.calcSunRiseUTC(JD, latitude, longitude);
+            sunSet = ScheduleGenerator.calcSunSetUTC(JD, latitude, longitude);
+
+            Log.d("TAG","day=" + d + " " +
+                    ScheduleGenerator.getTimeString(false,sunRise, zone, JD, dst) + " " +
+                    ScheduleGenerator.getTimeString(false,sunSet, zone, JD, dst)+ " " +
+                    ScheduleGenerator.getTimeString(true,sunRise, zone, JD, dst)+ " " +
+                    ScheduleGenerator.getTimeString(true,sunSet, zone, JD, dst)
+            );
+            /*int zone = Integer.parseInt(mActvTimezone.getText().toString());
+            */
+            onList[d] = Integer.parseInt(ScheduleGenerator.getTimeString(true, sunRise, zone, JD, dst));
+            offList[d] = Integer.parseInt(ScheduleGenerator.getTimeString(true, sunSet, zone, JD, dst));
+            d++;
+
+            startDate.add(Calendar.DAY_OF_YEAR, 1);
+
+        }
+        if(onList != null & offList != null){
+            //ActivityHelper.showProgressBar(mActivity, mContext.getString(R.string.generate_schedule));
+            mBluetoothMessage.writeMessage(onList, offList);
+        }
+
+
     }
 
 }

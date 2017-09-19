@@ -43,8 +43,8 @@ public class ScheduleLoading {
         this.mBluetoothMessage = mBluetoothMessage;
         this.mActivity = activity;
         this.mContext = activity.getApplicationContext();
-        onNumList = new int[365];
-        offNumList = new int[365];
+        onNumList = new int[366];
+        offNumList = new int[366];
         mDateParser = new DateParser(Calendar.getInstance(), mContext);
         checkPermission();
     }
@@ -107,7 +107,8 @@ public class ScheduleLoading {
             offNumList[i] = mDateParser.getNumTime(offList.get(i));
         }
        // mLoadingTableAlertDialog = ActivityHelper.showProgressBar(mActivity, "Запись рассписания");
-        mBluetoothMessage.writeMessage(onNumList, offNumList);
+        mView.dataCreated(onNumList, offNumList);
+
     }
 
 

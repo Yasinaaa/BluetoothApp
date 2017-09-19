@@ -12,6 +12,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.RecyclerView;
@@ -27,6 +28,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -49,6 +51,7 @@ import ru.android.bluetooth.main.helper.ResponseView;
 import ru.android.bluetooth.root.RootActivity;
 import ru.android.bluetooth.utils.ActivityHelper;
 import ru.android.bluetooth.utils.BluetoothHelper;
+import ru.android.bluetooth.utils.CacheHelper;
 
 /**
  * Created by yasina on 18.09.17.
@@ -69,7 +72,10 @@ public class SettingsActivity extends RootActivity
     Button mBtnOffDevice;
     @BindView(R.id.btn_change_name)
     Button mBtnChangeName;
-
+    @BindView(R.id.cl)
+    CoordinatorLayout mCoordinatorLayout;
+    @BindView(R.id.scrollView)
+    ScrollView mScrollView;
     @BindView(R.id.tv_change_password)
     TextView mTvChangePassword;
     @BindView(R.id.btn_change_password)
@@ -125,6 +131,8 @@ public class SettingsActivity extends RootActivity
        /* View view = this.getCurrentFocus();
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);*/
+        InputMethodManager im =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+        im.hideSoftInputFromWindow(mScrollView.getWindowToken(), 0);
 
         mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
         mBluetoothMessage.setBluetoothMessageListener(this);
@@ -147,11 +155,15 @@ public class SettingsActivity extends RootActivity
                 .setInterval(10 * 1000)
                 .setFastestInterval(1 * 1000);
 
+        mActvTimezone.setText(getTimeZone() + "");
+
+    }
+
+    private long getTimeZone(){
         Calendar mCalendar = Calendar.getInstance();
         TimeZone mTimeZone = mCalendar.getTimeZone();
         int mGMTOffset = mTimeZone.getRawOffset();
-        mActvTimezone.setText(TimeUnit.HOURS.convert(mGMTOffset, TimeUnit.MILLISECONDS) + "");
-
+        return TimeUnit.HOURS.convert(mGMTOffset, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -172,13 +184,15 @@ public class SettingsActivity extends RootActivity
         mCbAutoMode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setOnModeCheckBoxClicked(mCbAutoMode, mCbManualMode, false);
+                //setOnModeCheckBoxClicked(mCbAutoMode, mCbManualMode, false);
+                setMessage(BluetoothCommands.MANUAL_OFF);
             }
         });
         mCbManualMode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setOnModeCheckBoxClicked(mCbAutoMode, mCbManualMode, true);
+                //setOnModeCheckBoxClicked(mCbAutoMode, mCbManualMode, true);
+                setMessage(BluetoothCommands.MANUAL_ON);
             }
         });
         mBtnResetController.setOnClickListener(new View.OnClickListener() {
@@ -302,8 +316,8 @@ public class SettingsActivity extends RootActivity
         searchItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
-                mSettingsPresenter.setCoordinatesAndTimezone(currentLongitude, currentLatitude,
-                        mActvTimezone.getText().toString());
+                CacheHelper.setCoordinatesAndTimezone(getApplicationContext(), currentLongitude, currentLatitude,
+                        Long.getLong(mActvTimezone.getText().toString()));
 
                 finish();
                 return false;
@@ -382,6 +396,7 @@ public class SettingsActivity extends RootActivity
 
             currentLatitude = location.getLatitude();
             currentLongitude = location.getLongitude();
+            CacheHelper.setCoordinatesAndTimezone(getApplicationContext(), currentLongitude, currentLongitude, getTimeZone());
             mActvLatitude.setText(String.valueOf(currentLatitude));
             mActvLongitude.setText(String.valueOf(currentLongitude));
 
@@ -449,8 +464,8 @@ public class SettingsActivity extends RootActivity
                 case BluetoothCommands.STATUS:
 
                     parseStatus(answer);
-                    ResponseView.showSnackbar(mRl,
-                            ResponseView.STATUS);
+                    /*ResponseView.showSnackbar(mRl,
+                            ResponseView.STATUS);*/
                     break;
 
                 case BluetoothCommands.RESET:
@@ -460,33 +475,37 @@ public class SettingsActivity extends RootActivity
 
                 case BluetoothCommands.ON:
                     setDeviceModeColor(false);
-                    ResponseView.showSnackbar(mRl,
-                            ResponseView.ON);
+                    /*ResponseView.showSnackbar(mRl,
+                            ResponseView.ON);*/
                     setMessage(BluetoothCommands.STATUS);
 
                     break;
                 case BluetoothCommands.OFF:
                     setDeviceModeColor(true);
-                    ResponseView.showSnackbar(mRl, ResponseView.OFF);
+                    //ResponseView.showSnackbar(mRl, ResponseView.OFF);
                     setMessage(BluetoothCommands.STATUS);
                     break;
 
                 case BluetoothCommands.MANUAL_ON:
                     if(answer.contains("Ok")){
                         //ResponseView.showSnackbar(getWindow().getDecorView().getRootView(),
-                        ResponseView.showSnackbar(mRl,
-                                ResponseView.MANUAL_ON);
+                        /*ResponseView.showSnackbar(mRl,
+                                ResponseView.MANUAL_ON);*/
                         setMessage(BluetoothCommands.STATUS);
+                        mCbAutoMode.setChecked(false);
+                        mCbManualMode.setChecked(true);
                     }
                     break;
 
                 case BluetoothCommands.MANUAL_OFF:
                     if(answer.contains("Ok")){
-                        ResponseView.showSnackbar(mRl,
-                                ResponseView.MANUAL_OFF);
+                        /*ResponseView.showSnackbar(mRl,
+                                ResponseView.MANUAL_OFF);*/
                         //setMessage(BluetoothCommands.DEBUG);
                         // mAutoModePresenter.createDatesView(mRvOnOffInfo);
                         setMessage(BluetoothCommands.STATUS);
+                        mCbAutoMode.setChecked(true);
+                        mCbManualMode.setChecked(false);
                     }
                     break;
             }

@@ -89,8 +89,8 @@ public class DateParser {
 
     public int getNumTime(String time){
         try {
-            int hour = Integer.parseInt(time.substring(0, time.indexOf(":") + 1));
-            int min = Integer.parseInt(time.substring(time.indexOf(":")));
+            int hour = Integer.parseInt(removeExtraZeros(time.substring(0, time.indexOf(":"))));
+            int min = Integer.parseInt(removeExtraZeros(time.substring(time.indexOf(":")+1)));
             return hour*60 + min;
         }catch (java.lang.NumberFormatException e){
             Log.d("ddd", "time = " + time);
@@ -98,4 +98,10 @@ public class DateParser {
         return 0;
     }
 
+    private String removeExtraZeros(String value){
+        if (value.indexOf(0) == '0'){
+            value = value.substring(1);
+        }
+        return value;
+    }
 }

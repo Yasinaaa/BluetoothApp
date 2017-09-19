@@ -1,6 +1,9 @@
 package ru.android.bluetooth.view;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,13 +19,17 @@ import android.widget.TableLayout;
 
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
+import java.util.Calendar;
+
 import butterknife.BindView;
 import ru.android.bluetooth.R;
+import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
 import ru.android.bluetooth.one_day.ChangeOneDayScheduleActivity;
 import ru.android.bluetooth.root.RootActivity;
 import ru.android.bluetooth.schedule.ScheduleGeneratorActivity;
 import ru.android.bluetooth.utils.ActivityHelper;
+import ru.android.bluetooth.utils.CacheHelper;
 
 /**
  * Created by itisioslab on 03.08.17.
@@ -53,11 +60,21 @@ public class CalendarActivity extends RootActivity implements CalendarModule.Vie
        // init();
         start();
     }
-
+    AlertDialog alertDialog;
     public void fabClicked(View v){
        switch (v.getId()){
            case R.id.fab_generate_shedule_hand_one_day:
-               ActivityHelper.startActivity(CalendarActivity.this, ChangeOneDayScheduleActivity.class);
+               //ActivityHelper.startActivity(CalendarActivity.this, ChangeOneDayScheduleActivity.class);
+               AlertDialog.Builder dialog2 = new AlertDialog.Builder(getApplicationContext())
+                       .setTitle("Автореле")
+                       .setMessage("Данная функция не доступна в данной версии")
+                       .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                           public void onClick(DialogInterface dialog, int which) {
+                               // Toast.makeText(getBaseContext(), "Cancel", Toast.LENGTH_SHORT).show();
+                               dialog.cancel();
+                           }
+                       });
+               dialog2.show();
                break;
            case R.id.fab_load_schedule:
                //ActivityHelper.startActivity(CalendarActivity.this, GenerateHandActivity.class);
@@ -65,7 +82,34 @@ public class CalendarActivity extends RootActivity implements CalendarModule.Vie
                break;
 
            case R.id.fab_generate_schedule_sunrise_set:
-               ActivityHelper.startActivity(CalendarActivity.this, ScheduleGeneratorActivity.class);
+               //ActivityHelper.startActivity(CalendarActivity.this, ScheduleGeneratorActivity.class);
+               Calendar finishDate = Calendar.getInstance();
+               finishDate.add(Calendar.YEAR, 1);
+               String[] result = CacheHelper.getCoordinatesAndTimezone(getApplicationContext());
+               if(result != null){
+                   mCalendarPresenter.generateSchedule(Calendar.getInstance(), finishDate,
+                           Double.parseDouble(result[0]),  Double.parseDouble(result[1]),
+                           Integer.parseInt(result[2]));
+               }else {
+
+                   AlertDialog.Builder dialog = new AlertDialog.Builder(this)
+                           .setTitle("Настройки")
+                           .setMessage("Укажите свое местоположение в Настройках")
+                           .setNegativeButton("Ок", new DialogInterface.OnClickListener() {
+                               @Override
+                               public void onClick(DialogInterface dialogInterface, int i) {
+                                   startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                                   alertDialog.dismiss();
+                               }
+                           });
+                   alertDialog = dialog.create();
+                   dialog.show();
+               }
+
+               //mScheduleBluetoothReader.readSchedule(Calendar.getInstance(), finishDate);
+               /*mStatus = BluetoothCommands.SET_DATA;
+               mAlertDialog = ActivityHelper.showProgressBar(mActivity, getString(R.string.generate_schedule));
+               mBluetoothMessage.writeMessage(onList, offList);*/
                break;
        }
     }

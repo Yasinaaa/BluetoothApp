@@ -60,7 +60,7 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceMo
         Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_choose_device);
         start();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         //test();
     }
 
@@ -109,9 +109,7 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceMo
         mBtnConnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!isFirstOpen){
-                   // mBluetoothModule
-                }
+
                 if(mDeviceTitle != null) {
                     dialog = ActivityHelper.showProgressBar(activity);
                     mBluetoothModule.connectDevice(mDeviceTitle, ChooseDeviceActivity.this);
