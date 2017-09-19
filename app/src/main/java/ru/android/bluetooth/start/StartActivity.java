@@ -64,6 +64,7 @@ public class StartActivity extends AppCompatActivity{
                 }
             }
         }, 100);
+
     }
 
     @Override

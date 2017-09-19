@@ -36,7 +36,7 @@ public class BluetoothModule {
     private ConnectedThread mConnectedThread;
     private BluetoothSocket mBTSocket = null;
 
-    private static final UUID BTMODULEUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    private UUID BTMODULEUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
     private Context mContext;
     private Activity mActivity;
@@ -205,11 +205,11 @@ public class BluetoothModule {
     }
 
     public void unregister(){
-       // try {
+        try {
             mActivity.unregisterReceiver(blReceiver);
-        //}catch (java.lang.IllegalArgumentException e){
+        }catch (java.lang.IllegalArgumentException e){
 
-        //}
+        }
         //mBTAdapter.disable();
     }
 
@@ -269,6 +269,7 @@ public class BluetoothModule {
         }
     };
 
+
     public void connectDevice(String info, final ChooseDeviceModule.ChooseDeviceView chooseDeviceView){
 
             if(!mBTAdapter.isEnabled()) {
@@ -284,26 +285,36 @@ public class BluetoothModule {
                 public void run() {
                     boolean fail = false;
 
-                    BluetoothDevice device = mBTAdapter.getRemoteDevice(address);
+                    String[] answer = BluetoothHelper.getBluetoothUser(mContext);
+                    //if(answer[0] == address
+                    Log.d("TAG", String.valueOf(!BluetoothHelper.isOpen(mContext)) + String.valueOf(answer[0] != address));
+                    if(!BluetoothHelper.isOpen(mContext) || !answer[0].equals(address)) {
+                        BluetoothDevice device = mBTAdapter.getRemoteDevice(address);
 
-                    try {
-                        mBTSocket = createBluetoothSocket(device);
-                    } catch (IOException e) {
-                        fail = true;
-                        //Toast.makeText(mContext, "Socket creation failed", Toast.LENGTH_SHORT).show();
-                    }
-                    try {
-
-                        if(!mBTSocket.isConnected()){
-                            mBTSocket.connect();
+                        try {
+                            mBTSocket = createBluetoothSocket(device);
+                        } catch (IOException e) {
+                            fail = true;
+                            //Toast.makeText(mContext, "Socket creation failed", Toast.LENGTH_SHORT).show();
                         }
-                    } catch (final IOException e) {
-                        Log.e("TAG", e.getMessage());
+                        try {
+
+                            if (!mBTSocket.isConnected()) {
+                                mBTSocket.connect();
+                            }
+
+                        } catch (final IOException e) {
+                            Log.e("TAG", e.getMessage());
                         /*try {
                             fail = true;
                             mBTSocket.close();
-
-                            chooseDeviceView.error(e.getMessage());
+                            mBTSocket = createBluetoothSocket(device);
+                            if(!mBTSocket.isConnected()){
+                                mBTSocket.connect();
+                            }else {
+                                fail = false;
+                                chooseDeviceView.error(e.getMessage());
+                            }
 
                         } catch (IOException ex) {
 
@@ -323,27 +334,48 @@ public class BluetoothModule {
                             e1.printStackTrace();
                         }*/
 
-                    }
-                    if(fail == false) {
-                        //mActivity.unregisterReceiver(blReceiver);
-                        mConnectedThread = ConnectedThread.createConnectedThread(mBTSocket, mHandler);
-                        mConnectedThread.start();
-                        mBluetoothMessage.setConnectedThread(mConnectedThread);
+                        }
+                        if (fail == false) {
+                            //mActivity.unregisterReceiver(blReceiver);
+                            mConnectedThread = ConnectedThread.createConnectedThread(mBTSocket, mHandler);
+                            mConnectedThread.start();
+                            mBluetoothMessage.setConnectedThread(mConnectedThread);
 
-                        mHandler.obtainMessage(BluetoothCommands.CONNECTING_STATUS, 1, -1, name)
-                                .sendToTarget();
+                            mHandler.obtainMessage(BluetoothCommands.CONNECTING_STATUS, 1, -1, name)
+                                    .sendToTarget();
 
+                            BluetoothHelper.saveBluetoothOpened(mContext, true);
+                            chooseDeviceView.goNext();
+                            BluetoothHelper.saveBluetoothUser(mContext, address, name);
+                       /* try {
+                            mBTSocket.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }*/
+
+                        }
+                    }else {
                         chooseDeviceView.goNext();
-                        BluetoothHelper.saveBluetoothUser(mContext, address, name);
-
-
                     }
                 }
             }.start();
     }
 
+
     private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException {
+        //BTMODULEUUID = UUID.nameUUIDFromBytes("jj".getBytes());
+        Log.d("TAG", "b=" + BTMODULEUUID);
         return  device.createRfcommSocketToServiceRecord(BTMODULEUUID);
     }
 
+
+    public static final String baseBluetoothUuidPostfix = "0000-1000-8000-00805F9B34FB";
+
+    public static UUID uuidFromShortCode16(String shortCode16) {
+        return UUID.fromString("0000" + shortCode16 + "-" + baseBluetoothUuidPostfix);
+    }
+
+    public static UUID uuidFromShortCode32(String shortCode32) {
+        return UUID.fromString(shortCode32 + "-" + baseBluetoothUuidPostfix);
+    }
 }

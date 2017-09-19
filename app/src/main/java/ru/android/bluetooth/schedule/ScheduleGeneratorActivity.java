@@ -206,8 +206,6 @@ public class ScheduleGeneratorActivity extends RootActivity
             sunRise = ScheduleGenerator.calcSunRiseUTC(JD, latitude, longitude);
             sunSet = ScheduleGenerator.calcSunSetUTC(JD, latitude, longitude);
 
-
-
             /*Log.d(TAG,"day=" + d + " " +
                     ScheduleGenerator.getTimeString(false,sunRise, TimeZone.getDefault(), JD, dst) + " " +
                     ScheduleGenerator.getTimeString(false,sunSet, zone, JD, dst)+ " " +
@@ -215,10 +213,10 @@ public class ScheduleGeneratorActivity extends RootActivity
                     ScheduleGenerator.getTimeString(true,sunSet, zone, JD, dst)
             );*/
             int zone = Integer.parseInt(mActvTimezone.getText().toString());
-            /*onList[d] = Integer.parseInt(ScheduleGenerator.getTimeString(true, sunRise, zone, JD, dst));
-            offList[d] = Integer.parseInt(ScheduleGenerator.getTimeString(true, sunSet, zone, JD, dst));*/
-            onList[d] = 779;
-            offList[d] = 779;
+            onList[d] = Integer.parseInt(ScheduleGenerator.getTimeString(true, sunRise, zone, JD, dst));
+            offList[d] = Integer.parseInt(ScheduleGenerator.getTimeString(true, sunSet, zone, JD, dst));
+            //onList[d] = 720;
+            //offList[d] = 130;
             d++;
 
             startDate.add(Calendar.DAY_OF_YEAR, 1);

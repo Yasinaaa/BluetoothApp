@@ -13,7 +13,7 @@ public class BluetoothHelper {
 
     public static final String PREF_ADDRESS = "pref_address_data";
     public static final String PREF_NAME = "pref_name_data";
-
+    public static final String PREF_OPEN = "pref_open";
 
     /*public static boolean isFirstLaunch(@Nullable Context context) {
         if (context == null) return false;
@@ -34,6 +34,19 @@ public class BluetoothHelper {
                 sp.getString(PREF_ADDRESS, ""),
                 sp.getString(PREF_NAME, "")
         };
+    }
+
+    public static void saveBluetoothOpened(@Nullable final Context context, @Nullable boolean isOpen) {
+        if (context == null) return;
+        SharedPreferences sp =
+                PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
+        sp.edit().putBoolean(PREF_OPEN, isOpen).apply();
+    }
+
+    @Nullable public static boolean isOpen(@Nullable final Context context) {
+        SharedPreferences sp =
+                PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
+        return sp.getBoolean(PREF_OPEN,false);
     }
 
     public static void saveBluetoothUser(@Nullable final Context context, @Nullable String address, @Nullable String name) {

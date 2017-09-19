@@ -66,6 +66,17 @@
                 android:onClick="fabClicked"
                 fab:fab_title="@string/generate_sunrise_sunset" />
 
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab_load_schedule"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fab:fab_colorNormal="@color/colorPrimary"
+                fab:fab_colorPressed="@color/colorPrimaryDark"
+                fab:fab_plusIconColor="@color/white"
+                fab:fab_icon="@drawable/pdf"
+                fab:fab_size="normal"
+                android:onClick="fabClicked"
+                fab:fab_title="Загрузить в Excel файл" />
         </com.getbase.floatingactionbutton.FloatingActionsMenu>
     </FrameLayout>
 

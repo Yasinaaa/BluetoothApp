@@ -30,6 +30,7 @@ import ru.android.bluetooth.bluetooth.BluetoothModule;
 import ru.android.bluetooth.main.MainActivity;
 import ru.android.bluetooth.root.RootActivity;
 import ru.android.bluetooth.utils.ActivityHelper;
+import ru.android.bluetooth.utils.BluetoothHelper;
 
 /**
  * Created by itisioslab on 01.08.17.
@@ -59,6 +60,7 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceMo
         Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_choose_device);
         start();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         //test();
     }
 
@@ -90,6 +92,9 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceMo
     @Override
     public void init(){
 
+        BluetoothHelper.saveBluetoothOpened(getApplicationContext(), false);
+        mBluetoothModule = new BluetoothModule(this, this);
+        mBluetoothModule.register();
         ActivityHelper.setVisibleLogoIcon(ChooseDeviceActivity.this);
 
         mRvDevicesList.setItemAnimator(new DefaultItemAnimator());
@@ -104,9 +109,9 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceMo
         mBtnConnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!isFirstOpen){
+                /*if(!isFirstOpen){
                     mBluetoothModule = BluetoothModule.createBluetoohModule(activity, viewC);
-                }
+                }*/
                 if(mDeviceTitle != null) {
                     dialog = ActivityHelper.showProgressBar(activity);
                     mBluetoothModule.connectDevice(mDeviceTitle, ChooseDeviceActivity.this);
@@ -201,14 +206,17 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceMo
     @Override
     protected void onResume() {
         super.onResume();
-        mBluetoothModule = new BluetoothModule(this, this);
-        mBluetoothModule.register();
+        //if(mBluetoothModule != null)
+       //     mBluetoothModule.unregister();
+
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mBluetoothModule.unregister();
+        if(mBluetoothModule != null) {
+            mBluetoothModule.unregister();
+        }
     }
 
     @Override

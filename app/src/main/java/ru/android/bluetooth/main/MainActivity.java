@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.SystemClock;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -190,6 +191,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
         mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
         mBluetoothMessage.setBluetoothMessageListener(this);
         setMessage(BluetoothCommands.STATUS);
+
     }
 
     private void setOnOff(String onOf){
@@ -296,7 +298,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
     }
 
     int count = 0;
-    List<String> mTable = new ArrayList<String>();
+    //String mTable = "";
     @Override
     public void onResponse(String answer) {
         Log.d(TAG, " " + answer);
@@ -309,7 +311,14 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
             //Log.d(TAG, "mStatus=" + mStatus + " " + answer);
             switch (mStatus) {
                 case BluetoothCommands.GET_TABLE:
-                    mTable.add(answer);
+                   /* if(answer.contains("Not") || mTable.contains("command")){
+                        //answer = answer.replaceAll("[Notcomand ]","");
+                        exportToExcel(mTable);
+                    }
+                    mTable +=answer;*/
+
+
+
                     break;
                 case BluetoothCommands.DEBUG:
                     //TODO!!!
@@ -396,6 +405,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
         }
     }
     @Override
+
     public void setClickListeners(){
 
         setScheduleButtons();
@@ -511,6 +521,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
 
+        activity = this;
         final MenuItem searchItem = menu.findItem(R.id.action_settings);
         searchItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
@@ -518,7 +529,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
                 //ActivityHelper.startActivity(activity, SettingsActivity.class);
                 Intent intent = new Intent(activity,SettingsActivity.class);
                 startActivity(intent);
-                return false;
+                return true;
             }
         });
         return true;
@@ -535,7 +546,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
 
     }
 
-    final Activity activity = this;
+    Activity activity = this;
     private void setScheduleButtons(){
         mBtnEditSchedule.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -590,7 +601,11 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
                                         //.setAction(Intent.ACTION_GET_CONTENT);
 
                                // startActivityForResult(Intent.createChooser(intent, "Select a file"), 123);
-                                exportToExcel();
+                                //mTable = "";
+                                setMessage(BluetoothCommands.GET_TABLE);
+                                SystemClock.sleep(1000);
+                                setMessage(BluetoothCommands.GET_TABLE, "f\r\n");
+
                             }
                         })
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -625,42 +640,5 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
     }
 
 
-    private void exportToExcel() {
-        final String fileName = "TodoList.xls";
-        File file = new File(Environment.getExternalStorageDirectory(), fileName);
-        try {
-            file.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-        WorkbookSettings wbSettings = new WorkbookSettings();
-        wbSettings.setLocale(new Locale("en", "EN"));
-        WritableWorkbook workbook;
-
-        try {
-            workbook = Workbook.createWorkbook(file, wbSettings);
-            //Excel sheet name. 0 represents first sheet
-            WritableSheet sheet = workbook.createSheet("MyShoppingList", 0);
-
-            try {
-                sheet.addCell(new Label(0, 0, "Subject")); // column and row
-                sheet.addCell(new Label(1, 0, "Description"));
-
-
-            } catch (RowsExceededException e) {
-                e.printStackTrace();
-            } catch (WriteException e) {
-                e.printStackTrace();
-            }
-            workbook.write();
-            try {
-                workbook.close();
-            } catch (WriteException e) {
-                e.printStackTrace();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }

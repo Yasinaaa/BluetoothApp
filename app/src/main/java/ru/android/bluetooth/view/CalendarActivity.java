@@ -1,7 +1,9 @@
 package ru.android.bluetooth.view;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.SearchView;
@@ -29,6 +31,7 @@ import ru.android.bluetooth.schedule.ScheduleGeneratorActivity;
 import ru.android.bluetooth.utils.ActivityHelper;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Created by itisioslab on 03.08.17.
@@ -65,13 +68,27 @@ public class CalendarActivity extends RootActivity implements CalendarModule.Vie
            case R.id.fab_generate_shedule_hand_one_day:
                ActivityHelper.startActivity(CalendarActivity.this, ChangeOneDayScheduleActivity.class);
                break;
-           /*case R.id.fab_generate_shedule_hand:
-               ActivityHelper.startActivity(CalendarActivity.this, GenerateHandActivity.class);
-               break;*/
+           case R.id.fab_load_schedule:
+               //ActivityHelper.startActivity(CalendarActivity.this, GenerateHandActivity.class);
+
+               break;
            case R.id.fab_generate_schedule_sunrise_set:
                ActivityHelper.startActivity(CalendarActivity.this, ScheduleGeneratorActivity.class);
                break;
        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == 0x11) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // save file
+            } else {
+                Toast.makeText(getApplicationContext(), "PERMISSION_DENIED", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     @Override
@@ -179,5 +196,7 @@ public class CalendarActivity extends RootActivity implements CalendarModule.Vie
     @Override
     public void onLoadingScheduleFinished() {
         mCalendarPresenter.setTable(mTableLayout);
+
+
     }
 }

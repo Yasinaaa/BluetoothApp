@@ -1,11 +1,16 @@
 package ru.android.bluetooth.view;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +19,9 @@ import android.view.ViewGroup;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -25,7 +33,15 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
+import jxl.Workbook;
+import jxl.WorkbookSettings;
+import jxl.write.Label;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
+import jxl.write.WriteException;
+import jxl.write.biff.RowsExceededException;
 import ru.android.bluetooth.R;
 import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
@@ -45,10 +61,12 @@ public class CalendarPresenter implements CalendarModule.Presenter,
     private Calendar mCurrentDay = null;
     private int selectedItem = 999;
     private DateParser mDateParser;
+    private Activity mActivity;
 
 
-    public CalendarPresenter(Context mContext, BluetoothMessage mBluetoothMessage, CalendarModule.View view) {
-        this.mContext = mContext;
+    public CalendarPresenter(Activity a, BluetoothMessage mBluetoothMessage, CalendarModule.View view) {
+        this.mActivity = a;
+        this.mContext = a.getApplicationContext();
         this.mBluetoothMessage = mBluetoothMessage;
         this.mView = view;
         init();
@@ -59,8 +77,47 @@ public class CalendarPresenter implements CalendarModule.Presenter,
         mDateParser = new DateParser(mCurrentDay, mContext);
     }
 
+    private void exportToExcel(String table) {
+        final String fileName = "Schedule.xls";
+        File file = new File(Environment.getExternalStorageDirectory(), fileName);
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        WorkbookSettings wbSettings = new WorkbookSettings();
+        wbSettings.setLocale(new Locale("en", "EN"));
+        WritableWorkbook workbook;
+
+        try {
+            workbook = Workbook.createWorkbook(file, wbSettings);
+
+            WritableSheet sheet = workbook.createSheet("schedule", 0);
+
+            try {
+                sheet.addCell(new Label(0, 0, "Subject")); // column and row
+                sheet.addCell(new Label(1, 0, "Description"));
+
+
+            } catch (RowsExceededException e) {
+                e.printStackTrace();
+            } catch (WriteException e) {
+                e.printStackTrace();
+            }
+            workbook.write();
+            try {
+                workbook.close();
+            } catch (WriteException e) {
+                e.printStackTrace();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void readFile(final TableLayout tableLayout){
-        File file = new File(Environment.getExternalStorageDirectory(),"schedule.txt");
+        File file = new File(Environment.getExternalStorageDirectory(),"schedule.xls");
 
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
@@ -70,40 +127,52 @@ public class CalendarPresenter implements CalendarModule.Presenter,
             int i = 0;
             while ((item = br.readLine()) != null) {
                 if (item.matches("(.*)=\\d+,\\d+,\\d+")) {
+                    String items[];
+                    if(StringUtils.countMatches(item, "i") == 2){
+                         items = item.split("i");
+                    }
+                    else {
+                        items = new String[1];
+                        items[0] = item;
+                    }
+
                     try {
                         LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                         View view = inflater.inflate(R.layout.item_schedule_day, null);
                         TextView day = (TextView) view.findViewById(R.id.tv_day);
-                        day.setText(mDateParser.getDate(item.substring(item.indexOf("=") + 1, item.indexOf(","))));
                         TextView on = (TextView) view.findViewById(R.id.tv_on_time);
-
                         TextView off = (TextView) view.findViewById(R.id.tv_off_time);
-                        on.setText(mDateParser.getTime(item.substring(item.lastIndexOf(",") + 1, item.length())));
-                        off.setText(mDateParser.getTime(item.substring(item.indexOf(",") + 1, item.lastIndexOf(","))));
 
-                        tableLayout.addView(view, i);
-                        final int finalI = i;
-                        final Resources resource = mContext.getResources();
-                        view.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
+                        for (String it: items) {
+                            day.setText(mDateParser.getDate(item.substring(it.indexOf("=") + 1, it.indexOf(","))));
+                            on.setText(mDateParser.getTime(item.substring(it.lastIndexOf(",") + 1, it.length())));
+                            off.setText(mDateParser.getTime(item.substring(it.indexOf(",") + 1, it.lastIndexOf(","))));
 
-                                if(selectedItem == finalI){
-                                    view.setBackgroundColor(resource.getColor(R.color.white));
-                                    selectedItem = 999;
+                            tableLayout.addView(view, i);
+                            final int finalI = i;
+                            final Resources resource = mContext.getResources();
+                            view.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
 
-                                }else{
-                                    view.setBackgroundColor(resource.getColor(R.color.silver));
-                                    if(selectedItem != 999){
-                                        tableLayout.getChildAt(selectedItem).setBackgroundColor(resource.getColor(R.color.white));
+                                    if (selectedItem == finalI) {
+                                        view.setBackgroundColor(resource.getColor(R.color.white));
+                                        selectedItem = 999;
+
+                                    } else {
+                                        view.setBackgroundColor(resource.getColor(R.color.silver));
+                                        if (selectedItem != 999) {
+                                            tableLayout.getChildAt(selectedItem).
+                                                    setBackgroundColor(resource.getColor(R.color.white));
+                                        }
+                                        selectedItem = finalI;
                                     }
-                                    selectedItem = finalI;
+
+
                                 }
-
-
-                            }
-                        });
-                        i++;
+                            });
+                            i++;
+                        }
 
                     } catch (java.lang.Exception e) {
 
@@ -127,6 +196,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
     public void getSchedule() {
         writeFile();
         mBluetoothMessage.writeMessage(BluetoothCommands.GET_TABLE);
+        mBluetoothMessage.writeMessage("ddd\r\n");
     }
 
     @Override
@@ -140,7 +210,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
             }
         }
         //SEND NOT COMMAND
-        if (answer.contains("is=365")){
+        if (answer.contains("Not") || answer.contains("command")){
             try {
                 output.close();
                 mView.onLoadingScheduleFinished();
@@ -153,15 +223,21 @@ public class CalendarPresenter implements CalendarModule.Presenter,
     private void writeFile(){
         try {
 
-            File file = new File(Environment.getExternalStorageDirectory(),"schedule.txt");
+            File file = new File(Environment.getExternalStorageDirectory(),"schedule.xls");
             file.createNewFile();
+
             output = new BufferedWriter(new FileWriter(file));
 
 
             //Toast.makeText(getApplicationContext(), "Composition saved", Toast.LENGTH_LONG).show();
 
         } catch (Exception e) {
-            //Toast.makeText(getBaseContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+           // Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_LONG).show();
+            final int REQUEST_CODE = 0x11;
+
+            String[] permissions = {"android.permission.WRITE_EXTERNAL_STORAGE"};
+            ActivityCompat.requestPermissions(mActivity, permissions, REQUEST_CODE); // without sdk version check
+
         }
     }
 
@@ -179,5 +255,10 @@ public class CalendarPresenter implements CalendarModule.Presenter,
     }
 
 
+    private boolean shouldAskPermission(){
+
+        return(Build.VERSION.SDK_INT> Build.VERSION_CODES.LOLLIPOP_MR1);
+
+    }
 
 }

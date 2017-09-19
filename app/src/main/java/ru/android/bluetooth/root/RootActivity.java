@@ -14,11 +14,6 @@ public abstract class RootActivity extends AppCompatActivity implements RootModu
     public String TAG = RootActivity.class.getSimpleName();
 
     @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         onBackPressed();
         return true;

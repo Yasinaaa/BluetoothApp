@@ -102,13 +102,15 @@ public class S2 {
             data[j + 2] = value[0];
             crc += a[i];
 
-            if (crc > 255) {
+            while (crc > 255) {
                 crc = crc - 255;
             }
             j = j + 2;
         }
 
         data[data.length-1]=(byte)crc;
+
+        Log.d("tg", "crc=" + crc);
         return data;
     }
     //TODO: NEED
