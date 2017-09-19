@@ -16,6 +16,7 @@ public interface CalendarModule {
     interface Presenter{
         void setTable(TableLayout tableLayout);
         void getSchedule();
+        void setLoadSchedule();
         void searchDay(String date, TableLayout tableLayout, NestedScrollView mNestedScrollView);
     }
 }

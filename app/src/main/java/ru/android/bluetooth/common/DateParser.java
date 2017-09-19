@@ -83,5 +83,19 @@ public class DateParser {
         sp.edit().putString(PREF_BEGIN_DAY, date).apply();
     }
 
+    public int getNumDate(String dayNum){
+      return 0;
+    }
+
+    public int getNumTime(String time){
+        try {
+            int hour = Integer.parseInt(time.substring(0, time.indexOf(":") + 1));
+            int min = Integer.parseInt(time.substring(time.indexOf(":")));
+            return hour*60 + min;
+        }catch (java.lang.NumberFormatException e){
+            Log.d("ddd", "time = " + time);
+        }
+        return 0;
+    }
 
 }

@@ -1,14 +1,17 @@
 package ru.android.bluetooth.main;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.SystemClock;
@@ -43,8 +46,11 @@ import java.util.List;
 import java.util.Locale;
 
 import butterknife.BindView;
+import jxl.Cell;
+import jxl.Sheet;
 import jxl.Workbook;
 import jxl.WorkbookSettings;
+import jxl.read.biff.BiffException;
 import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
@@ -56,13 +62,17 @@ import ru.android.bluetooth.bluetooth.BluetoothMessage;
 import ru.android.bluetooth.common.DateParser;
 import ru.android.bluetooth.hand_generation.GenerateHandActivity;
 import ru.android.bluetooth.main.helper.ResponseView;
+import ru.android.bluetooth.main.helper.ScheduleLoading;
 import ru.android.bluetooth.root.RootActivity;
 import ru.android.bluetooth.schedule.ScheduleGeneratorActivity;
 import ru.android.bluetooth.settings.SettingsActivity;
 import ru.android.bluetooth.start.ChooseDeviceActivity;
 import ru.android.bluetooth.utils.ActivityHelper;
 import ru.android.bluetooth.utils.BluetoothHelper;
+import ru.android.bluetooth.utils.CacheHelper;
 import ru.android.bluetooth.view.CalendarActivity;
+
+import static java.security.AccessController.getContext;
 
 
 /**
@@ -135,8 +145,34 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         start();
+        /*PackageManager pm = getApplicationContext().getPackageManager();
+        int hasPerm = pm.checkPermission(
+                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                getApplicationContext().getPackageName());
+
+        if (hasPerm != PackageManager.PERMISSION_GRANTED) {
+            requestPermission();
+        }
+*/
     }
 
+    private static final int REQUEST_READ_PERMISSION = 785;
+    private static final int REQUEST_WRITE_PERMISSION = 786;
+
+    @Override
+    public void requestReadPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_READ_PERMISSION);
+        } else {
+
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == REQUEST_READ_PERMISSION && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            //openFilePicker();
+        }
+    }
    /* private void testSetData(){
 
         Calendar finishDate = Calendar.getInstance();
@@ -178,6 +214,8 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
         }catch (java.lang.NullPointerException e){
 
         }
+
+        setScheduleFilePath();
 
         ActivityHelper.setVisibleLogoIcon(this);
         //mTbSwitchModeDevice.setChecked(true);
@@ -315,14 +353,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
             //Log.d(TAG, "mStatus=" + mStatus + " " + answer);
             switch (mStatus) {
                 case BluetoothCommands.GET_TABLE:
-                    if(answer.contains("Not") || mTable.contains("command")){
-                        answer = answer.replaceAll("[Notcomand ]","");
-                        exportToExcel(mTable);
-                    }
-                    /*if(StringUtils.countMatches(answer, "i") == 2){
-                        String[] newArray = answer.split("i");
-                    }*/
-                    mTable +=answer;
+
 
 
 
@@ -612,20 +643,15 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
             public void onClick(View view) {
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity)
                         .setTitle(getString(R.string.generate_dialog_title))
-                        .setMessage("Каждый день рассписания должен выглядеть так: \n" +
-                                "is=1,134,256")
+                        .setMessage("Выберите Excel файл")
                         .setPositiveButton("Загрузить", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                //Intent intent = new Intent()
-                                        //.setType("*/*")
-                                        //.setAction(Intent.ACTION_GET_CONTENT);
 
-                               // startActivityForResult(Intent.createChooser(intent, "Select a file"), 123);
-                                mTable = "";
-                                mLoadingTableAlertDialog = ActivityHelper.showProgressBar(activity);
-                                setMessage(BluetoothCommands.GET_TABLE);
-                                SystemClock.sleep(1000);
-                                setMessage(BluetoothCommands.GET_TABLE, "f\r\n");
+                                Intent intent = new Intent()
+                                        .setType("*/*")
+                                        .setAction(Intent.ACTION_GET_CONTENT);
+
+                                startActivityForResult(Intent.createChooser(intent, "Select a file"), 123);
 
                             }
                         })
@@ -634,6 +660,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
                             }
                         });
                 dialogBuilder.show();
+
             }
         });
     }
@@ -641,11 +668,22 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==123 && resultCode==RESULT_OK) {
+
             Uri selectedfile = data.getData();
-            String title = selectedfile.getLastPathSegment();
-            if(title.endsWith(".txt")){
-                mEtScheduleName.setText(title.substring(title.indexOf("/") + 1));
-                File file = new File(selectedfile.getPath());
+            String r = Environment.getExternalStorageDirectory().getPath();
+            String title = selectedfile.getLastPathSegment().substring(selectedfile.getLastPathSegment().indexOf(":")+1);
+            if(title.endsWith(".xls")){
+
+                File file = new File(r+"/"+title);
+                if (file.exists()){
+                    Log.d("t", "exists");
+                }
+                //mEtScheduleName.setText(file.getPath());
+                //CacheHelper.setSchedulePath(getApplicationContext(), file.getPath());
+
+                ScheduleLoading scheduleLoading = new ScheduleLoading(this, mBluetoothMessage, this);
+                scheduleLoading.parceSchedule(file);
+
             }else {
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity)
                         .setTitle(getString(R.string.generate_dialog_title))
@@ -660,92 +698,22 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
         }
     }
 
-    private void exportToExcel(String table) {
-        ActivityHelper.changeProgressBarText(mLoadingTableAlertDialog, "Запись расписания в файл");
-        final String fileName = "Schedule.xls";
-        File file = new File(Environment.getExternalStorageDirectory(), fileName);
-        try {
-            file.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setScheduleFilePath();
+    }
 
-        WorkbookSettings wbSettings = new WorkbookSettings();
-        wbSettings.setLocale(new Locale("en", "EN"));
-        WritableWorkbook workbook;
-
-        try {
-            workbook = Workbook.createWorkbook(file, wbSettings);
-
-            WritableSheet sheet = workbook.createSheet("schedule", 0);
-            DateParser mDateParser = new DateParser(Calendar.getInstance(), getApplicationContext());
-
-            try {
-                String[] textArray = table.split("\n");
-                for (int i=0; i<textArray.length; i++){
-                    String[] underTextArray;
-                    if(StringUtils.countMatches(textArray[i], "i") == 2){
-                        underTextArray = textArray[i].split("i");
-                    }
-                    else {
-                        underTextArray = new String[1];
-                        underTextArray[0] = textArray[i];
-                    }
-
-                    for (int j=0; j<underTextArray.length; j++){
-                        try {
-                            sheet.addCell(new Label(0, i, mDateParser.getDate(underTextArray[j].
-                                    substring(underTextArray[j].indexOf("=") + 1,
-                                    underTextArray[j].indexOf(",")))));
-
-                        }catch (java.lang.StringIndexOutOfBoundsException e){
-
-                        }
-
-                        try {
-
-                        sheet.addCell(new Label(1, i, mDateParser.getTime(underTextArray[j].substring(
-                                underTextArray[j].lastIndexOf(",") + 1,
-                                underTextArray[j].length()))));
-                        }catch (java.lang.StringIndexOutOfBoundsException e){
-
-                        }
-
-                        try{
-                        sheet.addCell(new Label(2, i, mDateParser.getTime(underTextArray[j].substring(underTextArray[j].
-                                        indexOf(",") + 1,
-                                underTextArray[j].lastIndexOf(",")))));
-                        }catch (java.lang.StringIndexOutOfBoundsException e){
-
-                        }
-                    }
-
-                }
-
-            } catch (RowsExceededException e) {
-                e.printStackTrace();
-            } catch (WriteException e) {
-                e.printStackTrace();
-            }
-            workbook.write();
-            ActivityHelper.hideProgressBar(mLoadingTableAlertDialog);
-            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity)
-                    .setTitle("Файл сохранен")
-                    .setMessage("Сохранен в " + file.getPath())
-                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                        }
-                    });
-            dialogBuilder.show();
-            mEtScheduleName.setText(file.getPath());
-            try {
-                workbook.close();
-            } catch (WriteException e) {
-                e.printStackTrace();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+    private void setScheduleFilePath(){
+        String scheduleFile = CacheHelper.getSchedulePath(getApplicationContext());
+        if(scheduleFile != null){
+            mEtScheduleName.setVisibility(View.VISIBLE);
+            mEtScheduleName.setText(scheduleFile);
+        }else {
+            mEtScheduleName.setVisibility(View.GONE);
         }
     }
+
+
 
 }

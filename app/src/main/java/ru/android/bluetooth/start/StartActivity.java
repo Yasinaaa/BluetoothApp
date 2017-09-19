@@ -21,6 +21,8 @@ import ru.android.bluetooth.utils.ActivityHelper;
 public class StartActivity extends AppCompatActivity{
 
     private Activity activity = this;
+    private BluetoothAdapter mBTAdapter;
+
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -32,6 +34,9 @@ public class StartActivity extends AppCompatActivity{
                 switch (bluetoothState) {
                     case BluetoothAdapter.STATE_ON:
                         ActivityHelper.startActivityAndFinishThis(activity, ChooseDeviceActivity.class);
+                        break;
+                    case BluetoothAdapter.STATE_OFF:
+                        mBTAdapter.enable();
                         break;
                 }
             }
@@ -51,9 +56,11 @@ public class StartActivity extends AppCompatActivity{
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             public void run() {
-                BluetoothAdapter mBTAdapter = BluetoothAdapter.getDefaultAdapter();
+                mBTAdapter = BluetoothAdapter.getDefaultAdapter();
                 try {
                     if (mBTAdapter.isEnabled()){
+                        //mBTAdapter.disable();
+
                         ActivityHelper.startActivityAndFinishThis(activity, ChooseDeviceActivity.class);
                     }else {
                         mBTAdapter.enable();

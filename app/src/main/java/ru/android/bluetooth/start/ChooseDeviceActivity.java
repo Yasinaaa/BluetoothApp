@@ -93,7 +93,7 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceMo
     public void init(){
 
         BluetoothHelper.saveBluetoothOpened(getApplicationContext(), false);
-        mBluetoothModule = new BluetoothModule(this, this);
+        mBluetoothModule = BluetoothModule.createBluetoohModule(this, this);
         mBluetoothModule.register();
         ActivityHelper.setVisibleLogoIcon(ChooseDeviceActivity.this);
 
@@ -109,9 +109,9 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceMo
         mBtnConnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*if(!isFirstOpen){
-                    mBluetoothModule = BluetoothModule.createBluetoohModule(activity, viewC);
-                }*/
+                if(!isFirstOpen){
+                   // mBluetoothModule
+                }
                 if(mDeviceTitle != null) {
                     dialog = ActivityHelper.showProgressBar(activity);
                     mBluetoothModule.connectDevice(mDeviceTitle, ChooseDeviceActivity.this);

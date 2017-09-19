@@ -6,10 +6,12 @@ package ru.android.bluetooth.main;
 
 public interface MainModule {
 
+
     interface ManualModeView{
         void setDeviceTitle(String title);
         void setStatus(String status);
         void addItemToDateRecyclerView();
+        void requestReadPermission();
     }
 
     interface AutoModeView{

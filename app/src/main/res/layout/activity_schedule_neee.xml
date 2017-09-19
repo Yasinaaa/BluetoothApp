@@ -70,7 +70,7 @@
                 fab:fab_icon="@drawable/pdf"
                 fab:fab_size="normal"
                 android:onClick="fabClicked"
-                fab:fab_title="Загрузить в Excel файл" />
+                fab:fab_title="Выгрузить расписание в Excel файл" />
         </com.getbase.floatingactionbutton.FloatingActionsMenu>
 
 

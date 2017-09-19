@@ -1,37 +1,28 @@
 package ru.android.bluetooth.view;
 
-import android.content.Context;
+import android.Manifest;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.SearchView;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.CalendarView;
 import android.widget.FrameLayout;
 import android.widget.TableLayout;
-import android.widget.TableRow;
+
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
-import java.util.Calendar;
-
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import ru.android.bluetooth.R;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
-import ru.android.bluetooth.hand_generation.GenerateHandActivity;
 import ru.android.bluetooth.one_day.ChangeOneDayScheduleActivity;
 import ru.android.bluetooth.root.RootActivity;
 import ru.android.bluetooth.schedule.ScheduleGeneratorActivity;
 import ru.android.bluetooth.utils.ActivityHelper;
-import android.view.ViewGroup.LayoutParams;
-import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * Created by itisioslab on 03.08.17.
@@ -70,24 +61,29 @@ public class CalendarActivity extends RootActivity implements CalendarModule.Vie
                break;
            case R.id.fab_load_schedule:
                //ActivityHelper.startActivity(CalendarActivity.this, GenerateHandActivity.class);
-
+               requestWritePermission();
                break;
+
            case R.id.fab_generate_schedule_sunrise_set:
                ActivityHelper.startActivity(CalendarActivity.this, ScheduleGeneratorActivity.class);
                break;
        }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    private static final int REQUEST_READ_PERMISSION = 785;
+    private static final int REQUEST_WRITE_PERMISSION = 786;
 
-        if (requestCode == 0x11) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // save file
-            } else {
-                Toast.makeText(getApplicationContext(), "PERMISSION_DENIED", Toast.LENGTH_SHORT).show();
-            }
+    public void requestWritePermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_PERMISSION);
+        } else {
+            mCalendarPresenter.setLoadSchedule();
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == REQUEST_WRITE_PERMISSION && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            mCalendarPresenter.setLoadSchedule();
         }
     }
 

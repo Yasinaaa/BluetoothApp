@@ -3,11 +3,13 @@ package ru.android.bluetooth.view;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Environment;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -48,6 +50,7 @@ import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
 import ru.android.bluetooth.common.DateParser;
 import ru.android.bluetooth.utils.ActivityHelper;
+import ru.android.bluetooth.utils.CacheHelper;
 
 /**
  * Created by yasina on 17.09.17.
@@ -65,7 +68,9 @@ public class CalendarPresenter implements CalendarModule.Presenter,
     private DateParser mDateParser;
     private Activity mActivity;
     private AlertDialog mDialog;
-
+    private String mTable;
+    final String fileName = "Schedule1.xls";
+    //final String fileName = "Schedule.xls";
 
     public CalendarPresenter(Activity a, BluetoothMessage mBluetoothMessage, CalendarModule.View view) {
         this.mActivity = a;
@@ -81,7 +86,8 @@ public class CalendarPresenter implements CalendarModule.Presenter,
     }
 
     private void exportToExcel(String table) {
-        final String fileName = "Schedule.xls";
+        ActivityHelper.changeProgressBarText(mDialog, "Запись расписания в файл");
+
         File file = new File(Environment.getExternalStorageDirectory(), fileName);
         try {
             file.createNewFile();
@@ -97,11 +103,50 @@ public class CalendarPresenter implements CalendarModule.Presenter,
             workbook = Workbook.createWorkbook(file, wbSettings);
 
             WritableSheet sheet = workbook.createSheet("schedule", 0);
+            DateParser mDateParser = new DateParser(Calendar.getInstance(), mContext);
 
             try {
-                sheet.addCell(new Label(0, 0, "Subject")); // column and row
-                sheet.addCell(new Label(1, 0, "Description"));
+                String[] textArray = table.split("\n");
+                for (int i=0; i<textArray.length; i++){
+                    String[] underTextArray;
+                    if(StringUtils.countMatches(textArray[i], "i") == 2){
+                        underTextArray = textArray[i].split("i");
+                    }
+                    else {
+                        underTextArray = new String[1];
+                        underTextArray[0] = textArray[i];
+                    }
 
+                    for (int j=0; j<underTextArray.length; j++){
+                        try {
+                            sheet.addCell(new Label(0, i, mDateParser.getDate(underTextArray[j].
+                                    substring(underTextArray[j].indexOf("=") + 1,
+                                            underTextArray[j].indexOf(",")))));
+
+                        }catch (java.lang.StringIndexOutOfBoundsException e){
+
+                        }
+
+                        try {
+                            sheet.addCell(new Label(1, i, "00:01"));
+                            /*sheet.addCell(new Label(1, i, mDateParser.getTime(underTextArray[j].substring(
+                                    underTextArray[j].lastIndexOf(",") + 1,
+                                    underTextArray[j].length()))));*/
+                        }catch (java.lang.StringIndexOutOfBoundsException e){
+
+                        }
+
+                        try{
+                            sheet.addCell(new Label(2, i, "00:01"));
+                           /* sheet.addCell(new Label(2, i, mDateParser.getTime(underTextArray[j].substring(underTextArray[j].
+                                            indexOf(",") + 1,
+                                    underTextArray[j].lastIndexOf(",")))));*/
+                        }catch (java.lang.StringIndexOutOfBoundsException e){
+
+                        }
+                    }
+
+                }
 
             } catch (RowsExceededException e) {
                 e.printStackTrace();
@@ -109,6 +154,17 @@ public class CalendarPresenter implements CalendarModule.Presenter,
                 e.printStackTrace();
             }
             workbook.write();
+            ActivityHelper.hideProgressBar(mDialog);
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mActivity)
+                    .setTitle("Файл сохранен")
+                    .setMessage("Сохранен в " + file.getPath())
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
+            dialogBuilder.show();
+
+            CacheHelper.setSchedulePath(mContext, file.getPath());
             try {
                 workbook.close();
             } catch (WriteException e) {
@@ -120,36 +176,34 @@ public class CalendarPresenter implements CalendarModule.Presenter,
     }
 
     private void readFile(final TableLayout tableLayout){
-        File file = new File(Environment.getExternalStorageDirectory(),"Schedule.xls");
 
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            String item;
+        if (mTable != null) {
+            String[] textArray = mTable.split("\r\n");
+            for (int i = 0; i < textArray.length; i++) {
+                String[] underTextArray;
+                if (StringUtils.countMatches(textArray[i], "i") == 2) {
+                    underTextArray = textArray[i].split("i");
+                } else {
+                    underTextArray = new String[1];
+                    underTextArray[0] = textArray[i];
+                }
 
-            boolean isFirstLine = true;
-            int i = 0;
-            while ((item = br.readLine()) != null) {
-                if (item.matches("(.*)=\\d+,\\d+,\\d+")) {
-                    String items[];
-                    if(StringUtils.countMatches(item, "i") == 2){
-                         items = item.split("i");
-                    }
-                    else {
-                        items = new String[1];
-                        items[0] = item;
-                    }
+                for (int j = 0; j < underTextArray.length; j++) {
+                    if (underTextArray[j].matches("(.*)=\\d+,\\d+,\\d+")) {
 
-                    try {
-                        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                        View view = inflater.inflate(R.layout.item_schedule_day, null);
-                        TextView day = (TextView) view.findViewById(R.id.tv_day);
-                        TextView on = (TextView) view.findViewById(R.id.tv_on_time);
-                        TextView off = (TextView) view.findViewById(R.id.tv_off_time);
+                        try {
+                            LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                            View view = inflater.inflate(R.layout.item_schedule_day, null);
+                            TextView day = (TextView) view.findViewById(R.id.tv_day);
+                            TextView on = (TextView) view.findViewById(R.id.tv_on_time);
+                            TextView off = (TextView) view.findViewById(R.id.tv_off_time);
 
-                        for (String it: items) {
-                            day.setText(mDateParser.getDate(item.substring(it.indexOf("=") + 1, it.indexOf(","))));
-                            on.setText(mDateParser.getTime(item.substring(it.lastIndexOf(",") + 1, it.length())));
-                            off.setText(mDateParser.getTime(item.substring(it.indexOf(",") + 1, it.lastIndexOf(","))));
+                            day.setText(mDateParser.getDate(underTextArray[j].substring(underTextArray[j].indexOf("=") + 1,
+                                    underTextArray[j].indexOf(","))));
+                            on.setText(mDateParser.getTime(underTextArray[j].substring(
+                                    underTextArray[j].lastIndexOf(",") + 1, underTextArray[j].length())));
+                            off.setText(mDateParser.getTime(underTextArray[j].substring(underTextArray[j].indexOf(",") + 1,
+                                    underTextArray[j].lastIndexOf(","))));
 
                             tableLayout.addView(view, i);
                             final int finalI = i;
@@ -170,23 +224,16 @@ public class CalendarPresenter implements CalendarModule.Presenter,
                                         }
                                         selectedItem = finalI;
                                     }
-
-
                                 }
                             });
-                            i++;
-                        }
 
-                        ActivityHelper.hideProgressBar(mDialog);
-                    } catch (java.lang.Exception e) {
-                        ActivityHelper.hideProgressBar(mDialog);
+                            ActivityHelper.hideProgressBar(mDialog);
+                        } catch (Exception e) {
+                            ActivityHelper.hideProgressBar(mDialog);
+                        }
                     }
                 }
             }
-            br.close();
-        }
-        catch (IOException e) {
-            ActivityHelper.hideProgressBar(mDialog);
         }
 
     }
@@ -197,53 +244,32 @@ public class CalendarPresenter implements CalendarModule.Presenter,
     }
 
     @Override
+    public void setLoadSchedule(){
+        mDialog = ActivityHelper.showProgressBar(mActivity);
+        exportToExcel(mTable);
+    }
+
+    @Override
     public void getSchedule() {
-        writeFile();
+        mTable = "";
         mDialog = ActivityHelper.showProgressBar(mActivity, "Считывание расписания");
         mBluetoothMessage.writeMessage(BluetoothCommands.GET_TABLE);
+        SystemClock.sleep(1000);
         mBluetoothMessage.writeMessage("ddd\r\n");
     }
 
     @Override
     public void onResponse(String answer) {
         Log.d("d", answer);
-        if(answer != " ") {
-            try {
-                output.write(answer);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        if(answer.contains("Not") || mTable.contains("command")){
+            answer = answer.replaceAll("[Notcomand ]","");
+            mTable +=answer;
+            mView.onLoadingScheduleFinished();
+            ActivityHelper.hideProgressBar(mDialog);
+        }else {
+            mTable +=answer;
         }
-        //SEND NOT COMMAND
-        if (answer.contains("Not") || answer.contains("command")){
-            try {
-                output.close();
-                mView.onLoadingScheduleFinished();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
-    private void writeFile(){
-        try {
-
-            File file = new File(Environment.getExternalStorageDirectory(),"schedule.xls");
-            file.createNewFile();
-
-            output = new BufferedWriter(new FileWriter(file));
-
-
-            //Toast.makeText(getApplicationContext(), "Composition saved", Toast.LENGTH_LONG).show();
-
-        } catch (Exception e) {
-           // Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_LONG).show();
-            final int REQUEST_CODE = 0x11;
-
-            String[] permissions = {"android.permission.WRITE_EXTERNAL_STORAGE"};
-            ActivityCompat.requestPermissions(mActivity, permissions, REQUEST_CODE); // without sdk version check
-
-        }
     }
 
     @Override
@@ -257,13 +283,6 @@ public class CalendarPresenter implements CalendarModule.Presenter,
                 child.setBackgroundColor(mContext.getResources().getColor(R.color.silver));
             }
         }
-    }
-
-
-    private boolean shouldAskPermission(){
-
-        return(Build.VERSION.SDK_INT> Build.VERSION_CODES.LOLLIPOP_MR1);
-
     }
 
 }
