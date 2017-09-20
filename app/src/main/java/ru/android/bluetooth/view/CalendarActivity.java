@@ -60,7 +60,7 @@ public class CalendarActivity extends RootActivity implements CalendarModule.Vie
        // init();
         start();
     }
-    AlertDialog alertDialog;
+    AlertDialog alertDialog, alertDialog2;
     public void fabClicked(View v){
        switch (v.getId()){
            case R.id.fab_generate_shedule_hand_one_day:
@@ -71,9 +71,10 @@ public class CalendarActivity extends RootActivity implements CalendarModule.Vie
                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                            public void onClick(DialogInterface dialog, int which) {
                                // Toast.makeText(getBaseContext(), "Cancel", Toast.LENGTH_SHORT).show();
-                               dialog.cancel();
+                               alertDialog2.cancel();
                            }
                        });
+               alertDialog = dialog2.create();
                dialog2.show();
                break;
            case R.id.fab_load_schedule:

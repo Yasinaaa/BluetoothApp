@@ -159,11 +159,11 @@ public class SettingsActivity extends RootActivity
 
     }
 
-    private long getTimeZone(){
+    private int getTimeZone(){
         Calendar mCalendar = Calendar.getInstance();
         TimeZone mTimeZone = mCalendar.getTimeZone();
         int mGMTOffset = mTimeZone.getRawOffset();
-        return TimeUnit.HOURS.convert(mGMTOffset, TimeUnit.MILLISECONDS);
+        return (int)TimeUnit.HOURS.convert(mGMTOffset, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -316,8 +316,10 @@ public class SettingsActivity extends RootActivity
         searchItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
+                String g;
+                g= mActvTimezone.getText().toString();
                 CacheHelper.setCoordinatesAndTimezone(getApplicationContext(), currentLongitude, currentLatitude,
-                        Long.getLong(mActvTimezone.getText().toString()));
+                        Integer.parseInt(mActvTimezone.getText().toString()));
 
                 finish();
                 return false;

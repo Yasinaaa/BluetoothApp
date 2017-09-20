@@ -50,7 +50,7 @@ public class CacheHelper {
     }
 
     public static void setCoordinatesAndTimezone(@Nullable final Context context, @Nullable double lon,
-                                                 @Nullable double lan, @Nullable long timeZone) {
+                                                 @Nullable double lan, @Nullable int timeZone) {
         if (context == null || lon == 0 || lan == 0) return;
         SharedPreferences sp =
                 PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());

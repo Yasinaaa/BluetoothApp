@@ -183,7 +183,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
 
         if (mTable != null) {
             String[] textArray = mTable.split("\r\n");
-            for (int i = 0; i < textArray.length; i++) {
+            for (int i = 0; i < textArray.length-1; i++) {
                 String[] underTextArray;
                 if (StringUtils.countMatches(textArray[i], "i") == 2) {
                     underTextArray = textArray[i].split("i");
@@ -191,7 +191,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
                     underTextArray = new String[1];
                     underTextArray[0] = textArray[i];
                 }
-
+                ActivityHelper.hideProgressBar(mDialog);
                 for (int j = 0; j < underTextArray.length; j++) {
                     if (underTextArray[j].matches("(.*)=\\d+,\\d+,\\d+")) {
 
@@ -202,14 +202,17 @@ public class CalendarPresenter implements CalendarModule.Presenter,
                             TextView on = (TextView) view.findViewById(R.id.tv_on_time);
                             TextView off = (TextView) view.findViewById(R.id.tv_off_time);
 
-                            day.setText(mDateParser.getDate(underTextArray[j].substring(underTextArray[j].indexOf("=") + 1,
-                                    underTextArray[j].indexOf(","))));
+                            //mDateParser.getDate(
+                            int idNum = Integer.parseInt(underTextArray[j].substring(underTextArray[j].indexOf("=") + 1,
+                                    underTextArray[j].indexOf(",")));
+                            day.setText(underTextArray[j].substring(underTextArray[j].indexOf("=") + 1,
+                                    underTextArray[j].indexOf(",")));
                             on.setText(mDateParser.getTime(underTextArray[j].substring(
                                     underTextArray[j].lastIndexOf(",") + 1, underTextArray[j].length())));
                             off.setText(mDateParser.getTime(underTextArray[j].substring(underTextArray[j].indexOf(",") + 1,
                                     underTextArray[j].lastIndexOf(","))));
 
-                            tableLayout.addView(view, i);
+                            tableLayout.addView(view, idNum);
                             final int finalI = i;
                             final Resources resource = mContext.getResources();
                             view.setOnClickListener(new View.OnClickListener() {
@@ -231,7 +234,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
                                 }
                             });
 
-                            ActivityHelper.hideProgressBar(mDialog);
+
                         } catch (Exception e) {
                             ActivityHelper.hideProgressBar(mDialog);
                         }

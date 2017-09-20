@@ -31,7 +31,8 @@ public class S2 {
          //   byte[] answer2  = get128Array(130);
           //  byte[] answer3  = get128Array(58);
 
-            ArrayList<int[]> numbers = divideTo128ByteElements(combineBytes(lisOn, listOff));
+            int[] combined = combineBytes(lisOn, listOff);
+            ArrayList<int[]> numbers = divideTo128ByteElements(combined);
             ArrayList<byte[]> numsToBytesArray = new ArrayList<byte[]>();
             for (int i = 0; i< numbers.size(); i++){
                 numsToBytesArray.add(getValues(numbers.get(i)));
@@ -73,9 +74,9 @@ public class S2 {
                 System.arraycopy(array, 0, temp, 0, num);
             }else if(i==count){
                 temp = new int[mod];
-                temp = Arrays.copyOfRange(array, elements.get(i-1).length, elements.get(i-1).length + mod);
+                temp = Arrays.copyOfRange(array, num*i, num*i + mod);
             }else {
-                temp = Arrays.copyOfRange(array, elements.get(i-1).length, elements.get(i-1).length + num);
+                temp = Arrays.copyOfRange(array, num*i, num*i + num);
             }
             elements.add(temp);
         }

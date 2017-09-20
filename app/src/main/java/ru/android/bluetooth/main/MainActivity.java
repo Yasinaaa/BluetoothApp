@@ -163,10 +163,13 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
 
         }
     }
+
+    ScheduleLoading scheduleLoading;
+    File file;
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == REQUEST_READ_PERMISSION && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            //openFilePicker();
+            scheduleLoading.parceSchedule(file);
         }
     }
    /* private void testSetData(){
@@ -689,6 +692,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
             }
         });
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

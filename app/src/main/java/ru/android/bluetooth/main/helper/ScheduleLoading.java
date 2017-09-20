@@ -58,6 +58,7 @@ public class ScheduleLoading {
         if (hasPerm != PackageManager.PERMISSION_GRANTED) {
             mView.requestReadPermission();
         }
+
     }
 
     public void parceSchedule(File file){
