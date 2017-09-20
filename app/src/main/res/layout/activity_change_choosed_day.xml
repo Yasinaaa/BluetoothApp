@@ -8,11 +8,22 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/tv_current_day"
+        android:gravity="center"
+        android:text="20.09.2017"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="10dp"
+        android:textSize="20sp"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/tv_sunrise"
         android:text="03:54"
         android:gravity="center"
         android:textSize="50sp"
-        android:layout_above="@+id/tv_sunrise_title"
+        android:layout_below="@+id/tv_current_day"
        />
     <TextView
         android:layout_width="match_parent"
@@ -21,7 +32,7 @@
         android:text="восход"
         android:gravity="center"
         android:textSize="30sp"
-        android:layout_above="@+id/tv_sunset"
+        android:layout_below="@id/tv_sunrise"
         />
 
     <ImageButton
@@ -40,7 +51,7 @@
         android:text="19:50"
         android:gravity="center_horizontal"
         android:textSize="50sp"
-        android:layout_above="@+id/tv_sunset_title"
+        android:layout_below="@+id/tv_sunrise_title"
         android:layout_marginTop="20dp"/>
 
     <TextView
@@ -50,7 +61,7 @@
         android:text="закат"
         android:gravity="center_horizontal"
         android:textSize="30sp"
-        android:layout_centerVertical="true"/>
+        android:layout_below="@+id/tv_sunset"/>
 
     <ImageButton
         android:layout_width="30dp"

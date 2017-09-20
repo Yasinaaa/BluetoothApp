@@ -23,6 +23,9 @@ public class DateParser {
         this.mContext = mContext;
     }
 
+    public DateParser() {
+    }
+
     public String setCorrectDateView(Calendar calendar){
         int month = mCurrentDay.get(Calendar.MONTH) + 1;
         return setZeros(mCurrentDay.get(Calendar.DAY_OF_MONTH)) + "."
@@ -56,14 +59,14 @@ public class DateParser {
         return null;
     }
 
-    private String setZeros(String time){
+    public String setZeros(String time){
         if(time.length() == 1){
             time = "0" + time;
         }
         return time;
     }
 
-    private String setZeros(int time){
+    public String setZeros(int time){
         return setZeros(String.valueOf(time));
     }
 

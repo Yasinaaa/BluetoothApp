@@ -135,6 +135,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
     private BluetoothMessage mBluetoothMessage;
     private String mStatus;
     private AutoModePresenter mAutoModePresenter;
+    private DateParser mDateParser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -214,12 +215,12 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
 
         }
 
+        mLoadingTableAlertDialog = ActivityHelper.showProgressBar(activity, "Считывание данных");
+        mDateParser = new DateParser();
         setScheduleFilePath();
 
         ActivityHelper.setVisibleLogoIcon(this);
-        //mTbSwitchModeDevice.setChecked(true);
 
-        //setModeVisiblity(View.INVISIBLE);
         mRlLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
         mRlLayoutParams.addRule(RelativeLayout.BELOW, R.id.cv_controller_functions);
@@ -382,6 +383,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
                             ResponseView.RESET);*/
                     break;
                 case BluetoothCommands.STATUS:
+                    ActivityHelper.hideProgressBar(mLoadingTableAlertDialog);
                     mTvStatus.setText(mTvStatus.getText() + answer);
                     parseStatus(answer);
                     /*ResponseView.showSnackbar(mRl,
@@ -586,9 +588,16 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
             Date result = dateFormat.parse(data);
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(result);
-            mTvDate.setText(calendar.get(Calendar.DAY_OF_MONTH) + "-" +
-                    (calendar.get(Calendar.MONTH) + 1)+ "-" + calendar.get(Calendar.YEAR));
-            mTvTime.setText(result.getHours() + ":" + result.getMinutes() + ":" + result.getMinutes());
+
+            mTvDate.setText(
+                    mDateParser.setZeros(calendar.get(Calendar.DAY_OF_MONTH)) + "-" +
+                    mDateParser.setZeros((calendar.get(Calendar.MONTH) + 1)) + "-" +
+                    mDateParser.setZeros(calendar.get(Calendar.YEAR)));
+
+            mTvTime.setText(mDateParser.setZeros(result.getHours()) + ":" +
+                    mDateParser.setZeros(result.getMinutes()) + ":" +
+                    mDateParser.setZeros(result.getSeconds()));
+
         } catch (ParseException e) {
             e.printStackTrace();
         }

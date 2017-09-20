@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Looper;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -24,6 +25,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.BufferedReader;
@@ -38,6 +40,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+import android.os.Handler;
+import java.util.logging.LogRecord;
 
 import jxl.Workbook;
 import jxl.WorkbookSettings;
@@ -47,6 +51,7 @@ import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
 import ru.android.bluetooth.R;
+import ru.android.bluetooth.adapter.DeviceAdapter;
 import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
 import ru.android.bluetooth.common.DateParser;
@@ -74,19 +79,26 @@ public class CalendarPresenter implements CalendarModule.Presenter,
     final String fileName = "Schedule.xls";
     private int[] onList;
     private int[] offList;
+    private String mStatus;
+    private CalendarModule.OnItemClicked mOnClick;
+    private Handler mHandler;
     //final String fileName = "Schedule.xls";
 
-    public CalendarPresenter(Activity a, BluetoothMessage mBluetoothMessage, CalendarModule.View view) {
+    public CalendarPresenter(Activity a, BluetoothMessage mBluetoothMessage, CalendarModule.View view, CalendarModule.OnItemClicked onClick) {
         this.mActivity = a;
         this.mContext = a.getApplicationContext();
         this.mBluetoothMessage = mBluetoothMessage;
         this.mView = view;
+        this.mOnClick = onClick;
         init();
     }
 
     private void init(){
+        mHandler = new Handler(Looper.getMainLooper());
         mBluetoothMessage.setBluetoothMessageListener(this);
         mDateParser = new DateParser(mCurrentDay, mContext);
+        onList = new int[366];
+        offList = new int[366];
     }
 
     private void exportToExcel(String table) {
@@ -191,28 +203,53 @@ public class CalendarPresenter implements CalendarModule.Presenter,
                     underTextArray = new String[1];
                     underTextArray[0] = textArray[i];
                 }
-                ActivityHelper.hideProgressBar(mDialog);
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        // Your UI updates here
+                        ActivityHelper.hideProgressBar(mDialog);
+                    }
+                });
+
                 for (int j = 0; j < underTextArray.length; j++) {
                     if (underTextArray[j].matches("(.*)=\\d+,\\d+,\\d+")) {
 
                         try {
+
                             LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                            View view = inflater.inflate(R.layout.item_schedule_day, null);
-                            TextView day = (TextView) view.findViewById(R.id.tv_day);
-                            TextView on = (TextView) view.findViewById(R.id.tv_on_time);
-                            TextView off = (TextView) view.findViewById(R.id.tv_off_time);
 
-                            //mDateParser.getDate(
-                            int idNum = Integer.parseInt(underTextArray[j].substring(underTextArray[j].indexOf("=") + 1,
-                                    underTextArray[j].indexOf(",")));
-                            day.setText(underTextArray[j].substring(underTextArray[j].indexOf("=") + 1,
-                                    underTextArray[j].indexOf(",")));
-                            on.setText(mDateParser.getTime(underTextArray[j].substring(
-                                    underTextArray[j].lastIndexOf(",") + 1, underTextArray[j].length())));
-                            off.setText(mDateParser.getTime(underTextArray[j].substring(underTextArray[j].indexOf(",") + 1,
-                                    underTextArray[j].lastIndexOf(","))));
+                            String dayStr = underTextArray[j].substring(underTextArray[j].indexOf("=") + 1,
+                                    underTextArray[j].indexOf(","));
+                            String onNum = underTextArray[j].substring(
+                                    underTextArray[j].lastIndexOf(",") + 1, underTextArray[j].length());
+                            String offNum = underTextArray[j].substring(underTextArray[j].indexOf(",") + 1,
+                                    underTextArray[j].lastIndexOf(","));
 
-                            tableLayout.addView(view, idNum);
+                            final int idNum = Integer.parseInt(dayStr);
+
+                            View view = tableLayout.getChildAt(idNum);
+
+                            if(view == null){
+                                view = inflater.inflate(R.layout.item_schedule_day, null);
+                            }
+
+                            final TextView day = (TextView) view.findViewById(R.id.tv_day);
+                            final TextView on = (TextView) view.findViewById(R.id.tv_on_time);
+                            final TextView off = (TextView) view.findViewById(R.id.tv_off_time);
+
+                            day.setText(mDateParser.getDate(dayStr));
+                            on.setText(mDateParser.getTime(onNum));
+                            off.setText(mDateParser.getTime(offNum));
+                            onList[idNum] = Integer.parseInt(onNum);
+                            offList[idNum] = Integer.parseInt(offNum);
+
+                            if (tableLayout.getChildAt(idNum) == null){
+                                tableLayout.addView(view, idNum);
+                            }else {
+                                tableLayout.removeViewAt(idNum);
+                                tableLayout.addView(view, idNum);
+                            }
+
                             final int finalI = i;
                             final Resources resource = mContext.getResources();
                             view.setOnClickListener(new View.OnClickListener() {
@@ -222,6 +259,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
                                     if (selectedItem == finalI) {
                                         view.setBackgroundColor(resource.getColor(R.color.white));
                                         selectedItem = 999;
+                                        mOnClick.onItemClick(0,"","","");
 
                                     } else {
                                         view.setBackgroundColor(resource.getColor(R.color.silver));
@@ -230,7 +268,11 @@ public class CalendarPresenter implements CalendarModule.Presenter,
                                                     setBackgroundColor(resource.getColor(R.color.white));
                                         }
                                         selectedItem = finalI;
+                                        mOnClick.onItemClick(idNum, day.getText().toString(),
+                                                on.getText().toString(),
+                                                off.getText().toString());
                                     }
+
                                 }
                             });
 
@@ -247,7 +289,8 @@ public class CalendarPresenter implements CalendarModule.Presenter,
 
     @Override
     public void setTable(TableLayout tableLayout){
-       readFile(tableLayout);
+        tableLayout.removeAllViews();
+        readFile(tableLayout);
     }
 
     @Override
@@ -259,7 +302,16 @@ public class CalendarPresenter implements CalendarModule.Presenter,
     @Override
     public void getSchedule() {
         mTable = "";
-        mDialog = ActivityHelper.showProgressBar(mActivity, "Считывание расписания");
+
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                // Your UI updates here
+                mDialog = ActivityHelper.showProgressBar(mActivity, "Считывание расписания");
+            }
+        });
+
+        mStatus = BluetoothCommands.GET_TABLE;
         mBluetoothMessage.writeMessage(BluetoothCommands.GET_TABLE);
         SystemClock.sleep(1000);
         mBluetoothMessage.writeMessage("ddd\r\n");
@@ -269,11 +321,21 @@ public class CalendarPresenter implements CalendarModule.Presenter,
     public void onResponse(String answer) {
         Log.d("d", answer);
         if(answer.contains("Not") || mTable.contains("command")){
-            answer = answer.replaceAll("[Notcomand ]","");
-            mTable +=answer;
-            mView.onLoadingScheduleFinished();
-            ActivityHelper.hideProgressBar(mDialog);
-        }else {
+            if (mStatus.equals(BluetoothCommands.GET_TABLE)) {
+
+                answer = answer.replaceAll("[Notcomand ]", "");
+                mTable += answer;
+                mView.onLoadingScheduleFinished();
+                //ActivityHelper.hideProgressBar(mDialog);
+
+            }else if (mStatus.equals(BluetoothCommands.SET_DATA)){
+
+                mStatus = BluetoothCommands.GET_TABLE;
+                mBluetoothMessage.writeMessage(BluetoothCommands.GET_TABLE);
+                SystemClock.sleep(1000);
+                mBluetoothMessage.writeMessage("ddd\r\n");
+            }
+        }else if(mStatus.equals(BluetoothCommands.GET_TABLE)){
             mTable +=answer;
         }
 
@@ -282,7 +344,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
     @Override
     public void searchDay(String date, TableLayout tableLayout, NestedScrollView nestedScrollView) {
 
-        for (int i = 0; i < 365; i++){
+        for (int i = 0; i < 366; i++){
             View child = tableLayout.getChildAt(i);
             TextView textView = (TextView) child.findViewById(R.id.tv_day);
             if(textView.getText().equals(date)){
@@ -300,8 +362,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
         double sunRise;
         double sunSet;
         int d = 0;
-        onList = new int[366];
-        offList = new int[366];
+
 
         while (startDate.compareTo(endDate) <= 0) {
             currentDate = startDate;
@@ -327,10 +388,25 @@ public class CalendarPresenter implements CalendarModule.Presenter,
         }
         if(onList != null & offList != null){
             //ActivityHelper.showProgressBar(mActivity, mContext.getString(R.string.generate_schedule));
+            mTable = "";
+            mStatus = BluetoothCommands.SET_DATA;
+            mBluetoothMessage.writeMessage(onList, offList);
+        }
+    }
+    @Override
+    public void generateSchedule(int day, int on, int off) {
+        mDialog = ActivityHelper.showProgressBar(mActivity, "Обновление расписания");
+
+        onList[day] = on;
+        offList[day] = off;
+
+        if(onList != null & offList != null){
+            mTable = "";
+            mStatus = BluetoothCommands.SET_DATA;
             mBluetoothMessage.writeMessage(onList, offList);
         }
 
-
     }
+
 
 }

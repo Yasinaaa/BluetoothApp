@@ -4,6 +4,7 @@
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+
     android:id="@+id/scrollView">
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/cl"
@@ -14,6 +15,7 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+
             android:layout_margin="10dp">
 
             <TextView
@@ -88,6 +90,7 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:focusableInTouchMode="true"
                     android:padding="10dp">
 
                     <TextView
@@ -150,6 +153,10 @@
                         android:layout_below="@+id/btn_change_password"
                         android:text="OK" />
 
+                    <!--
+                    android:focusable="false"
+                        android:focusableInTouchMode="false"
+                    -->
                     <android.support.design.widget.TextInputLayout
                         android:id="@+id/til_latitude"
                         android:layout_below="@+id/btn_reset_controller"
@@ -158,8 +165,7 @@
                         android:layout_marginLeft="10dp"
                         android:layout_marginStart="10dp"
                         android:layout_marginTop="5dp"
-                        android:focusable="false"
-                        android:focusableInTouchMode="false"
+
                         android:padding="5dp">
 
                         <AutoCompleteTextView
@@ -170,7 +176,7 @@
                             android:inputType="numberDecimal"
                             android:maxLines="1"
                             android:enabled="false"
-                            android:text="55,75"
+
                             android:singleLine="true" />
 
                     </android.support.design.widget.TextInputLayout>
@@ -183,8 +189,6 @@
                         android:layout_marginLeft="10dp"
                         android:layout_marginStart="10dp"
                         android:layout_marginTop="10dp"
-                        android:focusable="false"
-                        android:focusableInTouchMode="false"
                         android:padding="5dp">
 
                         <AutoCompleteTextView
@@ -195,7 +199,6 @@
                             android:inputType="numberDecimal"
                             android:maxLines="1"
                             android:enabled="false"
-                            android:text="37,5"
                             android:singleLine="true" />
 
                     </android.support.design.widget.TextInputLayout>
@@ -219,8 +222,6 @@
                         android:layout_below="@+id/cb_set_coordinates_by_hand"
                         android:layout_marginLeft="11dp"
                         android:layout_marginStart="11dp"
-                        android:focusable="false"
-                        android:focusableInTouchMode="false"
                         android:padding="5dp">
 
                         <AutoCompleteTextView
@@ -231,7 +232,6 @@
                             android:inputType="number"
                             android:maxLines="1"
                             android:enabled="false"
-                            android:text="3"
                             android:singleLine="true" />
 
                     </android.support.design.widget.TextInputLayout>

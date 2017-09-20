@@ -23,11 +23,9 @@ import java.util.Calendar;
 
 import butterknife.BindView;
 import ru.android.bluetooth.R;
-import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
 import ru.android.bluetooth.one_day.ChangeOneDayScheduleActivity;
 import ru.android.bluetooth.root.RootActivity;
-import ru.android.bluetooth.schedule.ScheduleGeneratorActivity;
 import ru.android.bluetooth.utils.ActivityHelper;
 import ru.android.bluetooth.utils.CacheHelper;
 
@@ -35,7 +33,7 @@ import ru.android.bluetooth.utils.CacheHelper;
  * Created by itisioslab on 03.08.17.
  */
 
-public class CalendarActivity extends RootActivity implements CalendarModule.View {
+public class CalendarActivity extends RootActivity implements CalendarModule.View, CalendarModule.OnItemClicked {
 
     //@BindView(R.id.calendar_view_schedule)
     //CalendarView mCalendarViewSchedule;
@@ -44,9 +42,17 @@ public class CalendarActivity extends RootActivity implements CalendarModule.Vie
     TableLayout mTableLayout;
     @BindView(R.id.nested_scroll_view)
     NestedScrollView mNestedScrollView;
+    @BindView(R.id.frame_layout)
+    FrameLayout frameLayout;
+    @BindView(R.id.fab_menu)
+    FloatingActionsMenu fabMenu;
 
     private CalendarPresenter mCalendarPresenter;
     private BluetoothMessage mBluetoothMessage;
+    private String mDayToChange = "";
+    private String mOnDay = "";
+    private String mOffDay = "";
+    private int id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,18 +70,33 @@ public class CalendarActivity extends RootActivity implements CalendarModule.Vie
     public void fabClicked(View v){
        switch (v.getId()){
            case R.id.fab_generate_shedule_hand_one_day:
-               //ActivityHelper.startActivity(CalendarActivity.this, ChangeOneDayScheduleActivity.class);
-               AlertDialog.Builder dialog2 = new AlertDialog.Builder(getApplicationContext())
-                       .setTitle("Автореле")
-                       .setMessage("Данная функция не доступна в данной версии")
+
+               if(!mDayToChange.equals("")){
+                   Intent intent = new Intent(CalendarActivity.this, ChangeOneDayScheduleActivity.class);
+                   intent.putExtra(ChangeOneDayScheduleActivity.DAY_LOG, mDayToChange);
+                   intent.putExtra(ChangeOneDayScheduleActivity.ON_LOG, mOnDay);
+                   intent.putExtra(ChangeOneDayScheduleActivity.OFF_LOG, mOffDay);
+                   startActivityForResult(intent, ChangeOneDayScheduleActivity.REQUEST_CODE);
+                   fabMenu.collapse();
+                   fabMenu.collapseImmediately();
+               }else {
+                   AlertDialog.Builder dialog2 = new AlertDialog.Builder(CalendarActivity.this)
+                       .setTitle("Ошибка")
+                       .setMessage("Вы не выбрали день")
                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                            public void onClick(DialogInterface dialog, int which) {
                                // Toast.makeText(getBaseContext(), "Cancel", Toast.LENGTH_SHORT).show();
-                               alertDialog2.cancel();
+                               //alertDialog2.cancel();
+                               fabMenu.collapse();
+                               fabMenu.collapseImmediately();
                            }
                        });
-               alertDialog = dialog2.create();
-               dialog2.show();
+               //alertDialog2 = dialog2.create();
+                        dialog2.show();
+               }
+
+
+
                break;
            case R.id.fab_load_schedule:
                //ActivityHelper.startActivity(CalendarActivity.this, GenerateHandActivity.class);
@@ -93,7 +114,7 @@ public class CalendarActivity extends RootActivity implements CalendarModule.Vie
                            Integer.parseInt(result[2]));
                }else {
 
-                   AlertDialog.Builder dialog = new AlertDialog.Builder(this)
+                   AlertDialog.Builder dialog = new AlertDialog.Builder(CalendarActivity.this)
                            .setTitle("Настройки")
                            .setMessage("Укажите свое местоположение в Настройках")
                            .setNegativeButton("Ок", new DialogInterface.OnClickListener() {
@@ -105,6 +126,10 @@ public class CalendarActivity extends RootActivity implements CalendarModule.Vie
                            });
                    alertDialog = dialog.create();
                    dialog.show();
+
+                   fabMenu.collapseImmediately();
+                   fabMenu.setSelected(false);
+
                }
 
                //mScheduleBluetoothReader.readSchedule(Calendar.getInstance(), finishDate);
@@ -136,13 +161,11 @@ public class CalendarActivity extends RootActivity implements CalendarModule.Vie
     public void init(){
         mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
 
-        mCalendarPresenter = new CalendarPresenter(this, mBluetoothMessage, this);
+        mCalendarPresenter = new CalendarPresenter(this, mBluetoothMessage, this, this);
         mCalendarPresenter.getSchedule();
-        //mCalendarPresenter.setTable(mTableLayout);
 
-        final FrameLayout frameLayout = (FrameLayout) findViewById(R.id.frame_layout);
         frameLayout.getBackground().setAlpha(0);
-        final FloatingActionsMenu fabMenu = (FloatingActionsMenu) findViewById(R.id.fab_menu);
+
         fabMenu.setOnFloatingActionsMenuUpdateListener(new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
             @Override
             public void onMenuExpanded() {
@@ -160,6 +183,7 @@ public class CalendarActivity extends RootActivity implements CalendarModule.Vie
                     @Override
                     public void onClick(View view) {
                         fabClicked(view);
+
                     }
                 });
             }
@@ -238,7 +262,24 @@ public class CalendarActivity extends RootActivity implements CalendarModule.Vie
     @Override
     public void onLoadingScheduleFinished() {
         mCalendarPresenter.setTable(mTableLayout);
+    }
 
+    @Override
+    public void onItemClick(int id, String text, String on, String off) {
+        this.id = id;
+        mDayToChange = text;
+        mOnDay = on;
+        mOffDay = off;
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == ChangeOneDayScheduleActivity.REQUEST_CODE){
+
+            int on = data.getIntExtra(ChangeOneDayScheduleActivity.ON_LOG, 0);
+            int off = data.getIntExtra(ChangeOneDayScheduleActivity.OFF_LOG, 0);
+            mCalendarPresenter.generateSchedule(id, on, off);
+        }
     }
 }

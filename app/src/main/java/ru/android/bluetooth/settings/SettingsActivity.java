@@ -117,6 +117,7 @@ public class SettingsActivity extends RootActivity
     private SettingsPresenter mSettingsPresenter;
     private BluetoothMessage mBluetoothMessage;
     private String mStatus;
+    private AlertDialog mDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -127,13 +128,8 @@ public class SettingsActivity extends RootActivity
 
     @Override
     public void init() {
-        //hideKeyboard();
-       /* View view = this.getCurrentFocus();
-        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);*/
-        InputMethodManager im =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
-        im.hideSoftInputFromWindow(mScrollView.getWindowToken(), 0);
 
+        mDialog = ActivityHelper.showProgressBar(this, "Считывание данных");
         mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
         mBluetoothMessage.setBluetoothMessageListener(this);
         setMessage(BluetoothCommands.STATUS);
@@ -158,6 +154,7 @@ public class SettingsActivity extends RootActivity
         mActvTimezone.setText(getTimeZone() + "");
 
     }
+
 
     private int getTimeZone(){
         Calendar mCalendar = Calendar.getInstance();
@@ -328,15 +325,6 @@ public class SettingsActivity extends RootActivity
         return true;
     }
 
-    public void hideKeyboard() {
-        InputMethodManager imm = (InputMethodManager) this.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        View view = getCurrentFocus();
-        if (view == null) {
-            view = new View(this);
-        }
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-    }
-
     @Override
     protected void onStart() {
         super.onStart();
@@ -466,8 +454,7 @@ public class SettingsActivity extends RootActivity
                 case BluetoothCommands.STATUS:
 
                     parseStatus(answer);
-                    /*ResponseView.showSnackbar(mRl,
-                            ResponseView.STATUS);*/
+                    ActivityHelper.hideProgressBar(mDialog);
                     break;
 
                 case BluetoothCommands.RESET:
@@ -489,26 +476,15 @@ public class SettingsActivity extends RootActivity
                     break;
 
                 case BluetoothCommands.MANUAL_ON:
-                    if(answer.contains("Ok")){
-                        //ResponseView.showSnackbar(getWindow().getDecorView().getRootView(),
-                        /*ResponseView.showSnackbar(mRl,
-                                ResponseView.MANUAL_ON);*/
-                        setMessage(BluetoothCommands.STATUS);
-                        mCbAutoMode.setChecked(false);
-                        mCbManualMode.setChecked(true);
-                    }
+                    setMessage(BluetoothCommands.STATUS);
+                    mCbAutoMode.setChecked(false);
+                    mCbManualMode.setChecked(true);
                     break;
 
                 case BluetoothCommands.MANUAL_OFF:
-                    if(answer.contains("Ok")){
-                        /*ResponseView.showSnackbar(mRl,
-                                ResponseView.MANUAL_OFF);*/
-                        //setMessage(BluetoothCommands.DEBUG);
-                        // mAutoModePresenter.createDatesView(mRvOnOffInfo);
-                        setMessage(BluetoothCommands.STATUS);
-                        mCbAutoMode.setChecked(true);
-                        mCbManualMode.setChecked(false);
-                    }
+                    setMessage(BluetoothCommands.STATUS);
+                    mCbAutoMode.setChecked(true);
+                    mCbManualMode.setChecked(false);
                     break;
             }
 

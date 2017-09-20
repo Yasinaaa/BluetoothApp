@@ -111,7 +111,7 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceMo
             public void onClick(View view) {
 
                 if(mDeviceTitle != null) {
-                    dialog = ActivityHelper.showProgressBar(activity);
+                    dialog = ActivityHelper.showProgressBar(activity, "Подключение к устройству \n" + mDeviceTitle);
                     mBluetoothModule.connectDevice(mDeviceTitle, ChooseDeviceActivity.this);
                     isFirstOpen = false;
                 }

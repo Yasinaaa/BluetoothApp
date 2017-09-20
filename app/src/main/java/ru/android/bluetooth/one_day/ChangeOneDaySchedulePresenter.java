@@ -17,6 +17,7 @@ import java.util.Calendar;
 
 import ru.android.bluetooth.R;
 import ru.android.bluetooth.bluetooth.BluetoothCommands;
+import ru.android.bluetooth.common.DateParser;
 import ru.android.bluetooth.main.MainActivity;
 
 /**
@@ -27,10 +28,12 @@ public class ChangeOneDaySchedulePresenter {
 
     private Activity mActivity;
     private Context mContext;
+    private DateParser mDateParser;
 
     public ChangeOneDaySchedulePresenter(Activity activity) {
         this.mActivity = activity;
         this.mContext = activity.getApplicationContext();
+        mDateParser = new DateParser();
     }
 
     public void setOnClickListenerImageButton(ImageButton imageButton, final TextView tvTime,
@@ -42,7 +45,7 @@ public class ChangeOneDaySchedulePresenter {
                         new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int i, int i1) {
-                        tvTime.setText(i + ":" + i1);
+                        tvTime.setText(mDateParser.setZeros(i) + ":" + mDateParser.setZeros(i1));
                         tvMinutes.setText(status + " " + setMinutes(i, i1));
                     }
                 }, Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), true);
@@ -60,7 +63,7 @@ public class ChangeOneDaySchedulePresenter {
             @Override
             public void onClick(View view) {
 
-                AlertDialog.Builder dialog = new AlertDialog.Builder(mActivity)
+                /*AlertDialog.Builder dialog = new AlertDialog.Builder(mActivity)
                         .setTitle("Автореле")
                         .setMessage("Данная функция не доступна в данной версии")
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -69,9 +72,15 @@ public class ChangeOneDaySchedulePresenter {
                                 dialog.cancel();
                             }
                         });
-                dialog.show();
+                dialog.show();*/
+
+
             }
         });
+    }
+
+    public void getSchedule(){
+
     }
 
 }

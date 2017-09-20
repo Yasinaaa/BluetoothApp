@@ -45,6 +45,8 @@ public class S2 {
                 SystemClock.sleep(1000);
                 mmOutStream.write(numsToBytesArray.get(i));
             }
+            SystemClock.sleep(1000);
+            mmOutStream.write("ddd\r\n".getBytes());
            /* SystemClock.sleep(1000);
             mmOutStream.write(answer3);
             mmOutStream.write("d\r\n".getBytes());*/
