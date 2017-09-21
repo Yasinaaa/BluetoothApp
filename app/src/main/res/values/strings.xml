@@ -26,6 +26,9 @@
     <string name="device_is_not_on_net">Устройство не находится в сети</string>
     <string name="cancel">Выход</string>
     <string name="ok">Ok</string>
+    <string name="schedule">Рассписание</string>
+    <string name="file_mistake">Файл не является корректным</string>
+    <string name="file_saved">Файл загружен</string>
     <!--<string name=""></string>
     <string name=""></string>-->
 

@@ -81,7 +81,6 @@ public class CalendarPresenter implements CalendarModule.Presenter,
     private String mStatus;
     private CalendarModule.OnItemClicked mOnClick;
     private Handler mHandler;
-    //final String fileName = "Schedule.xls";
 
     public CalendarPresenter(Activity a, BluetoothMessage mBluetoothMessage, CalendarModule.View view, DateParser dateParser,
                              CalendarModule.OnItemClicked onClick) {
@@ -206,7 +205,6 @@ public class CalendarPresenter implements CalendarModule.Presenter,
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        // Your UI updates here
                         ActivityHelper.hideProgressBar(mDialog);
                     }
                 });

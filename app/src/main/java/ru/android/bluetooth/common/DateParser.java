@@ -98,7 +98,7 @@ public class DateParser {
         }catch (java.lang.NumberFormatException e){
             Log.d("ddd", "time = " + time);
         }
-        return 0;
+        return -999;
     }
 
     private String removeExtraZeros(String value){

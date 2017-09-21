@@ -12,6 +12,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.SystemClock;
 import android.support.v7.widget.CardView;
 import android.util.Log;
@@ -53,9 +55,8 @@ import ru.android.bluetooth.view.CalendarActivity;
  * Created by itisioslab on 01.08.17.
  */
 
-public class MainActivity extends RootActivity implements MainModule.ManualModeView, MainModule.AutoModeView,
+public class MainActivity extends RootActivity implements MainModule.View,
         BluetoothMessage.BluetoothMessageListener{
-
 
     @BindView(R.id.cv_controller_functions)
     CardView mCvControllerFunctions;
@@ -212,7 +213,6 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
                     }
                 }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
                 mDatePicker.show();
-                //testSetData();
             }
         });
 
@@ -433,8 +433,6 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
                 ActivityHelper.startActivity(mActivity, SettingsActivity.class);
-                /*Intent intent = new Intent(mActivity,SettingsActivity.class);
-                startActivity(intent);*/
                 return true;
             }
         });
@@ -446,12 +444,6 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
         super.onDestroy();
 
     }
-
-    @Override
-    public void addItemToDateRecyclerView() {
-
-    }
-
 
     private void setScheduleButtons(){
         mBtnEditSchedule.setOnClickListener(new View.OnClickListener() {
@@ -475,7 +467,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
                                         .setAction(Intent.ACTION_GET_CONTENT);
 
                                 startActivityForResult(Intent.createChooser(intent, "Select a file"), 123);
-
+                               // mLoadingTableAlertDialog = ActivityHelper.showProgressBar(mActivity, "Считывание файла");
                             }
                         })
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -489,6 +481,12 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
     }
 
     @Override
+    public void setScheduleTitle(String title){
+        mEtScheduleName.setText(title);
+        CacheHelper.setSchedulePath(getApplicationContext(), title);
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==123 && resultCode==RESULT_OK) {
@@ -498,27 +496,39 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
             String title = selectedfile.getLastPathSegment().substring(selectedfile.getLastPathSegment().indexOf(":")+1);
             if(title.endsWith(".xls")){
 
-                File file = new File(r+"/"+title);
+                final File file = new File(r+"/"+title);
                 if (file.exists()){
-                    Log.d("t", "exists");
+                    Log.d(TAG, "exists");
                 }
-                mEtScheduleName.setText(file.getPath());
-                CacheHelper.setSchedulePath(getApplicationContext(), file.getPath());
 
-                ScheduleLoading scheduleLoading = new ScheduleLoading(this, mBluetoothMessage, this);
-                scheduleLoading.parceSchedule(file);
+                Handler mHandler = new Handler(Looper.getMainLooper());
+                final MainModule.View v = this;
+               /* mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        ScheduleLoading scheduleLoading = new ScheduleLoading(v, mBluetoothMessage, mActivity);
+                        scheduleLoading.parceSchedule(file);
+                    }
+                });*/
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        ScheduleLoading scheduleLoading = new ScheduleLoading(v, mBluetoothMessage, mActivity);
+                        scheduleLoading.parceSchedule(file);
+                    }
+                });
+
+               // ActivityHelper.hideProgressBar(mLoadingTableAlertDialog);
 
             }else {
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mActivity)
                         .setTitle(getString(R.string.generate_dialog_title))
                         .setMessage("Не правильный формат файла")
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                             }
                         });
                 dialogBuilder.show();
             }
-
         }
     }
 
