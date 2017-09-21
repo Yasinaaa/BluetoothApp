@@ -129,6 +129,8 @@ public class SettingsActivity extends RootActivity
     @Override
     public void init() {
 
+        mScrollView.fullScroll(View.FOCUS_UP);
+        //mCoordinatorLayout.scrollTo(0,0);
         mActivity = this;
         mDialog = ActivityHelper.showProgressBar(this, "Считывание данных");
         mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
@@ -156,6 +158,7 @@ public class SettingsActivity extends RootActivity
         String[] device = BluetoothHelper.getBluetoothUser(getApplicationContext());
         mTvDeviceAddress.setText(device[0]);
         mTvDeviceTitle.setText(device[1]);
+       // mCoordinatorLayout.scrollTo(0,0);
     }
 
 
@@ -187,19 +190,14 @@ public class SettingsActivity extends RootActivity
         mCbAutoMode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //setOnModeCheckBoxClicked(mCbAutoMode, mCbManualMode, false);
-                if(mCbAutoMode.isChecked()){
-                    mCbAutoMode.setChecked(false);
-                }else {
-                    mCbAutoMode.setChecked(true);
-                }
+                setCheckedBox(mCbAutoMode);
                 setMessage(BluetoothCommands.MANUAL_OFF);
             }
         });
         mCbManualMode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //setOnModeCheckBoxClicked(mCbAutoMode, mCbManualMode, true);
+                setCheckedBox(mCbManualMode);
                 setMessage(BluetoothCommands.MANUAL_ON);
             }
         });
@@ -213,27 +211,11 @@ public class SettingsActivity extends RootActivity
         mSettingsPresenter.setCheckBoxTimezone(mCbSetTimezoneByHand, mTilTimezone);
     }
 
-    private void setOnModeCheckBoxClicked(CheckBox checkBox, CheckBox checkBox2, boolean isManual){
-        if(!isManual){
-            if(checkBox.isChecked()){
-                checkBox.setChecked(false);
-                checkBox2.setChecked(true);
-                setMessage(BluetoothCommands.MANUAL_ON);
-            }else {
-                checkBox.setChecked(true);
-                checkBox2.setChecked(false);
-                setMessage(BluetoothCommands.MANUAL_OFF);
-            }
+    private void setCheckedBox(CheckBox checkBox){
+        if(checkBox.isChecked()){
+            checkBox.setChecked(false);
         }else {
-            if(checkBox.isChecked()){
-                checkBox.setChecked(true);
-                checkBox2.setChecked(false);
-                setMessage(BluetoothCommands.MANUAL_OFF);
-            }else {
-                checkBox.setChecked(false);
-                checkBox2.setChecked(true);
-                setMessage(BluetoothCommands.MANUAL_ON);
-            }
+            checkBox.setChecked(true);
         }
     }
 

@@ -70,7 +70,6 @@ public class CalendarPresenter implements CalendarModule.Presenter,
     private BluetoothMessage mBluetoothMessage;
     private Writer output = null;
     private CalendarModule.View mView;
-    private Calendar mCurrentDay = null;
     private int selectedItem = 999;
     private DateParser mDateParser;
     private Activity mActivity;
@@ -84,10 +83,12 @@ public class CalendarPresenter implements CalendarModule.Presenter,
     private Handler mHandler;
     //final String fileName = "Schedule.xls";
 
-    public CalendarPresenter(Activity a, BluetoothMessage mBluetoothMessage, CalendarModule.View view, CalendarModule.OnItemClicked onClick) {
+    public CalendarPresenter(Activity a, BluetoothMessage mBluetoothMessage, CalendarModule.View view, DateParser dateParser,
+                             CalendarModule.OnItemClicked onClick) {
         this.mActivity = a;
         this.mContext = a.getApplicationContext();
         this.mBluetoothMessage = mBluetoothMessage;
+        this.mDateParser = dateParser;
         this.mView = view;
         this.mOnClick = onClick;
         init();
@@ -96,7 +97,6 @@ public class CalendarPresenter implements CalendarModule.Presenter,
     private void init(){
         mHandler = new Handler(Looper.getMainLooper());
         mBluetoothMessage.setBluetoothMessageListener(this);
-        mDateParser = new DateParser(mCurrentDay, mContext);
         onList = new int[366];
         offList = new int[366];
     }
@@ -325,12 +325,12 @@ public class CalendarPresenter implements CalendarModule.Presenter,
                 answer = answer.replaceAll("[Notcomand ]", "");
                 mTable += answer;
                 mView.onLoadingScheduleFinished();
-                //ActivityHelper.hideProgressBar(mDialog);
+                ActivityHelper.hideProgressBar(mDialog);
 
             }else if (mStatus.equals(BluetoothCommands.SET_DATA)){
 
                 mStatus = BluetoothCommands.GET_TABLE;
-                mBluetoothMessage.writeMessage(mActivity,BluetoothCommands.GET_TABLE);
+                mBluetoothMessage.writeMessage(mActivity, BluetoothCommands.GET_TABLE);
                 SystemClock.sleep(1000);
                 mBluetoothMessage.writeMessage(mActivity,"ddd\r\n");
             }
@@ -386,7 +386,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
 
         }
         if(onList != null & offList != null){
-            //ActivityHelper.showProgressBar(mActivity, mContext.getString(R.string.generate_schedule));
+            //mDialog = ActivityHelper.showProgressBar(mActivity, mContext.getString(R.string.generate_schedule));
             mTable = "";
             mStatus = BluetoothCommands.SET_DATA;
             mBluetoothMessage.writeMessage(onList, offList);

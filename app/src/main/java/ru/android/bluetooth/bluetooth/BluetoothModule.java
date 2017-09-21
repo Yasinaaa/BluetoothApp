@@ -303,7 +303,7 @@ public class BluetoothModule {
             }
 
             address = info.substring(info.length() - 17);
-            name = info.substring(0,info.length() - 17);
+            name = info.substring(0,info.length() - 18);
 
             new Thread()
             {
