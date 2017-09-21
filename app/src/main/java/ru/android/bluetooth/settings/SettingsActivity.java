@@ -1,5 +1,6 @@
 package ru.android.bluetooth.settings;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -106,6 +107,8 @@ public class SettingsActivity extends RootActivity
     CheckBox mCbSetTimezoneByHand;
     @BindView(R.id.rl)
     RelativeLayout mRl;
+    @BindView(R.id.btn_sync_geolocation)
+    Button mBtnSyncGeolocation;
 
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
     private GoogleApiClient mGoogleApiClient;
@@ -158,7 +161,7 @@ public class SettingsActivity extends RootActivity
         String[] device = BluetoothHelper.getBluetoothUser(getApplicationContext());
         mTvDeviceAddress.setText(device[0]);
         mTvDeviceTitle.setText(device[1]);
-       // mCoordinatorLayout.scrollTo(0,0);
+        // mCoordinatorLayout.scrollTo(0,0);
     }
 
 
@@ -209,6 +212,17 @@ public class SettingsActivity extends RootActivity
         });
         mSettingsPresenter.setCheckBoxLocation(mCbSetCoordinatesByHand, mTilLatitude, mTilLongitude);
         mSettingsPresenter.setCheckBoxTimezone(mCbSetTimezoneByHand, mTilTimezone);
+
+        mBtnSyncGeolocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mActvLatitude.setText(String.valueOf(currentLatitude));
+                mActvLongitude.setText(String.valueOf(currentLongitude));
+                mActvTimezone.setText(String.valueOf(getTimeZone()));
+                CacheHelper.setCoordinatesAndTimezone(getApplicationContext(), currentLongitude, currentLatitude,
+                        Integer.parseInt(mActvTimezone.getText().toString()));
+            }
+        });
     }
 
     private void setCheckedBox(CheckBox checkBox){
@@ -306,8 +320,7 @@ public class SettingsActivity extends RootActivity
         searchItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
-                String g;
-                g= mActvTimezone.getText().toString();
+                String g = mActvTimezone.getText().toString();
                 CacheHelper.setCoordinatesAndTimezone(getApplicationContext(), currentLongitude, currentLatitude,
                         Integer.parseInt(mActvTimezone.getText().toString()));
 
@@ -322,6 +335,7 @@ public class SettingsActivity extends RootActivity
     protected void onStart() {
         super.onStart();
         mGoogleApiClient.connect();
+
     }
 
     @Override
@@ -367,13 +381,12 @@ public class SettingsActivity extends RootActivity
                     .setNegativeButton("Ок", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                             alertDialog.dismiss();
+                            startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                         }
                     });
             alertDialog = dialog.create();
             dialog.show();
-
 
         } else {
 
