@@ -21,7 +21,7 @@ public class BluetoothMessage {
     private ConnectedThread mConnectedThread;
 
     private BluetoothMessage() {
-        final String[] response = {""};
+
         this.mHandler = new Handler(){
             public void handleMessage(android.os.Message msg) {
                 if (msg.what != BluetoothCommands.CONNECTING_STATUS) {
@@ -30,17 +30,9 @@ public class BluetoothMessage {
                         try {
                             String readMessage = null;
                             readMessage = IOUtils.toString(r, "utf-8");
-
                             readMessage = readMessage.trim().replaceAll("�", "");
-
-                            //if(readMessage.length() > 2) readMessage.replace("OK","");
-                            //if (readMessage.contains("3")) readMessage = "3";
-                            //Log.d("bm", readMessage);
                             mBluetoothMessageListener.onResponse(readMessage);
-
-                            //mBluetoothMessageListener.onResponse(readMessage);
                             readMessage = null;
-                            r = null;
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -51,10 +43,7 @@ public class BluetoothMessage {
         this.mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                //here call the second method
-
             }
-
         }, 1000000);
     }
 
@@ -79,30 +68,12 @@ public class BluetoothMessage {
         return mBluetoothMessage;
     }
     */
-    /*public void writeMessageD(int[] data){
-        mConnectedThread.writeData(data);
-    }
-    public void writeMessage(int[] data){
-        mConnectedThread.write(data);
-    }
-    public void writeMessage(int data){
-        mConnectedThread.write(data);
-    }
-    public void writeMessage(byte count, int data){
-        mConnectedThread.write(count,data);
-    }*/
-    public void writeMessage(){
-        mConnectedThread.writeeeeeeeeeeeeeeeeeee();
-    }
 
     public void writeMessage(Activity activity, String message){
         mConnectedThread.writeData(activity, message);
     }
     public void writeMessage(int[] listOn, int[] listOff){
         mConnectedThread.write(listOn, listOff);
-    }
-    public void wr(int count){
-        mConnectedThread.writePPP(count);
     }
 
     public Handler getHandler() {

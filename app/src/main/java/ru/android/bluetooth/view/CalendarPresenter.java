@@ -55,7 +55,7 @@ import ru.android.bluetooth.adapter.DeviceAdapter;
 import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
 import ru.android.bluetooth.common.DateParser;
-import ru.android.bluetooth.schedule.helper.ScheduleGenerator;
+import ru.android.bluetooth.schedule.ScheduleGenerator;
 import ru.android.bluetooth.utils.ActivityHelper;
 import ru.android.bluetooth.utils.CacheHelper;
 

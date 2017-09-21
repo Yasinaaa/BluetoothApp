@@ -13,95 +13,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!--<TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/tv_device_title"
-        android:gravity="center"
-        android:text="yasina"
-        android:layout_centerHorizontal="true"
-        android:textSize="30sp"
-        android:layout_alignParentTop="true"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/tv_device_address"
-        android:gravity="center"
-        android:text="Runtime"
-        android:textSize="20sp"
-        android:layout_below="@+id/tv_device_title"
-        android:layout_centerHorizontal="true" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/ib_change_name"
-        android:text="@string/change_device_name"
-        android:layout_marginRight="10dp"
-        />
-
-    <Button
-        android:id="@+id/btn_on_device"
-        android:layout_width="60dp"
-        android:layout_height="40dp"
-        android:text="ON"
-        android:background="@drawable/btn_off"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@+id/tv_device_address"/>
-
-    <Button
-        android:id="@+id/btn_off_device"
-        android:layout_width="60dp"
-        android:layout_height="40dp"
-        android:text="OFF"
-        android:layout_marginTop="10dp"
-        android:background="@drawable/btn_off"
-        android:layout_below="@+id/btn_on_device"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"/> -->
-
-   <!-- <ToggleButton
-        android:id="@+id/tb_mode_device"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textOn="@string/manual_mode"
-        android:textOff="@string/auto_mode"
-        android:showText="true"
-        android:layout_below="@+id/tv_device_address"
-        android:layout_centerHorizontal="true" /> -->
-
-      <!--  <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/btn_mode_manual"
-            android:text="@string/manual_mode"
-            android:layout_below="@+id/tv_device_address"/>
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/btn_mode_auto"
-            android:text="@string/auto_mode"
-            android:layout_toRightOf="@+id/btn_mode_manual"
-            android:layout_below="@+id/tv_device_address"/>-->
-
-       <!-- <android.support.v7.widget.RecyclerView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/rv_on_off_info"
-            android:layout_gravity="center"
-            android:layout_marginTop="5dp"
-
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true">
-        </android.support.v7.widget.RecyclerView>-->
-        <!--
-         android:layout_below="@+id/btn_mode_manual"
-             android:layout_below="@+id/rv_on_off_info"-->
-
     <android.support.v7.widget.CardView
         android:id="@+id/cv_controller_functions"
         android:layout_gravity="center"
@@ -117,47 +28,6 @@
             android:layout_height="wrap_content"
             android:padding="10dp">
 
-          <!--  <TextView
-                android:id="@+id/tv_change_password"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Изменить пароль"
-                android:padding="5dp"
-                android:layout_marginLeft="11dp"
-                android:layout_marginTop="10dp"
-                android:layout_alignParentTop="true"
-                android:textSize="15sp"/>
-
-            <Button
-                android:layout_width="60dp"
-                android:layout_height="40dp"
-                android:id="@+id/btn_change_password"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
-                android:text="OK" />
-
-            <TextView
-                android:id="@+id/tv_reset"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="11dp"
-                android:layout_marginStart="11dp"
-                android:layout_marginTop="10dp"
-                android:padding="5dp"
-                android:layout_below="@+id/tv_change_password"
-                android:text="Сброс контроллера" />
-
-            <Button
-                android:id="@+id/btn_reset_controller"
-                android:layout_width="60dp"
-                android:layout_height="40dp"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_below="@+id/btn_change_password"
-                android:text="OK" />
-                android:layout_below="@id/tv_reset"-->
-
             <TextView
                 android:id="@+id/tv_status_title"
                 android:layout_width="wrap_content"
@@ -166,10 +36,8 @@
                 android:layout_marginStart="11dp"
                 android:layout_marginTop="10dp"
                 android:padding="5dp"
-
                 android:text="Статус" />
 
-            <!--  android:layout_below="@+id/tv_reset" -->
             <TextView
                 android:id="@+id/tv_status"
                 android:layout_width="wrap_content"
@@ -182,7 +50,6 @@
                 android:padding="5dp"
                 android:layout_marginStart="17dp" />
 
-            <!-- android:layout_below="@+id/tv_reset" -->
             <Button
                 android:id="@+id/btn_sync_status"
                 android:layout_width="70dp"
@@ -241,7 +108,6 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/tv_version"
                     android:text="Дата"
-
                     android:layout_weight="5"/>
 
                 <TextView
@@ -380,16 +246,6 @@
                 android:layout_marginTop="40dp"
                 android:layout_below="@+id/tv_edit_schedule"
                 />
-            <Button
-                android:layout_width="90dp"
-                android:layout_height="50dp"
-                android:layout_marginTop="10dp"
-                android:id="@+id/btn_generate_schedule"
-                android:text="OK"
-                android:visibility="gone"
-                android:layout_below="@+id/btn_edit_schedule"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -408,7 +264,7 @@
                 android:id="@+id/btn_load_schedule"
                 android:text="OK"
                 android:layout_marginTop="10dp"
-                android:layout_below="@+id/btn_generate_schedule"
+                android:layout_below="@+id/btn_edit_schedule"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true" />
 

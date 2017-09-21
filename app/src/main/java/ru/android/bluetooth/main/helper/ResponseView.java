@@ -35,20 +35,7 @@ public class ResponseView {
 
     public static void showSnackbar(RelativeLayout view, String message){
         Snackbar snackbar = Snackbar.make(view, message, Snackbar.LENGTH_LONG);
-
         final View snackBarView = snackbar.getView();
-        /*final FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) snackBarView.getLayoutParams();
-
-        params.setMargins(params.leftMargin,
-                params.topMargin,
-                params.rightMargin,
-                params.bottomMargin + 80);
-
-        snackBarView.setLayoutParams(params);*/
-        /*RelativeLayout relativeLayout = (RelativeLayout) view.findViewById(R.id.rl);
-        RelativeLayout.LayoutParams params=(RelativeLayout.LayoutParams)view.getLayoutParams();
-        params.g = Gravity.TOP;
-        view.setLayoutParams(params);*/
         snackbar.show();
     }
 }

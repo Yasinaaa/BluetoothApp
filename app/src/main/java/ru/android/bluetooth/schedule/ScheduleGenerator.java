@@ -1,4 +1,4 @@
-package ru.android.bluetooth.schedule.helper;
+package ru.android.bluetooth.schedule;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;

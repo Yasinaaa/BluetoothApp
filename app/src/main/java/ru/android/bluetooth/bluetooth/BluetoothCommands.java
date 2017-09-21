@@ -26,83 +26,9 @@ public class BluetoothCommands {
     public static final String MANUAL_ON = "Manual On\r\n";
     public static final String MANUAL_OFF = "Manual Off\r\n";
 
-    /*public static final int GET_TABLE_NUM = 0;
-    public static final int RESET_NUM = 1;
-    public static final int STATUS_NUM = 2;
-    public static final int VERSION_NUM = 3;
-    public static final int SET_TIME_NUM = 4;
-    public static final int SET_DATE_NUM = 5;
-    public static final int GET_TIME_NUM = 6;
-    private static final int SET_NAME_NUM = 7;
-    private static final int SET_PASSWORD_NUM = 8;
-    public static final int SET_DATA_NUM = 9;
-    public static final int DEBUG_NUM = 10;
-    public static final int ON_NUM = 11;
-    public static final int OFF_NUM = 12;
-    public static final int MANUAL_ON_NUM = 13;
-    public static final int MANUAL_OFF_NUM = 14;
-    /*public final static int REQUEST_ENABLE_BT = 1;
-
-   */
     public final static int MESSAGE_READ = 2;
     public final static int CONNECTING_STATUS = 99;
 
-   /* private static final String COMMAND = "@%s $%s %s $%s %s";
-
-    public static String setCommand(String startDate, String startTime, String startPow, String finshTime, String finishPow){
-        return String.format(COMMAND, startDate, startTime, startPow, finshTime, finishPow);
-    }*/
-
-   /* public static int getStatusNum(String message){
-        switch (message){
-            case GET_TABLE:
-                return GET_TABLE_NUM;
-
-            case RESET:
-                return RESET_NUM;
-
-            case STATUS:
-                return STATUS_NUM;
-
-            case VERSION:
-                return VERSION_NUM;
-
-            case SET_TIME:
-                return SET_TIME_NUM;
-
-            case SET_DATE:
-                return SET_DATE_NUM;
-
-            case GET_TIME:
-                return GET_TIME_NUM;
-
-            case SET_NAME:
-                return SET_NAME_NUM;
-
-            case SET_PASSWORD:
-                return SET_PASSWORD_NUM;
-
-            case SET_DATA:
-                return SET_DATA_NUM;
-
-            case DEBUG:
-                return DEBUG_NUM;
-
-            case ON:
-                return ON_NUM;
-
-            case OFF:
-                return OFF_NUM;
-
-            case MANUAL_ON:
-                return MANUAL_ON_NUM;
-
-            case MANUAL_OFF:
-                return MANUAL_OFF_NUM;
-        }
-        return -99;
-    }
-*/
     public static String setPassword(String password){
         return String.format(SET_PASSWORD, password);
     }

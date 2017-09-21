@@ -42,7 +42,6 @@ import ru.android.bluetooth.common.DateParser;
 import ru.android.bluetooth.hand_generation.GenerateHandActivity;
 import ru.android.bluetooth.main.helper.ScheduleLoading;
 import ru.android.bluetooth.root.RootActivity;
-import ru.android.bluetooth.schedule.ScheduleGeneratorActivity;
 import ru.android.bluetooth.settings.SettingsActivity;
 import ru.android.bluetooth.start.ChooseDeviceActivity;
 import ru.android.bluetooth.utils.ActivityHelper;
@@ -90,8 +89,6 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
     Button mIbSyncDate;
     @BindView(R.id.et_schedule_name)
     EditText mEtScheduleName;
-    @BindView(R.id.btn_generate_schedule)
-    Button mBtnGenerateSchedule;
     @BindView(R.id.btn_edit_schedule)
     Button mBtnEditSchedule;
     @BindView(R.id.btn_load_schedule)
@@ -101,7 +98,7 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
     private RelativeLayout.LayoutParams mRlLayoutParams;
     private BluetoothMessage mBluetoothMessage;
     private String mStatus;
-    private AutoModePresenter mAutoModePresenter;
+    private MainPresenter mAutoModePresenter;
     private DateParser mDateParser;
     private AlertDialog mLoadingTableAlertDialog;
     private ScheduleLoading scheduleLoading;
@@ -463,39 +460,6 @@ public class MainActivity extends RootActivity implements MainModule.ManualModeV
                 ActivityHelper.startActivity(MainActivity.this, CalendarActivity.class);
             }
         });
-
-        mBtnGenerateSchedule.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                LayoutInflater inflater = mActivity.getLayoutInflater();
-                View dialogView = inflater.inflate(R.layout.dialog_choose_generation_schedule_type, null);
-                TextView handGeneration = dialogView.findViewById(R.id.tv_generate_schedule_hand);
-                handGeneration.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        ActivityHelper.startActivity(MainActivity.this, GenerateHandActivity.class);
-
-                    }
-                });
-                TextView sunRiseSetGeneration = dialogView.findViewById(R.id.tv_generate_schedule_sunrise_set);
-                sunRiseSetGeneration.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        ActivityHelper.startActivity(MainActivity.this, ScheduleGeneratorActivity.class);
-                    }
-                });
-
-                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mActivity)
-                        .setTitle(getString(R.string.generate_dialog_title))
-                        .setView(dialogView)
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
-                        });
-                dialogBuilder.show();
-            }
-        });
-
 
         mBtnLoadSchedule.setOnClickListener(new View.OnClickListener() {
             @Override

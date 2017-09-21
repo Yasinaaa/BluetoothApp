@@ -61,33 +61,7 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceMo
         setContentView(R.layout.activity_choose_device);
         start();
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        //test();
     }
-
-    /*public void test(){
-        ArrayList<String> testItems = new ArrayList<String>();
-        testItems.add("is=352,1,12");
-        testItems.add("352,1,,11, 12");
-        //testItems.add("   ");
-        testItems.add("is=353,13,14");
-        testItems.add("is=354,5,6");
-        testItems.add("is=355,17,18");
-        testItems.add("is=356,19,21");
-        // is=353,1,1
-        for (String item: testItems){
-            if (item.matches("(.*)=\\d+,\\d+,\\d+")) {
-                try {
-                    Log.d("f", "item1= " + item.substring(item.indexOf("=") + 1, item.indexOf(",")));
-                    Log.d("f", "item2= " + item.substring(item.indexOf(",") + 1, item.lastIndexOf(",")));
-                    Log.d("f", "item3= " + item.substring(item.lastIndexOf(",") + 1, item.length()));
-                } catch (java.lang.Exception e) {
-
-                }
-            }
-        }
-
-
-    }*/
 
     @Override
     public void init(){
@@ -160,19 +134,9 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceMo
         return true;
     }
 
-    /*public void hideKeyboard() {
-        InputMethodManager imm = (InputMethodManager) this.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        View view = this.getCurrentFocus();
-        if (view == null) {
-            view = new View(this);
-        }
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-    }*/
-
     @Override
     protected void onStop() {
         super.onStop();
-        //dialog.cancel();
     }
 
     @Override
@@ -221,15 +185,14 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceMo
     public void error(String message){
         dialog.cancel();
         AlertDialog.Builder dialogB = new AlertDialog.Builder(this)
-                .setTitle("Ошибка")
-                .setMessage("Устройство не находится в сети")
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                .setTitle(getString(R.string.mistake))
+                .setMessage(getString(R.string.device_is_not_on_net))
+                .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.cancel();
                     }
                 });
         dialogB.show();
-       // mBluetoothModule.unregister();
     }
 
     @Override

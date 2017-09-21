@@ -54,52 +54,20 @@ public class ActivityHelper {
         alertDialog.cancel();
     }
 
-    public static void startBroadcastReceiver(Activity from){
-        IntentFilter filter = new IntentFilter(AppDestroyBroadcastReceiver.TAG);
-        filter.addCategory(Intent.CATEGORY_DEFAULT);
-        AppDestroyBroadcastReceiver broadcastReceiver = new AppDestroyBroadcastReceiver(from);
-        LocalBroadcastManager loadBroadcastManager = LocalBroadcastManager.getInstance(from.getApplicationContext());
-        loadBroadcastManager.registerReceiver(broadcastReceiver, filter);
-    }
-
     public static void startActivity(Activity from, Class to){
         Intent intent = new Intent(from, to);
-        //sendToAppDestroyListener(from, true, to);
         from.startActivity(intent);
-        //from.finish();
-
     }
 
     public static void startActivityAndFinishThis(Activity from, Class to){
         Intent intent = new Intent(from, to);
         from.startActivity(intent);
         from.finish();
-
     }
 
-    public static void sendToAppDestroyListener(Activity from, boolean onOrOff){
-        Intent intent = new Intent(from, AppDestroyService.class);
-        intent.putExtra(AppDestroyService.ACTIVITY, from.getLocalClassName());
-        intent.putExtra(AppDestroyService.ACTIVITY_ON_OFF, onOrOff);
-        from.startService(intent);
-    }
-
-    public static void sendToAppDestroyListener(Activity from, boolean onOrOff, Class to){
-        Intent intent = new Intent(from, AppDestroyService.class);
-        intent.putExtra(AppDestroyService.ACTIVITY, to.getCanonicalName());
-        intent.putExtra(AppDestroyService.ACTIVITY_ON_OFF, onOrOff);
-        from.startService(intent);
-    }
     public static void setVisibleLogoIcon(AppCompatActivity activity){
-
         activity.getSupportActionBar().setDisplayUseLogoEnabled(true);
         activity.getSupportActionBar().setLogo(activity.getResources().getDrawable(R.drawable.runline));
         activity.getSupportActionBar().setIcon(activity.getResources().getDrawable(R.drawable.runline));
-
-
-        /*getSupportActionBar().setLogo(getResources().getDrawable(R.drawable.runline));
-        getSupportActionBar().setDisplayUseLogoEnabled(true);*/
-        //  getActionBar().setIcon(getResources().getDrawable(R.drawable.runline));
-        //getSupportActionBar().setIcon(getResources().getDrawable(R.drawable.runline));
     }
 }
