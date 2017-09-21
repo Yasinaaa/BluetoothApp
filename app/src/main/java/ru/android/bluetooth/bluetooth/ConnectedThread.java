@@ -1,6 +1,9 @@
 package ru.android.bluetooth.bluetooth;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothSocket;
+import android.content.DialogInterface;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
@@ -17,6 +20,7 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.zip.CRC32;
 
+import ru.android.bluetooth.R;
 import ru.android.bluetooth.schedule.helper.S;
 import ru.android.bluetooth.schedule.helper.S2;
 
@@ -80,7 +84,7 @@ public class ConnectedThread extends Thread {
                     try {
                         bytes = mmInStream.read(buffer, 0, bytes);
                         //int g = mmInStream.read();
-                        mHandler.obtainMessage(STATUS, bytes, -1, buffer)
+                        mHandler.obtainMessage(BluetoothCommands.MESSAGE_READ, bytes, -1, buffer)
                                 .sendToTarget();
                        // Log.e("fff", "bytes=" + bytes);
                     }catch (java.lang.ArrayIndexOutOfBoundsException e){
@@ -271,12 +275,18 @@ public class ConnectedThread extends Thread {
         s.part2(mmOutStream, data);*/
     }
 
-    private int STATUS;
-    public String writeData(int status, String data) {
+    public String writeData(Activity activity, String data) {
         try {
-            STATUS = status;
             mmOutStream.write(data.getBytes());
         } catch (IOException e) {
+
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity)
+                    .setTitle(activity.getString(R.string.connection_failed))
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
+            dialogBuilder.show();
             Log.d("T", e.getMessage());
             return e.getMessage();
         }

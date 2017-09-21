@@ -17,8 +17,8 @@ public class BluetoothCommands {
     public static final String SET_TIME = "Set Time=%s:%s:%s\r\n";
     public static final String SET_DATE = "Set Date=%s-%s-%s\r\n";
     public static final String GET_TIME = "Get Time\r\n";
-    private static final String SET_NAME = "Set Name=%s\r\n";
-    private static final String SET_PASSWORD = "Set Password=%s\r\n";
+    public static final String SET_NAME = "Set Name=%s\r\n";
+    public static final String SET_PASSWORD = "Set Password=%s\r\n";
     public static final String SET_DATA = "Set Data\r\n";
     public static final String DEBUG = "Get AOnOff\r\n";
     public static final String ON = "Rele On\r\n";
@@ -26,7 +26,7 @@ public class BluetoothCommands {
     public static final String MANUAL_ON = "Manual On\r\n";
     public static final String MANUAL_OFF = "Manual Off\r\n";
 
-    public static final int GET_TABLE_NUM = 0;
+    /*public static final int GET_TABLE_NUM = 0;
     public static final int RESET_NUM = 1;
     public static final int STATUS_NUM = 2;
     public static final int VERSION_NUM = 3;
@@ -42,8 +42,9 @@ public class BluetoothCommands {
     public static final int MANUAL_ON_NUM = 13;
     public static final int MANUAL_OFF_NUM = 14;
     /*public final static int REQUEST_ENABLE_BT = 1;
-    public final static int MESSAGE_READ = 2;
+
    */
+    public final static int MESSAGE_READ = 2;
     public final static int CONNECTING_STATUS = 99;
 
    /* private static final String COMMAND = "@%s $%s %s $%s %s";
@@ -52,7 +53,7 @@ public class BluetoothCommands {
         return String.format(COMMAND, startDate, startTime, startPow, finshTime, finishPow);
     }*/
 
-    public static int getStatusNum(String message){
+   /* public static int getStatusNum(String message){
         switch (message){
             case GET_TABLE:
                 return GET_TABLE_NUM;
@@ -101,7 +102,7 @@ public class BluetoothCommands {
         }
         return -99;
     }
-
+*/
     public static String setPassword(String password){
         return String.format(SET_PASSWORD, password);
     }

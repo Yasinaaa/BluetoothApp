@@ -306,21 +306,20 @@ public class CalendarPresenter implements CalendarModule.Presenter,
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                // Your UI updates here
                 mDialog = ActivityHelper.showProgressBar(mActivity, "Считывание расписания");
             }
         });
 
         mStatus = BluetoothCommands.GET_TABLE;
-        mBluetoothMessage.writeMessage(BluetoothCommands.GET_TABLE);
+        mBluetoothMessage.writeMessage(mActivity,BluetoothCommands.GET_TABLE);
         SystemClock.sleep(1000);
-        mBluetoothMessage.writeMessage("ddd\r\n");
+        mBluetoothMessage.writeMessage(mActivity,"ddd\r\n");
     }
 
     @Override
     public void onResponse(String answer) {
         Log.d("d", answer);
-        if(answer.contains("Not") || mTable.contains("command")){
+        if(answer.contains("Not") || answer.contains("command")){
             if (mStatus.equals(BluetoothCommands.GET_TABLE)) {
 
                 answer = answer.replaceAll("[Notcomand ]", "");
@@ -331,9 +330,9 @@ public class CalendarPresenter implements CalendarModule.Presenter,
             }else if (mStatus.equals(BluetoothCommands.SET_DATA)){
 
                 mStatus = BluetoothCommands.GET_TABLE;
-                mBluetoothMessage.writeMessage(BluetoothCommands.GET_TABLE);
+                mBluetoothMessage.writeMessage(mActivity,BluetoothCommands.GET_TABLE);
                 SystemClock.sleep(1000);
-                mBluetoothMessage.writeMessage("ddd\r\n");
+                mBluetoothMessage.writeMessage(mActivity,"ddd\r\n");
             }
         }else if(mStatus.equals(BluetoothCommands.GET_TABLE)){
             mTable +=answer;

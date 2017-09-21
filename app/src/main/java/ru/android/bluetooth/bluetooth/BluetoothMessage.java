@@ -1,5 +1,6 @@
 package ru.android.bluetooth.bluetooth;
 
+import android.app.Activity;
 import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
@@ -94,8 +95,8 @@ public class BluetoothMessage {
         mConnectedThread.writeeeeeeeeeeeeeeeeeee();
     }
 
-    public void writeMessage(String message){
-        mConnectedThread.writeData(BluetoothCommands.getStatusNum(message), message);
+    public void writeMessage(Activity activity, String message){
+        mConnectedThread.writeData(activity, message);
     }
     public void writeMessage(int[] listOn, int[] listOff){
         mConnectedThread.write(listOn, listOff);

@@ -129,6 +129,7 @@ public class SettingsActivity extends RootActivity
     @Override
     public void init() {
 
+        mActivity = this;
         mDialog = ActivityHelper.showProgressBar(this, "Считывание данных");
         mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
         mBluetoothMessage.setBluetoothMessageListener(this);
@@ -145,7 +146,6 @@ public class SettingsActivity extends RootActivity
                 .addApi(LocationServices.API)
                 .build();
 
-
         mLocationRequest = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                 .setInterval(10 * 1000)
@@ -153,6 +153,9 @@ public class SettingsActivity extends RootActivity
 
         mActvTimezone.setText(getTimeZone() + "");
 
+        String[] device = BluetoothHelper.getBluetoothUser(getApplicationContext());
+        mTvDeviceAddress.setText(device[0]);
+        mTvDeviceTitle.setText(device[1]);
     }
 
 
@@ -165,6 +168,9 @@ public class SettingsActivity extends RootActivity
 
     @Override
     public void setClickListeners() {
+
+        setChangePasswordAndUsername();
+
         mBtnOnDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -177,11 +183,16 @@ public class SettingsActivity extends RootActivity
                 setMessage(BluetoothCommands.OFF);
             }
         });
-        setChangePasswordAndUsername();
+
         mCbAutoMode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //setOnModeCheckBoxClicked(mCbAutoMode, mCbManualMode, false);
+                if(mCbAutoMode.isChecked()){
+                    mCbAutoMode.setChecked(false);
+                }else {
+                    mCbAutoMode.setChecked(true);
+                }
                 setMessage(BluetoothCommands.MANUAL_OFF);
             }
         });
@@ -234,21 +245,20 @@ public class SettingsActivity extends RootActivity
                 View dialogView = inflater.inflate(R.layout.dialog_password, null);
 
                 final EditText mPasswordView = (EditText) dialogView.findViewById(R.id.et_password);
-
-
                 AlertDialog.Builder passwordDialogBuilder = new AlertDialog.Builder(SettingsActivity.this)
                         .setTitle(getString(R.string.input_password))
                         .setView(dialogView)
 
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                               // Toast.makeText(getBaseContext(), "Pressed OK", Toast.LENGTH_SHORT).show();
-                                setMessage(BluetoothCommands.setPassword(mPasswordView.getText().toString()));
+                                setMessage(BluetoothCommands.SET_PASSWORD,
+                                        BluetoothCommands.setPassword(mPasswordView.getText().toString()));
+                                ResponseView.showSnackbar(mRl,
+                                        ResponseView.SET_PASSWORD);
                             }
                         })
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                               // Toast.makeText(getBaseContext(), "Cancel", Toast.LENGTH_SHORT).show();
                             }
                         });
                 passwordDialogBuilder.show();
@@ -273,14 +283,16 @@ public class SettingsActivity extends RootActivity
 
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                // Toast.makeText(getBaseContext(), "Pressed OK", Toast.LENGTH_SHORT).show();
-                                setMessage(BluetoothCommands.setName(mPasswordView.getText().toString()));
+                                ResponseView.showSnackbar(mRl,
+                                        ResponseView.SET_PASSWORD);
+                                setMessage(BluetoothCommands.SET_NAME,
+                                        BluetoothCommands.setName(mPasswordView.getText().toString()));
                                 mTvDeviceTitle.setText(mPasswordView.getText().toString());
+
                             }
                         })
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                //Toast.makeText(getBaseContext(), "Cancel", Toast.LENGTH_SHORT).show();
                             }
                         });
                 passwordDialogBuilder.show();
@@ -290,14 +302,13 @@ public class SettingsActivity extends RootActivity
 
     private void setMessage(String status){
         mStatus = status;
-        mBluetoothMessage.writeMessage(status);
+        mBluetoothMessage.writeMessage(mActivity,status);
     }
 
     private void setMessage(String status, String text){
         mStatus = status;
-        mBluetoothMessage.writeMessage(text);
+        mBluetoothMessage.writeMessage(mActivity,text);
     }
-
 
     @Override
     public void setTag() {
@@ -451,6 +462,14 @@ public class SettingsActivity extends RootActivity
         if(mStatus!= null) {
 
             switch (mStatus) {
+                case BluetoothCommands.SET_PASSWORD:
+
+                    break;
+
+                case BluetoothCommands.SET_NAME:
+
+                    break;
+
                 case BluetoothCommands.STATUS:
 
                     parseStatus(answer);

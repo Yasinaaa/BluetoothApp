@@ -24,8 +24,8 @@ public class ResponseView {
     public static final String SET_TIME = "Время обновлено";
     public static final String SET_DATE = "Дата обновлена";
     public static final String GET_TIME = "Информация о времени обновлена";
-    private static final String SET_NAME = "Имя изменено";
-    private static final String SET_PASSWORD = "Пароль изменен";
+    public static final String SET_NAME = "Имя изменено";
+    public static final String SET_PASSWORD = "Пароль изменен";
     public static final String SET_DATA = "Рассписание изменено";
     public static final String DEBUG = "";
     public static final String ON = "Реле включено";

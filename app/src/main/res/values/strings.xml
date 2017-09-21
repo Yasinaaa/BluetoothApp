@@ -21,5 +21,6 @@
     <string name="no_bluetooth_connection">Не подключен Bluetooth</string>
     <string name="generate_schedule">Генерация рассписания</string>
     <string name="loading_schedule">Запись рассписания</string>
+    <string name="connection_failed">Соединение разорвано</string>
 
 </resources>

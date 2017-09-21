@@ -242,7 +242,7 @@ public class ScheduleGeneratorActivity extends RootActivity
 
     private void writeMessage(String status){
         mStatus = status;
-        mBluetoothMessage.writeMessage(status);
+        mBluetoothMessage.writeMessage(mActivity,status);
     }
 
     @Override
