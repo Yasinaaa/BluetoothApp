@@ -42,6 +42,7 @@ import ru.android.bluetooth.bluetooth.BluetoothMessage;
 import ru.android.bluetooth.common.DateParser;
 import ru.android.bluetooth.main.helper.ScheduleLoading;
 import ru.android.bluetooth.root.RootActivity;
+import ru.android.bluetooth.settings.A;
 import ru.android.bluetooth.settings.SettingsActivity;
 import ru.android.bluetooth.start.ChooseDeviceActivity;
 import ru.android.bluetooth.utils.ActivityHelper;
@@ -94,17 +95,15 @@ public class MainActivity extends RootActivity implements MainModule.View,
     @BindView(R.id.btn_load_schedule)
     Button mBtnLoadSchedule;
 
-    private String thisTextNeedToSetTextView;
+    private String mThisTextNeedToSetTextView;
     private RelativeLayout.LayoutParams mRlLayoutParams;
     private BluetoothMessage mBluetoothMessage;
     private String mStatus;
-    private MainPresenter mAutoModePresenter;
+    private MainPresenter mMainPresenter;
     private DateParser mDateParser;
     private AlertDialog mLoadingTableAlertDialog;
     private ScheduleLoading scheduleLoading;
-    private File file;
-    private static final int REQUEST_READ_PERMISSION = 785;
-    private static final int REQUEST_WRITE_PERMISSION = 786;
+    private File mFile;
     private String mTable;
     private Activity mActivity;
 
@@ -116,18 +115,9 @@ public class MainActivity extends RootActivity implements MainModule.View,
     }
 
     @Override
-    public void requestReadPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_READ_PERMISSION);
-        } else {
-
-        }
-    }
-
-    @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode == REQUEST_READ_PERMISSION && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            scheduleLoading.parceSchedule(file);
+        if (requestCode == ActivityHelper.REQUEST_READ_PERMISSION && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            scheduleLoading.parceSchedule(mFile);
         }
     }
 
@@ -143,7 +133,7 @@ public class MainActivity extends RootActivity implements MainModule.View,
         mActivity = this;
         mDateParser = new DateParser();
         setScheduleFilePath();
-
+        scheduleLoading = new ScheduleLoading(this, mActivity);
         ActivityHelper.setVisibleLogoIcon(this);
 
         mRlLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
@@ -204,7 +194,7 @@ public class MainActivity extends RootActivity implements MainModule.View,
                         if(i2s.length() == 1){
                             i2s = "0" + (i2 + 1);
                         }
-                        thisTextNeedToSetTextView = String.format("%s-%s-%s", new String[]{
+                        mThisTextNeedToSetTextView = String.format("%s-%s-%s", new String[]{
                                 i2s+"", i1s, i+""
                         });
                         setMessage(BluetoothCommands.SET_DATE, BluetoothCommands.setDate(year, month+1, day), true);
@@ -222,7 +212,7 @@ public class MainActivity extends RootActivity implements MainModule.View,
                     @Override
                     public void onTimeSet(TimePicker timePicker, int i, int i1) {
 
-                        thisTextNeedToSetTextView = String.format("%s:%s", new String[]{
+                        mThisTextNeedToSetTextView = String.format("%s:%s", new String[]{
                                setZeros(i), setZeros(i1)
                         });
                         setMessage(BluetoothCommands.SET_TIME, BluetoothCommands.setTime(i,i1), true);
@@ -315,14 +305,14 @@ public class MainActivity extends RootActivity implements MainModule.View,
                     break;
 
                 case BluetoothCommands.SET_DATE:
-                    mTvDate.setText(thisTextNeedToSetTextView);
+                    mTvDate.setText(mThisTextNeedToSetTextView);
                     if (answer.contains("Not") || answer.contains("command")) {
                         setMessage(BluetoothCommands.STATUS, true);
                     }
                     break;
 
                 case BluetoothCommands.SET_TIME:
-                    mTvTime.setText(thisTextNeedToSetTextView);
+                    mTvTime.setText(mThisTextNeedToSetTextView);
                     if (answer.contains("Not") || answer.contains("command")) {
                         setMessage(BluetoothCommands.STATUS, true);
                     }
@@ -431,7 +421,8 @@ public class MainActivity extends RootActivity implements MainModule.View,
         searchItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
-                ActivityHelper.startActivity(mActivity, SettingsActivity.class);
+                //ActivityHelper.startActivity(mActivity, SettingsActivity.class);
+                ActivityHelper.startActivity(mActivity, A.class);
                 return true;
             }
         });
@@ -495,13 +486,13 @@ public class MainActivity extends RootActivity implements MainModule.View,
             String title = selectedfile.getLastPathSegment().substring(selectedfile.getLastPathSegment().indexOf(":")+1);
             if(title.endsWith(".xls")){
 
-                final File file = new File(r+"/"+title);
-                if (file.exists()){
+                mFile = new File(r+"/"+title);
+                if (mFile.exists()){
                     Log.d(TAG, "exists");
                 }
 
                 Handler mHandler = new Handler(Looper.getMainLooper());
-                final MainModule.View v = this;
+
                /* mHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -511,22 +502,22 @@ public class MainActivity extends RootActivity implements MainModule.View,
                 });*/
                 runOnUiThread(new Runnable() {
                     public void run() {
-                        ScheduleLoading scheduleLoading = new ScheduleLoading(v, mBluetoothMessage, mActivity);
-                        scheduleLoading.parceSchedule(file);
+
+                        scheduleLoading.parceSchedule(mFile);
                     }
                 });
 
                // ActivityHelper.hideProgressBar(mLoadingTableAlertDialog);
 
             }else {
-                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mActivity)
+               /* AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mActivity)
                         .setTitle(getString(R.string.generate_dialog_title))
                         .setMessage("Не правильный формат файла")
                         .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                             }
                         });
-                dialogBuilder.show();
+                dialogBuilder.show();*/
             }
         }
     }

@@ -10,7 +10,6 @@ public interface MainModule {
         void dataCreated(int[] onList, int[] offList);
         void setDeviceTitle(String title);
         void setStatus(String status);
-        void requestReadPermission();
         void setScheduleTitle(String title);
     }
 

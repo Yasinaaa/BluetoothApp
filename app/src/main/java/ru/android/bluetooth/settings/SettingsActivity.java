@@ -11,9 +11,11 @@ import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
@@ -38,7 +40,6 @@ import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
@@ -65,9 +66,7 @@ import ru.android.bluetooth.utils.DialogHelper;
  */
 
 public class SettingsActivity extends RootActivity
-        implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener,
-        LocationListener, BluetoothMessage.BluetoothMessageListener {
+        implements BluetoothMessage.BluetoothMessageListener {
 
     @BindView(R.id.tv_device_title)
     TextView mTvDeviceTitle;
@@ -117,22 +116,24 @@ public class SettingsActivity extends RootActivity
     Button mBtnSyncGeolocation;
 
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
-    private GoogleApiClient mGoogleApiClient;
-    private LocationRequest mLocationRequest;
+
     private double currentLatitude;
     private double currentLongitude;
-
+    private LocationManager mlocManager;
+    private LocationListener locationListener;
     private Activity mActivity;
     private SettingsPresenter mSettingsPresenter;
     private BluetoothMessage mBluetoothMessage;
     private String mStatus;
     private AlertDialog mDialog;
     private final int MY_PERMISSIONS_REQUEST_LOCATION = 12;
+    private Bundle bundle;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+        bundle = savedInstanceState;
         start();
     }
 
@@ -153,16 +154,51 @@ public class SettingsActivity extends RootActivity
 
         mActivity = this;
         mSettingsPresenter = new SettingsPresenter(this);
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
 
-        mLocationRequest = LocationRequest.create()
-                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                .setInterval(10 * 1000)
-                .setFastestInterval(1 * 1000);
+        Criteria hdCrit = new Criteria();
+        hdCrit.setAccuracy(Criteria.ACCURACY_COARSE);
+        mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        String mlocProvider = mlocManager.getBestProvider(hdCrit, true);
+        Location currentLocation = mlocManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+
+        locationListener = new LocationListener() {
+            public void onLocationChanged(Location location) {
+                // Called when a new location is found by the network location provider.
+                currentLatitude = location.getLatitude();
+                currentLongitude = location.getLongitude();
+                mActvLatitude.setText(String.valueOf(currentLatitude));
+                mActvLongitude.setText(String.valueOf(currentLongitude));
+            }
+
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+                Log.d(TAG, provider);
+            }
+
+            public void onProviderEnabled(String provider) {
+                Log.d(TAG, provider);
+            }
+
+            public void onProviderDisabled(String provider) {
+                Log.d(TAG, provider);
+            }
+        };
+
+
+
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(SettingsActivity.this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                    MY_PERMISSIONS_REQUEST_LOCATION);
+
+        }else {
+
+
+        }
 
         mActvTimezone.setText(getTimeZone() + "");
 
@@ -343,16 +379,12 @@ public class SettingsActivity extends RootActivity
     @Override
     protected void onStart() {
         super.onStart();
-        mGoogleApiClient.connect();
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         Log.v(this.getClass().getSimpleName(), "onResume");
-
-        mGoogleApiClient.connect();
     }
 
     @Override
@@ -362,17 +394,13 @@ public class SettingsActivity extends RootActivity
 //        alertDialog.dismiss();
         //  alertDialog.cancel();
 
-        if (mGoogleApiClient.isConnected()) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-            mGoogleApiClient.disconnect();
-        }
 
     }
 
     Location location;
     AlertDialog alertDialog;
 
-    @Override
+   /* @Override
     public void onConnected(Bundle bundle) {
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
@@ -390,6 +418,9 @@ public class SettingsActivity extends RootActivity
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
+
+
+
             location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         }
 
@@ -426,7 +457,7 @@ public class SettingsActivity extends RootActivity
 
             //Toast.makeText(this, currentLatitude + " WORKS " + currentLongitude + "", Toast.LENGTH_LONG).show();
         }
-    }
+    }*/
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -457,31 +488,6 @@ public class SettingsActivity extends RootActivity
                 }
             }
         }
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {}
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        if (connectionResult.hasResolution()) {
-            try {
-                connectionResult.startResolutionForResult(this, CONNECTION_FAILURE_RESOLUTION_REQUEST);
-            } catch (IntentSender.SendIntentException e) {
-                e.printStackTrace();
-            }
-        } else {
-            Log.e("Error", "Location services connection failed with code " + connectionResult.getErrorCode());
-        }
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        currentLatitude = location.getLatitude();
-        currentLongitude = location.getLongitude();
-        mActvLatitude.setText(String.valueOf(currentLatitude));
-        mActvLongitude.setText(String.valueOf(currentLongitude));
-        //Toast.makeText(this, currentLatitude + " WORKS " + currentLongitude + "", Toast.LENGTH_LONG).show();
     }
 
     @Override

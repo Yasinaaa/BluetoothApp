@@ -6,14 +6,18 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Environment;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import android.os.Handler;
 import android.os.Looper;
+import android.system.ErrnoException;
+import android.util.Log;
 
 import jxl.Cell;
 import jxl.Sheet;
@@ -24,6 +28,7 @@ import ru.android.bluetooth.bluetooth.BluetoothMessage;
 import ru.android.bluetooth.common.DateParser;
 import ru.android.bluetooth.main.MainModule;
 import ru.android.bluetooth.utils.ActivityHelper;
+import ru.android.bluetooth.utils.DialogHelper;
 
 /**
  * Created by yasina on 19.09.17.
@@ -31,8 +36,7 @@ import ru.android.bluetooth.utils.ActivityHelper;
 
 public class ScheduleLoading {
 
-    private AlertDialog mLoadingTableAlertDialog;
-    private BluetoothMessage mBluetoothMessage;
+    private final String TAG = "ScheduleLoading";
     private int[] onNumList;
     private int[] offNumList;
     private DateParser mDateParser;
@@ -41,17 +45,15 @@ public class ScheduleLoading {
     private MainModule.View mView;
     private Handler mHandler;
 
-    public ScheduleLoading(MainModule.View mView,
-                           BluetoothMessage mBluetoothMessage, Activity activity) {
+    public ScheduleLoading(MainModule.View mView, Activity activity) {
 
         this.mView = mView;
-        this.mBluetoothMessage = mBluetoothMessage;
         this.mActivity = activity;
         this.mContext = activity.getApplicationContext();
         onNumList = new int[366];
         offNumList = new int[366];
         mDateParser = new DateParser(Calendar.getInstance(), mContext);
-        checkPermission();
+
         mHandler = new Handler(Looper.getMainLooper());
     }
 
@@ -62,13 +64,14 @@ public class ScheduleLoading {
                 mContext.getPackageName());
 
         if (hasPerm != PackageManager.PERMISSION_GRANTED) {
-            mView.requestReadPermission();
+            ActivityHelper.requestReadPermission(mActivity);
         }
 
     }
 
     public void parceSchedule(File file){
 
+        checkPermission();
         List<String> dateList = new ArrayList<String>();
         List<String> onList = new ArrayList<String>();
         List<String> offList = new ArrayList<String>();
@@ -99,11 +102,18 @@ public class ScheduleLoading {
                 }
 
             } catch (BiffException e) {
-                e.printStackTrace();
+                Log.d(TAG, e.getMessage());
                 showErrorDialog(dialogBuilder);
+
             } catch (Exception e) {
-                e.printStackTrace();
-                showErrorDialog(dialogBuilder);
+                Log.d(TAG, e.getMessage());
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    if (!e.getClass().equals(FileNotFoundException.class)){
+                        showErrorDialog(dialogBuilder);
+                    }
+                }
+
             }
         }
         else
@@ -144,13 +154,7 @@ public class ScheduleLoading {
     }
 
     private void showErrorDialog(AlertDialog.Builder dialogBuilder){
-        dialogBuilder.setTitle(mActivity.getString(R.string.schedule))
-                .setMessage(mActivity.getString(R.string.file_mistake))
-                .setNegativeButton(mActivity.getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                });
-        dialogBuilder.show();
+        DialogHelper.showErrorMessage(mActivity, mActivity.getString(R.string.file_mistake));
     }
 
 }

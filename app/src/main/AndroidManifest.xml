@@ -8,10 +8,14 @@
     <permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission-sdk-23   android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission-sdk-23 android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"></uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_GPS" />
+    <uses-permission android:name="android.permission.ACCESS_ASSISTED_GPS" />
+    <uses-feature android:name="android.hardware.location.gps" />
+
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -19,7 +23,6 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
-    <uses-feature android:name="android.hardware.location.gps" />
 
     <uses-feature
         android:glEsVersion="0x00020000"
@@ -48,7 +51,7 @@
 
         </activity>
 
-        <activity android:screenOrientation="portrait" android:name=".settings.SettingsActivity" android:configChanges="keyboardHidden"></activity>
+        <activity android:screenOrientation="portrait" android:name=".settings.A" android:configChanges="keyboardHidden"></activity>
         <activity android:screenOrientation="portrait" android:name=".main.MainActivity">
 
         </activity>
