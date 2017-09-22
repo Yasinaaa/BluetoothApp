@@ -1,35 +1,39 @@
 package ru.android.bluetooth.settings;
 
+/**
+ * Created by yasina on 22.09.17.
+ */
+
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Looper;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
+import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -38,35 +42,34 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 
-import java.security.Provider;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
-import io.fabric.sdk.android.services.settings.SettingsRequest;
+import ru.android.bluetooth.BuildConfig;
 import ru.android.bluetooth.R;
 import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
-import ru.android.bluetooth.main.MainActivity;
 import ru.android.bluetooth.main.helper.ResponseView;
 import ru.android.bluetooth.root.RootActivity;
-import ru.android.bluetooth.utils.ActivityHelper;
 import ru.android.bluetooth.utils.BluetoothHelper;
 import ru.android.bluetooth.utils.CacheHelper;
 import ru.android.bluetooth.utils.DialogHelper;
 
-/**
- * Created by yasina on 18.09.17.
- */
+public class SettingsActivity extends RootActivity implements BluetoothMessage.BluetoothMessageListener{
 
-public class SettingsActivity extends RootActivity
-        implements BluetoothMessage.BluetoothMessageListener {
+    private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
+    private FusedLocationProviderClient mFusedLocationClient;
+    protected Location mLastLocation;
 
     @BindView(R.id.tv_device_title)
     TextView mTvDeviceTitle;
@@ -115,32 +118,24 @@ public class SettingsActivity extends RootActivity
     @BindView(R.id.btn_sync_geolocation)
     Button mBtnSyncGeolocation;
 
-    private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
-
     private double currentLatitude;
     private double currentLongitude;
-    private LocationManager mlocManager;
-    private LocationListener locationListener;
     private Activity mActivity;
     private SettingsPresenter mSettingsPresenter;
     private BluetoothMessage mBluetoothMessage;
     private String mStatus;
     private AlertDialog mDialog;
-    private final int MY_PERMISSIONS_REQUEST_LOCATION = 12;
-    private Bundle bundle;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-        bundle = savedInstanceState;
+
         start();
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
     }
-
-
     @Override
     public void init() {
-
         mScrollView.fullScroll(View.FOCUS_UP);
         //mCoordinatorLayout.scrollTo(0,0);
         mActivity = this;
@@ -154,51 +149,6 @@ public class SettingsActivity extends RootActivity
 
         mActivity = this;
         mSettingsPresenter = new SettingsPresenter(this);
-
-        Criteria hdCrit = new Criteria();
-        hdCrit.setAccuracy(Criteria.ACCURACY_COARSE);
-        mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        String mlocProvider = mlocManager.getBestProvider(hdCrit, true);
-        Location currentLocation = mlocManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-
-        locationListener = new LocationListener() {
-            public void onLocationChanged(Location location) {
-                // Called when a new location is found by the network location provider.
-                currentLatitude = location.getLatitude();
-                currentLongitude = location.getLongitude();
-                mActvLatitude.setText(String.valueOf(currentLatitude));
-                mActvLongitude.setText(String.valueOf(currentLongitude));
-            }
-
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-                Log.d(TAG, provider);
-            }
-
-            public void onProviderEnabled(String provider) {
-                Log.d(TAG, provider);
-            }
-
-            public void onProviderDisabled(String provider) {
-                Log.d(TAG, provider);
-            }
-        };
-
-
-
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(SettingsActivity.this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
-                    MY_PERMISSIONS_REQUEST_LOCATION);
-
-        }else {
-
-
-        }
 
         mActvTimezone.setText(getTimeZone() + "");
 
@@ -353,7 +303,7 @@ public class SettingsActivity extends RootActivity
 
     @Override
     public void setTag() {
-
+        TAG = "SettingsActivity";
     }
 
     @Override
@@ -376,125 +326,137 @@ public class SettingsActivity extends RootActivity
         return true;
     }
 
+
     @Override
-    protected void onStart() {
+    public void onStart() {
         super.onStart();
+
+        if (!checkPermissions()) {
+            requestPermissions();
+        } else {
+            getLastLocation();
+        }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.v(this.getClass().getSimpleName(), "onResume");
-    }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Log.v(this.getClass().getSimpleName(), "onPause()");
-//        alertDialog.dismiss();
-        //  alertDialog.cancel();
-
-
-    }
-
-    Location location;
     AlertDialog alertDialog;
+    @SuppressWarnings("MissingPermission")
+    private void getLastLocation() {
+        final Activity a = this;
 
-   /* @Override
-    public void onConnected(Bundle bundle) {
+        mFusedLocationClient.getLastLocation()
+                .addOnCompleteListener(this, new OnCompleteListener<Location>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Location> task) {
+                        if (task.isSuccessful() && task.getResult() != null) {
+                            mLastLocation = task.getResult();
+                            currentLatitude = mLastLocation.getLatitude();
+                            currentLongitude = mLastLocation.getLongitude();
 
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED){
+                            mActvLatitude.setText(String.valueOf(mLastLocation.getLatitude()));
+                            mActvLongitude.setText(String.valueOf(mLastLocation.getLongitude()));
 
-                ActivityCompat.requestPermissions(SettingsActivity.this,
-                new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
-                MY_PERMISSIONS_REQUEST_LOCATION);
+                        } else {
+                            Log.w(TAG, "getLastLocation:exception", task.getException());
 
-            return;
-        }
-
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-
-
-
-            location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        }
-
-        if (location == null) {
-            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-            AlertDialog.Builder dialog = new AlertDialog.Builder(this)
-                    .setTitle("Местопложение")
-                    .setMessage("Разрешите включить ваше местоположение")
-                    .setPositiveButton(mActivity.getString(R.string.ok), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            alertDialog.dismiss();
-                            startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                            AlertDialog.Builder dialog = new AlertDialog.Builder(a)
+                                    .setTitle("Местопложение")
+                                    .setMessage("Разрешите включить ваше местоположение")
+                                    .setPositiveButton(a.getString(R.string.ok), new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            alertDialog.dismiss();
+                                            startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                                        }
+                                    })
+                                    .setNegativeButton(a.getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            alertDialog.dismiss();
+                                        }
+                                    });
+                            alertDialog = dialog.create();
+                            dialog.show();
                         }
-                    })
-                    .setNegativeButton(mActivity.getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                    }
+                });
+    }
+
+    private void showSnackbar(final int mainTextStringId, final int actionStringId,
+                              View.OnClickListener listener) {
+        Snackbar.make(findViewById(android.R.id.content),
+                getString(mainTextStringId),
+                Snackbar.LENGTH_INDEFINITE)
+                .setAction(getString(actionStringId), listener).show();
+    }
+
+    private boolean checkPermissions() {
+        int permissionState = ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION);
+        return permissionState == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void startLocationPermissionRequest() {
+        ActivityCompat.requestPermissions(SettingsActivity.this,
+                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                REQUEST_PERMISSIONS_REQUEST_CODE);
+    }
+
+    private void requestPermissions() {
+        boolean shouldProvideRationale =
+                ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION);
+
+        if (shouldProvideRationale) {
+            Log.i(TAG, "Displaying permission rationale to provide additional context.");
+
+            showSnackbar(R.string.permission_rationale, android.R.string.ok,
+                    new View.OnClickListener() {
                         @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            alertDialog.dismiss();
+                        public void onClick(View view) {
+                            // Request permission
+                            startLocationPermissionRequest();
                         }
                     });
-            alertDialog = dialog.create();
-            dialog.show();
-
 
         } else {
-
-            currentLatitude = location.getLatitude();
-            currentLongitude = location.getLongitude();
-            CacheHelper.setCoordinatesAndTimezone(getApplicationContext(), currentLongitude, currentLongitude, getTimeZone());
-            mActvLatitude.setText(String.valueOf(currentLatitude));
-            mActvLongitude.setText(String.valueOf(currentLongitude));
-
-
-            //Toast.makeText(this, currentLatitude + " WORKS " + currentLongitude + "", Toast.LENGTH_LONG).show();
-        }
-    }*/
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case 1: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                } else {
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                }
-                return;
-            }
-            case MY_PERMISSIONS_REQUEST_LOCATION: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    if (ContextCompat.checkSelfPermission(this,
-                            Manifest.permission.ACCESS_FINE_LOCATION)
-                            == PackageManager.PERMISSION_GRANTED) {
-
-                    }
-
-                } else {
-
-                }
-            }
+            Log.i(TAG, "Requesting permission");
+            startLocationPermissionRequest();
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        Log.i(TAG, "onRequestPermissionResult");
+        if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
+            if (grantResults.length <= 0) {
+                // If user interaction was interrupted, the permission request is cancelled and you
+                // receive empty arrays.
+                Log.i(TAG, "User interaction was cancelled.");
+            } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted.
+                getLastLocation();
+            } else {
+                showSnackbar(R.string.permission_denied_explanation, R.string.settings,
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                // Build intent that displays the App settings screen.
+                                Intent intent = new Intent();
+                                intent.setAction(
+                                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                Uri uri = Uri.fromParts("package",
+                                        BuildConfig.APPLICATION_ID, null);
+                                intent.setData(uri);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(intent);
+                            }
+                        });
+            }
+        }
+    }
     @Override
     public void onResponse(String answer) {
         Log.d(TAG, " " + answer);
@@ -555,7 +517,7 @@ public class SettingsActivity extends RootActivity
         for(String s: parameters){
 
             if (s.contains("Manual")){
-                 setMode(s.split(" ")[1]);
+                setMode(s.split(" ")[1]);
             }else
             if (s.contains("Rele")){
                 setOnOff(s.split(" ")[1]);
@@ -598,5 +560,6 @@ public class SettingsActivity extends RootActivity
             mBtnOffDevice.setBackground(color1);
         }
     }
+
 
 }

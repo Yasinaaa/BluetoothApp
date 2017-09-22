@@ -1,6 +1,5 @@
 package ru.android.bluetooth.main;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -9,7 +8,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -42,7 +40,6 @@ import ru.android.bluetooth.bluetooth.BluetoothMessage;
 import ru.android.bluetooth.common.DateParser;
 import ru.android.bluetooth.main.helper.ScheduleLoading;
 import ru.android.bluetooth.root.RootActivity;
-import ru.android.bluetooth.settings.A;
 import ru.android.bluetooth.settings.SettingsActivity;
 import ru.android.bluetooth.start.ChooseDeviceActivity;
 import ru.android.bluetooth.utils.ActivityHelper;
@@ -421,8 +418,7 @@ public class MainActivity extends RootActivity implements MainModule.View,
         searchItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
-                //ActivityHelper.startActivity(mActivity, SettingsActivity.class);
-                ActivityHelper.startActivity(mActivity, A.class);
+                ActivityHelper.startActivity(mActivity, SettingsActivity.class);
                 return true;
             }
         });
