@@ -1,4 +1,4 @@
-package ru.android.bluetooth.view;
+package ru.android.bluetooth.calendar;
 
 import android.support.v4.widget.NestedScrollView;
 import android.widget.TableLayout;

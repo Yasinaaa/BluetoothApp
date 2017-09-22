@@ -21,7 +21,7 @@ import ru.android.bluetooth.root.RootActivity;
  * Created by itisioslab on 03.08.17.
  */
 
-public class GenerateHandActivity  extends RootActivity  {
+public class GenerateHandActivity extends RootActivity  {
 
     @BindView(R.id.tv_sunrise)
     TextView mTvSunrise;

@@ -15,6 +15,7 @@ import java.io.IOException;
 
 public class BluetoothMessage {
 
+    private final String TAG = "BluetoothMessage";
     private Handler mHandler;
     private static BluetoothMessage mBluetoothMessage;
     private BluetoothMessageListener mBluetoothMessageListener;
@@ -34,7 +35,7 @@ public class BluetoothMessage {
                             mBluetoothMessageListener.onResponse(readMessage);
                             readMessage = null;
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            Log.d(TAG, e.getMessage());
                         }
                     }
                 }
@@ -54,26 +55,15 @@ public class BluetoothMessage {
         return mBluetoothMessage;
     }
 
-    public ConnectedThread getConnectedThread() {
-        return mConnectedThread;
-    }
-
     public void setConnectedThread(ConnectedThread mConnectedThread) {
         this.mConnectedThread = mConnectedThread;
     }
-    /*public static BluetoothMessage createBluetoothMessage(ConnectedThread connectedThread){
-        if (mBluetoothMessage == null){
-            mBluetoothMessage = new BluetoothMessage(connectedThread);
-        }
-        return mBluetoothMessage;
-    }
-    */
 
     public void writeMessage(Activity activity, String message){
         mConnectedThread.writeData(activity, message);
     }
-    public void writeMessage(int[] listOn, int[] listOff){
-        mConnectedThread.write(listOn, listOff);
+    public void writeMessage(Activity activity, int[] listOn, int[] listOff){
+        mConnectedThread.write(activity, listOn, listOff);
     }
 
     public Handler getHandler() {

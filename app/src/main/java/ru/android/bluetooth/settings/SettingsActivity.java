@@ -9,13 +9,17 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.util.Log;
@@ -38,6 +42,7 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
+import java.security.Provider;
 import java.util.Calendar;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
@@ -53,6 +58,7 @@ import ru.android.bluetooth.root.RootActivity;
 import ru.android.bluetooth.utils.ActivityHelper;
 import ru.android.bluetooth.utils.BluetoothHelper;
 import ru.android.bluetooth.utils.CacheHelper;
+import ru.android.bluetooth.utils.DialogHelper;
 
 /**
  * Created by yasina on 18.09.17.
@@ -121,6 +127,7 @@ public class SettingsActivity extends RootActivity
     private BluetoothMessage mBluetoothMessage;
     private String mStatus;
     private AlertDialog mDialog;
+    private final int MY_PERMISSIONS_REQUEST_LOCATION = 12;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -129,13 +136,14 @@ public class SettingsActivity extends RootActivity
         start();
     }
 
+
     @Override
     public void init() {
 
         mScrollView.fullScroll(View.FOCUS_UP);
         //mCoordinatorLayout.scrollTo(0,0);
         mActivity = this;
-        mDialog = ActivityHelper.showProgressBar(this, "Считывание данных");
+        mDialog = DialogHelper.showProgressBar(this, "Считывание данных");
         mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
         mBluetoothMessage.setBluetoothMessageListener(this);
         setMessage(BluetoothCommands.STATUS);
@@ -162,14 +170,15 @@ public class SettingsActivity extends RootActivity
         mTvDeviceAddress.setText(device[0]);
         mTvDeviceTitle.setText(device[1]);
         // mCoordinatorLayout.scrollTo(0,0);
+
     }
 
 
-    private int getTimeZone(){
+    private int getTimeZone() {
         Calendar mCalendar = Calendar.getInstance();
         TimeZone mTimeZone = mCalendar.getTimeZone();
         int mGMTOffset = mTimeZone.getRawOffset();
-        return (int)TimeUnit.HOURS.convert(mGMTOffset, TimeUnit.MILLISECONDS);
+        return (int) TimeUnit.HOURS.convert(mGMTOffset, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -225,15 +234,15 @@ public class SettingsActivity extends RootActivity
         });
     }
 
-    private void setCheckedBox(CheckBox checkBox){
-        if(checkBox.isChecked()){
+    private void setCheckedBox(CheckBox checkBox) {
+        if (checkBox.isChecked()) {
             checkBox.setChecked(false);
-        }else {
+        } else {
             checkBox.setChecked(true);
         }
     }
 
-    private void setChangePasswordAndUsername(){
+    private void setChangePasswordAndUsername() {
         mBtnChangePassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -274,7 +283,7 @@ public class SettingsActivity extends RootActivity
 
 
                 AlertDialog.Builder passwordDialogBuilder = new AlertDialog.Builder(SettingsActivity.this)
-                       // .setTitle(getString(R.string.input_password))
+                        // .setTitle(getString(R.string.input_password))
                         .setView(dialogView)
 
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -296,14 +305,14 @@ public class SettingsActivity extends RootActivity
         });
     }
 
-    private void setMessage(String status){
+    private void setMessage(String status) {
         mStatus = status;
-        mBluetoothMessage.writeMessage(mActivity,status);
+        mBluetoothMessage.writeMessage(mActivity, status);
     }
 
-    private void setMessage(String status, String text){
+    private void setMessage(String status, String text) {
         mStatus = status;
-        mBluetoothMessage.writeMessage(mActivity,text);
+        mBluetoothMessage.writeMessage(mActivity, text);
     }
 
     @Override
@@ -360,33 +369,51 @@ public class SettingsActivity extends RootActivity
 
     }
 
-
+    Location location;
     AlertDialog alertDialog;
+
     @Override
     public void onConnected(Bundle bundle) {
+
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED) {
+                        != PackageManager.PERMISSION_GRANTED){
+
+                ActivityCompat.requestPermissions(SettingsActivity.this,
+                new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                MY_PERMISSIONS_REQUEST_LOCATION);
+
             return;
         }
-        Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        }
 
         if (location == null) {
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-
             AlertDialog.Builder dialog = new AlertDialog.Builder(this)
                     .setTitle("Местопложение")
                     .setMessage("Разрешите включить ваше местоположение")
-                    .setNegativeButton("Ок", new DialogInterface.OnClickListener() {
+                    .setPositiveButton(mActivity.getString(R.string.ok), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             alertDialog.dismiss();
                             startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                         }
+                    })
+                    .setNegativeButton(mActivity.getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            alertDialog.dismiss();
+                        }
                     });
             alertDialog = dialog.create();
             dialog.show();
+
 
         } else {
 
@@ -415,8 +442,20 @@ public class SettingsActivity extends RootActivity
                 }
                 return;
             }
-            // other 'case' lines to check for other
-            // permissions this app might request
+            case MY_PERMISSIONS_REQUEST_LOCATION: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    if (ContextCompat.checkSelfPermission(this,
+                            Manifest.permission.ACCESS_FINE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED) {
+
+                    }
+
+                } else {
+
+                }
+            }
         }
     }
 
@@ -468,7 +507,7 @@ public class SettingsActivity extends RootActivity
                 case BluetoothCommands.STATUS:
 
                     parseStatus(answer);
-                    ActivityHelper.hideProgressBar(mDialog);
+                    DialogHelper.hideProgressBar(mDialog);
                     break;
 
                 case BluetoothCommands.RESET:

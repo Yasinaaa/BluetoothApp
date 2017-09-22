@@ -27,38 +27,19 @@ import ru.android.bluetooth.schedule.ScheduleWriter;
 public class ConnectedThread extends Thread {
 
     private final String TAG = "ConnectedThread";
-    private final BluetoothSocket mmSocket;
-    private final InputStream mmInStream;
-    private final OutputStream mmOutStream;
+    private InputStream mmInStream;
+    private OutputStream mmOutStream;
     private Handler mHandler;
-    private static ConnectedThread mConnectedThread;
 
-    public static ConnectedThread createConnectedThread(BluetoothSocket socket,Handler handler){
-        /*if (mConnectedThread == null){
-            return new ConnectedThread(socket, handler);
-        }else {
-            return mConnectedThread;
-        }*/
-        return new ConnectedThread(socket, handler);
-    }
-
-    public static ConnectedThread createConnectedThread(){
-        return mConnectedThread;
-    }
-
-    private ConnectedThread(BluetoothSocket socket,Handler handler) {
+    public ConnectedThread(BluetoothSocket socket,Handler handler) {
         this.mHandler = handler;
-        mmSocket = socket;
-        InputStream tmpIn = null;
-        OutputStream tmpOut = null;
-
         try {
-            tmpIn = socket.getInputStream();
-            tmpOut = socket.getOutputStream();
-        } catch (IOException e) { }
-
-        mmInStream = tmpIn;
-        mmOutStream = tmpOut;
+            mmInStream = socket.getInputStream();
+            mmOutStream = socket.getOutputStream();
+        } catch (IOException e)
+        {
+            Log.d(TAG, e.getMessage());
+        }
     }
 
     public void run() {
@@ -68,9 +49,7 @@ public class ConnectedThread extends Thread {
         while (true) {
             try {
                 bytes = mmInStream.available();
-
                 buffer = new byte[bytes];
-
                 if(bytes != 0) {
                     SystemClock.sleep(1000);
                     try {
@@ -78,24 +57,20 @@ public class ConnectedThread extends Thread {
                         mHandler.obtainMessage(BluetoothCommands.MESSAGE_READ, bytes, -1, buffer)
                                 .sendToTarget();
                     }catch (java.lang.ArrayIndexOutOfBoundsException e){
-                        Log.e(TAG, "bytes=" + bytes);
+                        Log.d(TAG, e.getMessage());
                     }
-
-                }else {
-
                 }
             } catch (IOException e) {
-                e.printStackTrace();
-
+                Log.d(TAG, e.getMessage());
                 break;
             }
         }
 
     }
 
-    public void write(int[] listOn, int[] listOff){
+    public void write(Activity activity, int[] listOn, int[] listOff){
         ScheduleWriter s = new ScheduleWriter();
-        s.write(mmOutStream, listOn, listOff);
+        s.write(activity, mmOutStream, listOn, listOff);
     }
 
     public String writeData(Activity activity, String data) {

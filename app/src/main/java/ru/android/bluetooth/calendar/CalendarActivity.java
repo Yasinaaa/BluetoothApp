@@ -1,4 +1,4 @@
-package ru.android.bluetooth.view;
+package ru.android.bluetooth.calendar;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -10,8 +10,8 @@ import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.SearchView;
@@ -37,10 +37,8 @@ import java.util.concurrent.TimeUnit;
 import butterknife.BindView;
 import ru.android.bluetooth.R;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
-import ru.android.bluetooth.common.DateParser;
 import ru.android.bluetooth.one_day.ChangeOneDayScheduleActivity;
 import ru.android.bluetooth.root.RootActivity;
-import ru.android.bluetooth.utils.ActivityHelper;
 import ru.android.bluetooth.utils.CacheHelper;
 
 /**
@@ -52,7 +50,7 @@ public class CalendarActivity extends RootActivity
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
-
+    private final int MY_PERMISSIONS_REQUEST_LOCATION = 12;
     private static final int REQUEST_GEOLOCATION_PERMISSION = 784;
     private static final int REQUEST_READ_PERMISSION = 785;
     private static final int REQUEST_WRITE_PERMISSION = 786;
@@ -75,7 +73,7 @@ public class CalendarActivity extends RootActivity
     private int id;
     private AlertDialog alertDialog, alertDialog2;
     private Calendar mStartDate, mFinishDate;
-
+    private Location location;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     private double currentLatitude;
@@ -134,7 +132,7 @@ public class CalendarActivity extends RootActivity
             case R.id.fab_generate_schedule_sunrise_set:
                 //ActivityHelper.startActivity(CalendarActivity.this, ScheduleGeneratorActivity.class);
 
-                setSchedule();
+                setSchedule(null);
                 fabMenu.collapseImmediately();
                 fabMenu.setSelected(false);
 
@@ -146,9 +144,8 @@ public class CalendarActivity extends RootActivity
        }
     }
 
-    private void setSchedule(){
+    private void setSchedule(String[] result){
 
-        String[] result = CacheHelper.getCoordinatesAndTimezone(getApplicationContext());
         if (result != null) {
             mCalendarPresenter.generateSchedule(mStartDate, mFinishDate,
                     Double.parseDouble(result[0]), Double.parseDouble(result[1]),
@@ -157,11 +154,23 @@ public class CalendarActivity extends RootActivity
             fabMenu.setSelected(false);
         } else {
 
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                            != PackageManager.PERMISSION_GRANTED){
+
+                ActivityCompat.requestPermissions(CalendarActivity.this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_LOCATION);
+
                 return;
             }
-            Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
+
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED) {
+                location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            }
             if (location == null) {
                 LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
 
@@ -171,15 +180,9 @@ public class CalendarActivity extends RootActivity
                         .setNegativeButton("Ок", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                    requestPermissions(new String[]{
-                                            Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_GEOLOCATION_PERMISSION);
-                                } else {
-                                    startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                                }
                                 isScheduleGeneration = true;
                                 alertDialog.dismiss();
+                                startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                             }
                         });
                 alertDialog = dialog.create();
@@ -199,6 +202,33 @@ public class CalendarActivity extends RootActivity
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == REQUEST_WRITE_PERMISSION && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             mCalendarPresenter.setLoadSchedule();
+        }
+        if (requestCode == MY_PERMISSIONS_REQUEST_LOCATION) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_FINE_LOCATION)
+                        == PackageManager.PERMISSION_GRANTED) {
+
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(this)
+                            .setTitle("Местопложение")
+                            .setMessage("Разрешите включить ваше местоположение")
+                            .setNegativeButton("Ок", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    isScheduleGeneration = true;
+                                    alertDialog.dismiss();
+                                    startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                                }
+                            });
+                    alertDialog = dialog.create();
+                    dialog.show();
+                }
+
+            } else {
+
+            }
         }
 
     }
@@ -223,8 +253,7 @@ public class CalendarActivity extends RootActivity
 
         mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
 
-        mCalendarPresenter = new CalendarPresenter(this, mBluetoothMessage, this, new DateParser(mStartDate, getApplicationContext()),
-                this);
+        mCalendarPresenter = new CalendarPresenter(this, mBluetoothMessage, this, this);
         mCalendarPresenter.getSchedule();
 
         frameLayout.getBackground().setAlpha(0);
@@ -409,21 +438,6 @@ public class CalendarActivity extends RootActivity
         Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
         if (location == null) {
-            /*LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-
-            AlertDialog.Builder dialog = new AlertDialog.Builder(this)
-                    .setTitle("Местопложение")
-                    .setMessage("Разрешите включить ваше местоположение")
-                    .setNegativeButton("Ок", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                            alertDialog.dismiss();
-                        }
-                    });
-            alertDialog = dialog.create();
-            dialog.show();*/
-
 
         } else {
             Log.d(TAG,"open =");
@@ -431,9 +445,9 @@ public class CalendarActivity extends RootActivity
             currentLongitude = location.getLongitude();
             CacheHelper.setCoordinatesAndTimezone(getApplicationContext(), currentLongitude, currentLongitude, getTimeZone());
             if(isScheduleGeneration){
-                alertDialog = ActivityHelper.showProgressBar(this, "Запись изменений");
+
                 Log.d(TAG,"send =");
-                setSchedule();
+                setSchedule(CacheHelper.getCoordinatesAndTimezone(getApplicationContext()));
                 isScheduleGeneration = false;
 
             }

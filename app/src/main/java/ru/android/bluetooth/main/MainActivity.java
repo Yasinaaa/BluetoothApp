@@ -17,7 +17,6 @@ import android.os.Looper;
 import android.os.SystemClock;
 import android.support.v7.widget.CardView;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -41,14 +40,14 @@ import ru.android.bluetooth.R;
 import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
 import ru.android.bluetooth.common.DateParser;
-import ru.android.bluetooth.hand_generation.GenerateHandActivity;
 import ru.android.bluetooth.main.helper.ScheduleLoading;
 import ru.android.bluetooth.root.RootActivity;
 import ru.android.bluetooth.settings.SettingsActivity;
 import ru.android.bluetooth.start.ChooseDeviceActivity;
 import ru.android.bluetooth.utils.ActivityHelper;
 import ru.android.bluetooth.utils.CacheHelper;
-import ru.android.bluetooth.view.CalendarActivity;
+import ru.android.bluetooth.calendar.CalendarActivity;
+import ru.android.bluetooth.utils.DialogHelper;
 
 
 /**
@@ -246,7 +245,7 @@ public class MainActivity extends RootActivity implements MainModule.View,
     @Override
     public void dataCreated(int[] onList, int[] offList) {
         mStatus = BluetoothCommands.GET_TABLE;
-        mBluetoothMessage.writeMessage(onList, offList);
+        mBluetoothMessage.writeMessage(mActivity, onList, offList);
     }
 
     @Override
@@ -268,14 +267,14 @@ public class MainActivity extends RootActivity implements MainModule.View,
 
                 case BluetoothCommands.STATUS:
                     if (answer.contains("Not") || answer.contains("command")) {
-                        ActivityHelper.hideProgressBar(mLoadingTableAlertDialog);
+                        DialogHelper.hideProgressBar(mLoadingTableAlertDialog);
                         answer = answer.replaceAll("[Notcomand ]", "");
                         mTable += answer;
                         //mTvStatus.setText(mTvStatus.getText() + answer);
                         mTvStatus.setText(mTable);
                         parseStatus(mTable);
                     }else if(answer.equals("")){
-                        ActivityHelper.hideProgressBar(mLoadingTableAlertDialog);
+                        DialogHelper.hideProgressBar(mLoadingTableAlertDialog);
                     }else {
                         mTable += answer;
                     }
@@ -283,7 +282,7 @@ public class MainActivity extends RootActivity implements MainModule.View,
 
                 case BluetoothCommands.VERSION:
                     if (answer.contains("Not") || answer.contains("command")) {
-                        ActivityHelper.hideProgressBar(mLoadingTableAlertDialog);
+                        DialogHelper.hideProgressBar(mLoadingTableAlertDialog);
                         answer = answer.replaceAll("[Notcomand ]", "");
                         mTable += answer;
                         mTvVersion.setText(mTable);
@@ -295,7 +294,7 @@ public class MainActivity extends RootActivity implements MainModule.View,
 
                 case BluetoothCommands.GET_TIME:
                     if (answer.contains("Not") || answer.contains("command")) {
-                        ActivityHelper.hideProgressBar(mLoadingTableAlertDialog);
+                        DialogHelper.hideProgressBar(mLoadingTableAlertDialog);
                         answer = answer.replaceAll("[Notcomand ]", "");
                         mTable += answer;
                         String[] time = mTable.split(" ");
@@ -359,28 +358,28 @@ public class MainActivity extends RootActivity implements MainModule.View,
     private void setMessage(String status, boolean noDialog){
         mStatus = status;
         if (!noDialog){
-            mLoadingTableAlertDialog = ActivityHelper.showProgressBar(mActivity, "Отправка запроса");
+            mLoadingTableAlertDialog = DialogHelper.showProgressBar(mActivity, "Отправка запроса");
         }
         setMessageOnly(status);
     }
 
     private void setMessage(String status){
         mStatus = status;
-        mLoadingTableAlertDialog = ActivityHelper.showProgressBar(mActivity, "Отправка запроса");
+        mLoadingTableAlertDialog = DialogHelper.showProgressBar(mActivity, "Отправка запроса");
         setMessageOnly(status);
     }
 
 
     private void setMessage(String status, String text){
         mStatus = status;
-        mLoadingTableAlertDialog = ActivityHelper.showProgressBar(mActivity, "Отправка запроса");
+        mLoadingTableAlertDialog = DialogHelper.showProgressBar(mActivity, "Отправка запроса");
         setMessageOnly(text);
     }
 
     private void setMessage(String status, String text, boolean noDialog){
         mStatus = status;
         if (!noDialog){
-            mLoadingTableAlertDialog = ActivityHelper.showProgressBar(mActivity, "Отправка запроса");
+            mLoadingTableAlertDialog = DialogHelper.showProgressBar(mActivity, "Отправка запроса");
         }
         setMessageOnly(text);
     }

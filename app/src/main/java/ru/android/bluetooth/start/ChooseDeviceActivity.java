@@ -2,7 +2,6 @@ package ru.android.bluetooth.start;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
@@ -13,7 +12,6 @@ import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ScrollView;
 
@@ -23,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import ru.android.bluetooth.R;
 import ru.android.bluetooth.adapter.DeviceAdapter;
 import ru.android.bluetooth.bluetooth.BluetoothModule;
@@ -31,13 +28,15 @@ import ru.android.bluetooth.main.MainActivity;
 import ru.android.bluetooth.root.RootActivity;
 import ru.android.bluetooth.utils.ActivityHelper;
 import ru.android.bluetooth.utils.BluetoothHelper;
+import ru.android.bluetooth.utils.DialogHelper;
 
 /**
  * Created by itisioslab on 01.08.17.
  */
 
-public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceModule.ChooseDeviceView,
-        DeviceAdapter.OnItemClicked {
+public class ChooseDeviceActivity
+        extends RootActivity
+        implements ChooseDeviceView, DeviceAdapter.OnItemClicked {
 
     @BindView(R.id.rv_devices)
     RecyclerView mRvDevicesList;
@@ -50,9 +49,8 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceMo
     private List<String> mDeviceList = new ArrayList<String>();
     private BluetoothModule mBluetoothModule;
     private String mDeviceTitle;
-
+    private Activity mActivity;
     public static AlertDialog dialog;
-    private boolean isFirstOpen = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,9 +64,9 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceMo
     @Override
     public void init(){
 
+        mActivity = this;
         BluetoothHelper.saveBluetoothOpened(getApplicationContext(), false);
-        mBluetoothModule = BluetoothModule.createBluetoohModule(this, this);
-        mBluetoothModule.register();
+        mBluetoothModule = BluetoothModule.createBluetoothModule(this, this);
         ActivityHelper.setVisibleLogoIcon(ChooseDeviceActivity.this);
 
         mRvDevicesList.setItemAnimator(new DefaultItemAnimator());
@@ -78,16 +76,12 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceMo
 
     @Override
     public void setClickListeners() {
-        final Activity activity = this;
-        final ChooseDeviceModule.ChooseDeviceView viewC = this;
         mBtnConnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 if(mDeviceTitle != null) {
-                    dialog = ActivityHelper.showProgressBar(activity, "Подключение к устройству \n" + mDeviceTitle);
-                    mBluetoothModule.connectDevice(mDeviceTitle, ChooseDeviceActivity.this);
-                    isFirstOpen = false;
+                    dialog = DialogHelper.showProgressBar(mActivity, getString(R.string.connect_to_device) + mDeviceTitle);
+                    mBluetoothModule.connectDevice(mDeviceTitle);
                 }
             }
         });
@@ -161,16 +155,11 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceMo
     @Override
     public void goNext(){
         ActivityHelper.startActivity(ChooseDeviceActivity.this, MainActivity.class);
-        Activity a = this;
-       // mBluetoothModule.unregister(a);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        //if(mBluetoothModule != null)
-       //     mBluetoothModule.unregister();
-
     }
 
     @Override
@@ -184,15 +173,7 @@ public class ChooseDeviceActivity extends RootActivity implements ChooseDeviceMo
     @Override
     public void error(String message){
         dialog.cancel();
-        AlertDialog.Builder dialogB = new AlertDialog.Builder(this)
-                .setTitle(getString(R.string.mistake))
-                .setMessage(getString(R.string.device_is_not_on_net))
-                .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-        dialogB.show();
+        DialogHelper.showErrorMessage(mActivity, getString(R.string.device_is_not_on_net));
     }
 
     @Override

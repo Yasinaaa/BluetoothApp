@@ -107,4 +107,8 @@ public class DateParser {
         }
         return value;
     }
+
+    public void setNewCurrentDay() {
+        this.mCurrentDay = null;
+    }
 }

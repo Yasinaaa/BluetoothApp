@@ -1,47 +1,29 @@
-package ru.android.bluetooth.view;
+package ru.android.bluetooth.calendar;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.os.Build;
 import android.os.Environment;
 import android.os.Looper;
 import android.os.SystemClock;
-import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Locale;
-import java.util.TimeZone;
+
 import android.os.Handler;
-import java.util.logging.LogRecord;
 
 import jxl.Workbook;
 import jxl.WorkbookSettings;
@@ -51,13 +33,13 @@ import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
 import ru.android.bluetooth.R;
-import ru.android.bluetooth.adapter.DeviceAdapter;
 import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
 import ru.android.bluetooth.common.DateParser;
 import ru.android.bluetooth.schedule.ScheduleGenerator;
 import ru.android.bluetooth.utils.ActivityHelper;
 import ru.android.bluetooth.utils.CacheHelper;
+import ru.android.bluetooth.utils.DialogHelper;
 
 /**
  * Created by yasina on 17.09.17.
@@ -82,12 +64,12 @@ public class CalendarPresenter implements CalendarModule.Presenter,
     private CalendarModule.OnItemClicked mOnClick;
     private Handler mHandler;
 
-    public CalendarPresenter(Activity a, BluetoothMessage mBluetoothMessage, CalendarModule.View view, DateParser dateParser,
+    public CalendarPresenter(Activity a, BluetoothMessage mBluetoothMessage, CalendarModule.View view,
                              CalendarModule.OnItemClicked onClick) {
         this.mActivity = a;
         this.mContext = a.getApplicationContext();
         this.mBluetoothMessage = mBluetoothMessage;
-        this.mDateParser = dateParser;
+        this.mDateParser = new DateParser();
         this.mView = view;
         this.mOnClick = onClick;
         init();
@@ -101,7 +83,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
     }
 
     private void exportToExcel(String table) {
-        ActivityHelper.changeProgressBarText(mDialog, "Запись расписания в файл");
+        DialogHelper.changeProgressBarText(mDialog, "Запись расписания в файл");
 
         File file = new File(Environment.getExternalStorageDirectory(), fileName);
         try {
@@ -169,7 +151,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
                 e.printStackTrace();
             }
             workbook.write();
-            ActivityHelper.hideProgressBar(mDialog);
+            DialogHelper.hideProgressBar(mDialog);
             AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mActivity)
                     .setTitle("Файл сохранен")
                     .setMessage("Сохранен в " + file.getPath())
@@ -192,6 +174,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
 
     private void readFile(final TableLayout tableLayout){
 
+        mDateParser.setNewCurrentDay();
         if (mTable != null) {
             String[] textArray = mTable.split("\r\n");
             for (int i = 0; i < textArray.length-1; i++) {
@@ -205,7 +188,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        ActivityHelper.hideProgressBar(mDialog);
+                        DialogHelper.hideProgressBar(mDialog);
                     }
                 });
 
@@ -276,7 +259,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
 
 
                         } catch (Exception e) {
-                            ActivityHelper.hideProgressBar(mDialog);
+                            DialogHelper.hideProgressBar(mDialog);
                         }
                     }
                 }
@@ -293,7 +276,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
 
     @Override
     public void setLoadSchedule(){
-        mDialog = ActivityHelper.showProgressBar(mActivity);
+        mDialog = DialogHelper.showProgressBar(mActivity);
         exportToExcel(mTable);
     }
 
@@ -304,7 +287,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                mDialog = ActivityHelper.showProgressBar(mActivity, "Считывание расписания");
+                mDialog = DialogHelper.showProgressBar(mActivity, "Считывание расписания");
             }
         });
 
@@ -323,10 +306,16 @@ public class CalendarPresenter implements CalendarModule.Presenter,
                 answer = answer.replaceAll("[Notcomand ]", "");
                 mTable += answer;
                 mView.onLoadingScheduleFinished();
-                ActivityHelper.hideProgressBar(mDialog);
+                DialogHelper.hideProgressBar(mDialog);
 
             }else if (mStatus.equals(BluetoothCommands.SET_DATA)){
 
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mDialog = DialogHelper.showProgressBar(mActivity, "Запись изменений");
+                    }
+                });
                 mStatus = BluetoothCommands.GET_TABLE;
                 mBluetoothMessage.writeMessage(mActivity, BluetoothCommands.GET_TABLE);
                 SystemClock.sleep(1000);
@@ -384,15 +373,13 @@ public class CalendarPresenter implements CalendarModule.Presenter,
 
         }
         if(onList != null & offList != null){
-            //mDialog = ActivityHelper.showProgressBar(mActivity, mContext.getString(R.string.generate_schedule));
             mTable = "";
             mStatus = BluetoothCommands.SET_DATA;
-            mBluetoothMessage.writeMessage(onList, offList);
+            mBluetoothMessage.writeMessage(mActivity, onList, offList);
         }
     }
     @Override
     public void generateSchedule(int day, int on, int off) {
-        mDialog = ActivityHelper.showProgressBar(mActivity, "Обновление расписания");
 
         onList[day] = on;
         offList[day] = off;
@@ -400,7 +387,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
         if(onList != null & offList != null){
             mTable = "";
             mStatus = BluetoothCommands.SET_DATA;
-            mBluetoothMessage.writeMessage(onList, offList);
+            mBluetoothMessage.writeMessage(mActivity, onList, offList);
         }
 
     }
