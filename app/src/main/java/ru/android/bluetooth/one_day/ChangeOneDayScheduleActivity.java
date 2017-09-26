@@ -74,14 +74,17 @@ public class ChangeOneDayScheduleActivity extends RootActivity {
         //mChangeOneDaySchedulePresenter.setNotAvailableDialog(mFabSave);
     }
 
+    int o, t;
     @Override
     public void setClickListeners() {
         mFabSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent();
-                intent.putExtra(ON_LOG, mDateParser.getNumTime(mTvSunrise.getText().toString()));
-                intent.putExtra(OFF_LOG, mDateParser.getNumTime(mTvSunset.getText().toString()));
+                o = mDateParser.getNumTime(mTvSunrise.getText().toString());
+                t = mDateParser.getNumTime(mTvSunset.getText().toString());
+                intent.putExtra(ON_LOG, o);
+                intent.putExtra(OFF_LOG, t);
                 setResult(RESULT_OK, intent);
                 finish();
             }

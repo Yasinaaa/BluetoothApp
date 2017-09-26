@@ -2,6 +2,7 @@ package ru.android.bluetooth.start;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
@@ -175,6 +176,7 @@ public class ChooseDeviceActivity
         dialog.cancel();
         DialogHelper.showErrorMessage(mActivity, getString(R.string.device_is_not_on_net));
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {

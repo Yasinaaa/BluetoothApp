@@ -174,6 +174,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
 
     private void readFile(final TableLayout tableLayout){
 
+        selectedItem = 999;
         mDateParser.setNewCurrentDay();
         if (mTable != null) {
             String[] textArray = mTable.split("\r\n");
@@ -191,72 +192,92 @@ public class CalendarPresenter implements CalendarModule.Presenter,
                         DialogHelper.hideProgressBar(mDialog);
                     }
                 });
+                LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-                for (int j = 0; j < underTextArray.length; j++) {
+                for (int j = -1; j < underTextArray.length; j++) {
+                    if (j == -1){
+                        View view = tableLayout.getChildAt(0);
+
+                        if(view == null){
+                            view = inflater.inflate(R.layout.item_schedule_day, null);
+                        }
+
+                        final TextView day = (TextView) view.findViewById(R.id.tv_day);
+                        final TextView on = (TextView) view.findViewById(R.id.tv_on_time);
+                        final TextView off = (TextView) view.findViewById(R.id.tv_off_time);
+
+                        on.setText("Вкл");
+                        off.setText("Выкл");
+
+                        if (tableLayout.getChildAt(0) == null){
+                            tableLayout.addView(view, 0);
+                        }else {
+                            tableLayout.removeViewAt(0);
+                            tableLayout.addView(view, 0);
+                        }
+
+                    }else
                     if (underTextArray[j].matches("(.*)=\\d+,\\d+,\\d+")) {
 
                         try {
 
-                            LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                                String dayStr = underTextArray[j].substring(underTextArray[j].indexOf("=") + 1,
+                                        underTextArray[j].indexOf(","));
+                                String onNum = underTextArray[j].substring(
+                                        underTextArray[j].lastIndexOf(",") + 1, underTextArray[j].length());
+                                String offNum = underTextArray[j].substring(underTextArray[j].indexOf(",") + 1,
+                                        underTextArray[j].lastIndexOf(","));
 
-                            String dayStr = underTextArray[j].substring(underTextArray[j].indexOf("=") + 1,
-                                    underTextArray[j].indexOf(","));
-                            String onNum = underTextArray[j].substring(
-                                    underTextArray[j].lastIndexOf(",") + 1, underTextArray[j].length());
-                            String offNum = underTextArray[j].substring(underTextArray[j].indexOf(",") + 1,
-                                    underTextArray[j].lastIndexOf(","));
+                                final int idNum = Integer.parseInt(dayStr) + 1;
 
-                            final int idNum = Integer.parseInt(dayStr);
+                                View view = tableLayout.getChildAt(idNum);
 
-                            View view = tableLayout.getChildAt(idNum);
-
-                            if(view == null){
-                                view = inflater.inflate(R.layout.item_schedule_day, null);
-                            }
-
-                            final TextView day = (TextView) view.findViewById(R.id.tv_day);
-                            final TextView on = (TextView) view.findViewById(R.id.tv_on_time);
-                            final TextView off = (TextView) view.findViewById(R.id.tv_off_time);
-
-                            day.setText(mDateParser.getDate(dayStr));
-                            on.setText(mDateParser.getTime(onNum));
-                            off.setText(mDateParser.getTime(offNum));
-                            onList[idNum] = Integer.parseInt(onNum);
-                            offList[idNum] = Integer.parseInt(offNum);
-
-                            if (tableLayout.getChildAt(idNum) == null){
-                                tableLayout.addView(view, idNum);
-                            }else {
-                                tableLayout.removeViewAt(idNum);
-                                tableLayout.addView(view, idNum);
-                            }
-
-                            final int finalI = i;
-                            final Resources resource = mContext.getResources();
-                            view.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-
-                                    if (selectedItem == finalI) {
-                                        view.setBackgroundColor(resource.getColor(R.color.white));
-                                        selectedItem = 999;
-                                        mOnClick.onItemClick(0,"","","");
-
-                                    } else {
-                                        view.setBackgroundColor(resource.getColor(R.color.silver));
-                                        if (selectedItem != 999) {
-                                            tableLayout.getChildAt(selectedItem).
-                                                    setBackgroundColor(resource.getColor(R.color.white));
-                                        }
-                                        selectedItem = finalI;
-                                        mOnClick.onItemClick(idNum, day.getText().toString(),
-                                                on.getText().toString(),
-                                                off.getText().toString());
-                                    }
-
+                                if(view == null){
+                                    view = inflater.inflate(R.layout.item_schedule_day, null);
                                 }
-                            });
 
+                                final TextView day = (TextView) view.findViewById(R.id.tv_day);
+                                final TextView on = (TextView) view.findViewById(R.id.tv_on_time);
+                                final TextView off = (TextView) view.findViewById(R.id.tv_off_time);
+
+                                day.setText(mDateParser.getDate(dayStr));
+                                on.setText(mDateParser.getTime(onNum));
+                                off.setText(mDateParser.getTime(offNum));
+                                onList[idNum-1] = Integer.parseInt(onNum);
+                                offList[idNum-1] = Integer.parseInt(offNum);
+
+                                if (tableLayout.getChildAt(idNum) == null){
+                                    tableLayout.addView(view, idNum);
+                                }else {
+                                    tableLayout.removeViewAt(idNum);
+                                    tableLayout.addView(view, idNum);
+                                }
+
+                                final int finalI = idNum;
+                                final Resources resource = mContext.getResources();
+                                view.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+
+                                        if (selectedItem == finalI) {
+                                            view.setBackgroundColor(resource.getColor(R.color.white_overlay));
+                                            selectedItem = 999;
+                                            mOnClick.onItemClick(0,"","","");
+
+                                        } else {
+                                            view.setBackgroundColor(resource.getColor(R.color.silver));
+                                            if (selectedItem != 999) {
+                                                tableLayout.getChildAt(selectedItem).
+                                                        setBackgroundColor(resource.getColor(R.color.white_overlay));
+                                            }
+                                            selectedItem = finalI;
+                                            mOnClick.onItemClick(idNum - 1, day.getText().toString(),
+                                                    on.getText().toString(),
+                                                    off.getText().toString());
+                                        }
+
+                                    }
+                                });
 
                         } catch (Exception e) {
                             DialogHelper.hideProgressBar(mDialog);

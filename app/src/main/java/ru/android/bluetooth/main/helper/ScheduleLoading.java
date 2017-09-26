@@ -93,7 +93,7 @@ public class ScheduleLoading {
                     mView.setScheduleTitle(file.getPath());
                     dialogBuilder
                             .setTitle(mActivity.getString(R.string.schedule))
-                            .setMessage(mActivity.getString(R.string.file_saved))
+                            .setMessage(mActivity.getString(R.string.file_saved) + " " + file.getPath())
                             .setNegativeButton(mActivity.getString(R.string.cancel), new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                 }
@@ -103,7 +103,7 @@ public class ScheduleLoading {
 
             } catch (BiffException e) {
                 Log.d(TAG, e.getMessage());
-                showErrorDialog(dialogBuilder);
+                showErrorDialog(dialogBuilder, file.getPath());
 
             } catch (Exception e) {
                 Log.d(TAG, e.getMessage());
@@ -151,6 +151,10 @@ public class ScheduleLoading {
         }
 
         return isHasMistake;
+    }
+
+    private void showErrorDialog(AlertDialog.Builder dialogBuilder, String text){
+        DialogHelper.showErrorMessage(mActivity, text);
     }
 
     private void showErrorDialog(AlertDialog.Builder dialogBuilder){

@@ -1,39 +1,33 @@
 package ru.android.bluetooth.settings;
 
-/**
- * Created by yasina on 22.09.17.
- */
-
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -42,34 +36,39 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 
-import java.util.ArrayList;
+import java.security.Provider;
 import java.util.Calendar;
-import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
-import ru.android.bluetooth.BuildConfig;
+import io.fabric.sdk.android.services.settings.SettingsRequest;
 import ru.android.bluetooth.R;
 import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
+import ru.android.bluetooth.bluetooth.BluetoothModule;
+import ru.android.bluetooth.common.LocationActivity;
+import ru.android.bluetooth.main.MainActivity;
 import ru.android.bluetooth.main.helper.ResponseView;
 import ru.android.bluetooth.root.RootActivity;
+import ru.android.bluetooth.start.ChooseDeviceView;
+import ru.android.bluetooth.utils.ActivityHelper;
 import ru.android.bluetooth.utils.BluetoothHelper;
 import ru.android.bluetooth.utils.CacheHelper;
 import ru.android.bluetooth.utils.DialogHelper;
 
-public class SettingsActivity extends RootActivity implements BluetoothMessage.BluetoothMessageListener{
+/**
+ * Created by yasina on 18.09.17.
+ */
 
-    private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
-    private FusedLocationProviderClient mFusedLocationClient;
-    protected Location mLastLocation;
+public class SettingsActivity extends LocationActivity
+        implements BluetoothMessage.BluetoothMessageListener, ChooseDeviceView {
 
     @BindView(R.id.tv_device_title)
     TextView mTvDeviceTitle;
@@ -118,8 +117,7 @@ public class SettingsActivity extends RootActivity implements BluetoothMessage.B
     @BindView(R.id.btn_sync_geolocation)
     Button mBtnSyncGeolocation;
 
-    private double currentLatitude;
-    private double currentLongitude;
+    private BluetoothModule mBluetoothModule;
     private Activity mActivity;
     private SettingsPresenter mSettingsPresenter;
     private BluetoothMessage mBluetoothMessage;
@@ -127,22 +125,22 @@ public class SettingsActivity extends RootActivity implements BluetoothMessage.B
     private AlertDialog mDialog;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-
         start();
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
     }
+
     @Override
     public void init() {
         mScrollView.fullScroll(View.FOCUS_UP);
-        //mCoordinatorLayout.scrollTo(0,0);
         mActivity = this;
         mDialog = DialogHelper.showProgressBar(this, "Считывание данных");
         mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
         mBluetoothMessage.setBluetoothMessageListener(this);
         setMessage(BluetoothCommands.STATUS);
+
+        mBluetoothModule = BluetoothModule.createBluetoothModule(this, this);
 
         mCbSetCoordinatesByHand.setSelected(false);
         mCbSetTimezoneByHand.setSelected(false);
@@ -155,16 +153,6 @@ public class SettingsActivity extends RootActivity implements BluetoothMessage.B
         String[] device = BluetoothHelper.getBluetoothUser(getApplicationContext());
         mTvDeviceAddress.setText(device[0]);
         mTvDeviceTitle.setText(device[1]);
-        // mCoordinatorLayout.scrollTo(0,0);
-
-    }
-
-
-    private int getTimeZone() {
-        Calendar mCalendar = Calendar.getInstance();
-        TimeZone mTimeZone = mCalendar.getTimeZone();
-        int mGMTOffset = mTimeZone.getRawOffset();
-        return (int) TimeUnit.HOURS.convert(mGMTOffset, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -203,6 +191,7 @@ public class SettingsActivity extends RootActivity implements BluetoothMessage.B
             @Override
             public void onClick(View view) {
                 setMessage(BluetoothCommands.RESET);
+                mBluetoothModule.connectDevice(null);
             }
         });
         mSettingsPresenter.setCheckBoxLocation(mCbSetCoordinatesByHand, mTilLatitude, mTilLongitude);
@@ -211,10 +200,10 @@ public class SettingsActivity extends RootActivity implements BluetoothMessage.B
         mBtnSyncGeolocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mActvLatitude.setText(String.valueOf(currentLatitude));
-                mActvLongitude.setText(String.valueOf(currentLongitude));
+                mActvLatitude.setText(String.valueOf(mCurrentLatitude));
+                mActvLongitude.setText(String.valueOf(mCurrentLongitude));
                 mActvTimezone.setText(String.valueOf(getTimeZone()));
-                CacheHelper.setCoordinatesAndTimezone(getApplicationContext(), currentLongitude, currentLatitude,
+                CacheHelper.setCoordinatesAndTimezone(getApplicationContext(), mCurrentLongitude, mCurrentLatitude,
                         Integer.parseInt(mActvTimezone.getText().toString()));
             }
         });
@@ -316,7 +305,8 @@ public class SettingsActivity extends RootActivity implements BluetoothMessage.B
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
                 String g = mActvTimezone.getText().toString();
-                CacheHelper.setCoordinatesAndTimezone(getApplicationContext(), currentLongitude, currentLatitude,
+                CacheHelper.setCoordinatesAndTimezone(getApplicationContext(),
+                        mCurrentLongitude, mCurrentLatitude,
                         Integer.parseInt(mActvTimezone.getText().toString()));
 
                 finish();
@@ -326,137 +316,11 @@ public class SettingsActivity extends RootActivity implements BluetoothMessage.B
         return true;
     }
 
-
     @Override
-    public void onStart() {
-        super.onStart();
-
-        if (!checkPermissions()) {
-            requestPermissions();
-        } else {
-            getLastLocation();
-        }
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
-
-    AlertDialog alertDialog;
-    @SuppressWarnings("MissingPermission")
-    private void getLastLocation() {
-        final Activity a = this;
-
-        mFusedLocationClient.getLastLocation()
-                .addOnCompleteListener(this, new OnCompleteListener<Location>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Location> task) {
-                        if (task.isSuccessful() && task.getResult() != null) {
-                            mLastLocation = task.getResult();
-                            currentLatitude = mLastLocation.getLatitude();
-                            currentLongitude = mLastLocation.getLongitude();
-
-                            mActvLatitude.setText(String.valueOf(mLastLocation.getLatitude()));
-                            mActvLongitude.setText(String.valueOf(mLastLocation.getLongitude()));
-
-                        } else {
-                            Log.w(TAG, "getLastLocation:exception", task.getException());
-
-                            AlertDialog.Builder dialog = new AlertDialog.Builder(a)
-                                    .setTitle("Местопложение")
-                                    .setMessage("Разрешите включить ваше местоположение")
-                                    .setPositiveButton(a.getString(R.string.ok), new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            alertDialog.dismiss();
-                                            startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                                        }
-                                    })
-                                    .setNegativeButton(a.getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            alertDialog.dismiss();
-                                        }
-                                    });
-                            alertDialog = dialog.create();
-                            dialog.show();
-                        }
-                    }
-                });
-    }
-
-    private void showSnackbar(final int mainTextStringId, final int actionStringId,
-                              View.OnClickListener listener) {
-        Snackbar.make(findViewById(android.R.id.content),
-                getString(mainTextStringId),
-                Snackbar.LENGTH_INDEFINITE)
-                .setAction(getString(actionStringId), listener).show();
-    }
-
-    private boolean checkPermissions() {
-        int permissionState = ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_COARSE_LOCATION);
-        return permissionState == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private void startLocationPermissionRequest() {
-        ActivityCompat.requestPermissions(SettingsActivity.this,
-                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                REQUEST_PERMISSIONS_REQUEST_CODE);
-    }
-
-    private void requestPermissions() {
-        boolean shouldProvideRationale =
-                ActivityCompat.shouldShowRequestPermissionRationale(this,
-                        Manifest.permission.ACCESS_COARSE_LOCATION);
-
-        if (shouldProvideRationale) {
-            Log.i(TAG, "Displaying permission rationale to provide additional context.");
-
-            showSnackbar(R.string.permission_rationale, android.R.string.ok,
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            // Request permission
-                            startLocationPermissionRequest();
-                        }
-                    });
-
-        } else {
-            Log.i(TAG, "Requesting permission");
-            startLocationPermissionRequest();
-        }
-    }
-
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        Log.i(TAG, "onRequestPermissionResult");
-        if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
-            if (grantResults.length <= 0) {
-                // If user interaction was interrupted, the permission request is cancelled and you
-                // receive empty arrays.
-                Log.i(TAG, "User interaction was cancelled.");
-            } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted.
-                getLastLocation();
-            } else {
-                showSnackbar(R.string.permission_denied_explanation, R.string.settings,
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                // Build intent that displays the App settings screen.
-                                Intent intent = new Intent();
-                                intent.setAction(
-                                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                Uri uri = Uri.fromParts("package",
-                                        BuildConfig.APPLICATION_ID, null);
-                                intent.setData(uri);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                startActivity(intent);
-                            }
-                        });
-            }
-        }
-    }
     @Override
     public void onResponse(String answer) {
         Log.d(TAG, " " + answer);
@@ -480,7 +344,8 @@ public class SettingsActivity extends RootActivity implements BluetoothMessage.B
 
                 case BluetoothCommands.RESET:
                     //mTvReset.setText(answer);
-                    ResponseView.showSnackbar(mRl, ResponseView.RESET);
+
+
                     break;
 
                 case BluetoothCommands.ON:
@@ -561,5 +426,29 @@ public class SettingsActivity extends RootActivity implements BluetoothMessage.B
         }
     }
 
+    @Override
+    public void error(String message) {
 
+    }
+
+    @Override
+    public void goNext() {
+        ResponseView.showSnackbar(mRl, ResponseView.RESET);
+    }
+
+    @Override
+    public void addDevice(String text) {
+
+    }
+
+    @Override
+    public void setLonLat(double lat, double lon) {
+        mActvLatitude.setText(String.valueOf(lat));
+        mActvLongitude.setText(String.valueOf(lon));
+    }
+
+    @Override
+    public boolean setScheduleGeneration() {
+        return true;
+    }
 }

@@ -10,8 +10,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.SystemClock;
 import android.support.v7.widget.CardView;
 import android.util.Log;
@@ -83,8 +81,6 @@ public class MainActivity extends RootActivity implements MainModule.View,
     TextView mTvTime;
     @BindView(R.id.btn_set_time)
     Button mBtnSetTime;
-    @BindView(R.id.btn_sync_date)
-    Button mIbSyncDate;
     @BindView(R.id.et_schedule_name)
     EditText mEtScheduleName;
     @BindView(R.id.btn_edit_schedule)
@@ -165,14 +161,6 @@ public class MainActivity extends RootActivity implements MainModule.View,
 
     private void setDateClickListeners(){
         final Calendar calendar = Calendar.getInstance();
-        mIbSyncDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mTvTime.setText("");
-                mTvDate.setText("");
-                setMessage(BluetoothCommands.GET_TIME);
-            }
-        });
         mBtnSetDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -477,44 +465,33 @@ public class MainActivity extends RootActivity implements MainModule.View,
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==123 && resultCode==RESULT_OK) {
 
-            Uri selectedfile = data.getData();
-            String r = Environment.getExternalStorageDirectory().getPath();
-            String title = selectedfile.getLastPathSegment().substring(selectedfile.getLastPathSegment().indexOf(":")+1);
-            if(title.endsWith(".xls")){
+            final Uri selectedfile = data.getData();
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mActivity)
+                    .setTitle("Uri")
+                    .setMessage(selectedfile.getPath())
+                    .setNegativeButton("Продолжить", new DialogInterface.OnClickListener() {
 
-                mFile = new File(r+"/"+title);
-                if (mFile.exists()){
-                    Log.d(TAG, "exists");
-                }
+                        public void onClick(DialogInterface dialog, int which) {
+                            String r = Environment.getExternalStorageDirectory().getPath();
+                            String title = selectedfile.getLastPathSegment().substring(selectedfile.getLastPathSegment().indexOf(":")+1);
+                            if(title.endsWith(".xls")){
 
-                Handler mHandler = new Handler(Looper.getMainLooper());
+                                mFile = new File(r+"/"+title);
+                                if (mFile.exists()){
+                                    Log.d(TAG, "exists");
+                                }
+                                runOnUiThread(new Runnable() {
+                                    public void run() {
 
-               /* mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        ScheduleLoading scheduleLoading = new ScheduleLoading(v, mBluetoothMessage, mActivity);
-                        scheduleLoading.parceSchedule(file);
-                    }
-                });*/
-                runOnUiThread(new Runnable() {
-                    public void run() {
+                                        scheduleLoading.parceSchedule(mFile);
+                                    }
+                                });
 
-                        scheduleLoading.parceSchedule(mFile);
-                    }
-                });
-
-               // ActivityHelper.hideProgressBar(mLoadingTableAlertDialog);
-
-            }else {
-               /* AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mActivity)
-                        .setTitle(getString(R.string.generate_dialog_title))
-                        .setMessage("Не правильный формат файла")
-                        .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
                             }
-                        });
-                dialogBuilder.show();*/
-            }
+                        }
+                    });
+            dialogBuilder.show();
+
         }
     }
 

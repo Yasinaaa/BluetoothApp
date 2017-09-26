@@ -32,9 +32,9 @@ public class BluetoothModule implements BluetoothStarter.BluetoothView{
     private UUID BTMODULEUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     private ConnectedThread mConnectedThread;
     private BluetoothSocket mBTSocket = null;
-    private Context mContext;
-    private Activity mActivity;
-    private ChooseDeviceView mView;
+    private static Context mContext;
+    private static Activity mActivity;
+    private static ChooseDeviceView mView;
     private static BluetoothModule mBluetoothModule = null;
     private BluetoothAdapter mBTAdapter;
     private BluetoothMessage mBluetoothMessage;
@@ -54,6 +54,9 @@ public class BluetoothModule implements BluetoothStarter.BluetoothView{
         if (mBluetoothModule == null){
             mBluetoothModule = new BluetoothModule(activity, view);
         }
+        mActivity = activity;
+        mContext = mActivity.getBaseContext();
+        mView = view;
         return mBluetoothModule;
     }
 
@@ -142,8 +145,11 @@ public class BluetoothModule implements BluetoothStarter.BluetoothView{
                 return;
             }
 
-            mAddress = info.substring(info.length() - 17);
-            mName = info.substring(0, info.length() - 18);
+            if (info != null){
+                mAddress = info.substring(info.length() - 17);
+                mName = info.substring(0, info.length() - 18);
+            }
+
             final BluetoothStarter.BluetoothView bluetoothView = this;
 
             new Thread() {

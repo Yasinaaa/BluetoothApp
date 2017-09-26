@@ -29,20 +29,22 @@ public class DateParser {
     public String setCorrectDateView(Calendar calendar){
         int month = mCurrentDay.get(Calendar.MONTH) + 1;
         return setZeros(mCurrentDay.get(Calendar.DAY_OF_MONTH)) + "."
-                + setZeros(month) + "."
-                + setZeros(mCurrentDay.get(Calendar.YEAR));
+                + setZeros(month);
     }
 
     public String getDate(String dayNum){
-        if(mCurrentDay == null){
+        /*if(mCurrentDay == null){
             mCurrentDay = Calendar.getInstance();
             String result = setCorrectDateView(mCurrentDay);
             saveBeginDay(result);
             return result;
         }else {
-            mCurrentDay.add(Calendar.DATE, 1);
+
             return setCorrectDateView(mCurrentDay);
-        }
+        }*/
+        String result = setCorrectDateView(mCurrentDay);
+        mCurrentDay.add(Calendar.DATE, 1);
+        return result;
     }
 
     public String getTime(String time){
@@ -109,6 +111,12 @@ public class DateParser {
     }
 
     public void setNewCurrentDay() {
-        this.mCurrentDay = null;
+        mCurrentDay = Calendar.getInstance();
+        mCurrentDay.set(Calendar.DAY_OF_MONTH, 1);
+        mCurrentDay.set(Calendar.MONTH, Calendar.JANUARY);
+
+        /*mFinishDate = Calendar.getInstance();
+        mFinishDate.set(Calendar.DAY_OF_MONTH, 31);
+        mFinishDate.set(Calendar.MONTH, Calendar.DECEMBER);*/
     }
 }
