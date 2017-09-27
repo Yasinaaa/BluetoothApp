@@ -33,7 +33,7 @@ import ru.android.bluetooth.utils.CacheHelper;
  */
 
 public abstract class LocationActivity extends RootActivity
-    implements LocationView, GoogleApiClient.ConnectionCallbacks,
+    implements LocationModule, GoogleApiClient.ConnectionCallbacks,
     GoogleApiClient.OnConnectionFailedListener,
     LocationListener{
 

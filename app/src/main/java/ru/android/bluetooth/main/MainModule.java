@@ -7,8 +7,7 @@ package ru.android.bluetooth.main;
 public interface MainModule {
 
     interface View{
-        void dataCreated(int[] onList, int[] offList);
-        void setDeviceTitle(String title);
+       // void dataCreated(int[] onList, int[] offList);
         void setStatus(String status);
         void setScheduleTitle(String title);
     }

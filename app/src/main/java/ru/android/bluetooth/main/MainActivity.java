@@ -2,40 +2,28 @@ package ru.android.bluetooth.main;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.SystemClock;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.TimePicker;
 
 import java.io.File;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 
 import butterknife.BindView;
 import ru.android.bluetooth.R;
 import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
-import ru.android.bluetooth.common.date_time.DateParser;
 import ru.android.bluetooth.main.helper.ScheduleLoading;
 import ru.android.bluetooth.root.RootActivity;
 import ru.android.bluetooth.settings.SettingsActivity;
@@ -88,13 +76,11 @@ public class MainActivity extends RootActivity implements MainModule.View,
     @BindView(R.id.btn_load_schedule)
     Button mBtnLoadSchedule;
 
-    private String mThisTextNeedToSetTextView;
-    private BluetoothMessage mBluetoothMessage;
 
+    private BluetoothMessage mBluetoothMessage;
     private MainPresenter mMainPresenter;
     private ScheduleLoading scheduleLoading;
-    private File mFile;
-    private String mTable = "";
+
     private Activity mActivity;
 
     @Override
@@ -107,7 +93,7 @@ public class MainActivity extends RootActivity implements MainModule.View,
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == ActivityHelper.REQUEST_READ_PERMISSION && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            scheduleLoading.parceSchedule(mFile);
+            mMainPresenter.parseFile(scheduleLoading);
         }
     }
 
@@ -121,21 +107,14 @@ public class MainActivity extends RootActivity implements MainModule.View,
         }
 
         mActivity = this;
-
-        mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
-        mBluetoothMessage.setBluetoothMessageListener(this);
-        mBluetoothMessage.setMessage(mTable, mActivity, BluetoothCommands.STATUS);
-
         mMainPresenter = new MainPresenter(mActivity, mBluetoothMessage);
         mMainPresenter.setScheduleFilePath(mEtScheduleName);
 
+        mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
+        mBluetoothMessage.setBluetoothMessageListener(this);
+        mMainPresenter.sendStatusMessage();
+
         scheduleLoading = new ScheduleLoading(this, mActivity);
-
-    }
-
-    // arguing for it
-    private int setOppositeVisiblity(int visiblity){
-        return visiblity == View.VISIBLE ? View.INVISIBLE : View.VISIBLE;
     }
 
     @Override
@@ -149,16 +128,11 @@ public class MainActivity extends RootActivity implements MainModule.View,
         TAG = "MainActivity";
     }
 
-    @Override
+    /*@Override
     public void dataCreated(int[] onList, int[] offList) {
         mBluetoothMessage.mStatus = BluetoothCommands.GET_TABLE;
         mBluetoothMessage.writeMessage(mActivity, onList, offList);
-    }
-
-    @Override
-    public void setDeviceTitle(String title) {
-        //mTvDeviceTitle.setText(title);
-    }
+    }*/
 
     @Override
     public void setStatus(String status) {
@@ -173,65 +147,43 @@ public class MainActivity extends RootActivity implements MainModule.View,
             switch (mBluetoothMessage.mStatus) {
 
                 case BluetoothCommands.STATUS:
-                    if (answer.contains("Not") || answer.contains("command")) {
-                        DialogHelper.hideProgressBar(mBluetoothMessage.mDialog);
-                        answer = answer.replaceAll("[Notcomand ]", "");
-                        mTable += answer;
-                        mTvStatus.setText(mTable);
-                        mMainPresenter.parseStatus(mTable, mTvDate, mTvTime);
-                    }else if(answer.equals("")){
-                        DialogHelper.hideProgressBar(mBluetoothMessage.mDialog);
-                    }else {
-                        mTable += answer;
-                    }
+
+                    mMainPresenter.parseResponse(answer, new MainPresenter.ResponseParseView() {
+                        @Override
+                        public void nextJob(String text) {
+                            mTvStatus.setText(text);
+                            mMainPresenter.parseStatus(text, mTvDate, mTvTime);
+                        }
+                    });
                     break;
 
                 case BluetoothCommands.VERSION:
-                    if (answer.contains("Not") || answer.contains("command")) {
-                        DialogHelper.hideProgressBar(mBluetoothMessage.mDialog);
-                        answer = answer.replaceAll("[Notcomand ]", "");
-                        mTable += answer;
-                        mTvVersion.setText(mTable);
-                    }else {
-                        mTable += answer;
-                    }
 
+                    mMainPresenter.parseResponse(answer, new MainPresenter.ResponseParseView() {
+                        @Override
+                        public void nextJob(String text) {
+                            mTvVersion.setText(text);
+                        }
+                    });
                     break;
 
                 case BluetoothCommands.GET_TIME:
-                    if (answer.contains("Not") || answer.contains("command")) {
-                        DialogHelper.hideProgressBar(mBluetoothMessage.mDialog);
-                        answer = answer.replaceAll("[Notcomand ]", "");
-                        mTable += answer;
-                        String[] time = mTable.split(" ");
-                        try {
-                            mTvDate.setText(mTvDate.getText() + time[0]);
-                        } catch (java.lang.ArrayIndexOutOfBoundsException e) {
 
+                    mMainPresenter.parseResponse(answer, new MainPresenter.ResponseParseView() {
+                        @Override
+                        public void nextJob(String text) {
+                            mMainPresenter.getTimeResponse(text, mTvDate, mTvTime);
                         }
+                    });
 
-                        try {
-                            mTvTime.setText(mTvTime.getText() + time[1]);
-                        } catch (java.lang.ArrayIndexOutOfBoundsException e2) {
-
-                        }
-                    }else {
-                        mTable += answer;
-                    }
                     break;
 
                 case BluetoothCommands.SET_DATE:
-                    mTvDate.setText(mThisTextNeedToSetTextView);
-                    if (answer.contains("Not") || answer.contains("command")) {
-                        mBluetoothMessage.setMessage(mTable, mActivity, BluetoothCommands.STATUS, true);
-                    }
+                    mMainPresenter.setTimeDateResponse(answer, mTvDate);
                     break;
 
                 case BluetoothCommands.SET_TIME:
-                    mTvTime.setText(mThisTextNeedToSetTextView);
-                    if (answer.contains("Not") || answer.contains("command")) {
-                        mBluetoothMessage.setMessage(mTable, mActivity, BluetoothCommands.STATUS, true);
-                    }
+                    mMainPresenter.setTimeDateResponse(answer, mTvTime);
                     break;
             }
         }
@@ -240,20 +192,32 @@ public class MainActivity extends RootActivity implements MainModule.View,
     @Override
     public void setClickListeners(){
 
-        setScheduleButtons();
         mMainPresenter.setDateTimeClickListeners(mBtnSetTime, mBtnSetDate);
 
+        mBtnEditSchedule.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ActivityHelper.startActivity(MainActivity.this, CalendarActivity.class);
+            }
+        });
+
+        mBtnLoadSchedule.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mMainPresenter.setChooseFileDialog();
+            }
+        });
         mIbSyncStatus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mBluetoothMessage.setMessage(mTable, mActivity, BluetoothCommands.STATUS);
+                mMainPresenter.sendStatusMessage();
             }
         });
 
         mIbSyncVersion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mBluetoothMessage.setMessage(mTable, mActivity, BluetoothCommands.VERSION);
+                mMainPresenter.sendVersionMessage();
             }
         });
 
@@ -281,22 +245,6 @@ public class MainActivity extends RootActivity implements MainModule.View,
 
     }
 
-    private void setScheduleButtons(){
-        mBtnEditSchedule.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ActivityHelper.startActivity(MainActivity.this, CalendarActivity.class);
-            }
-        });
-
-        mBtnLoadSchedule.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mMainPresenter.setChooseFileDialog();
-            }
-        });
-    }
-
     @Override
     public void setScheduleTitle(String title){
         mEtScheduleName.setText(title);
@@ -307,34 +255,7 @@ public class MainActivity extends RootActivity implements MainModule.View,
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==123 && resultCode==RESULT_OK) {
-
-            final Uri selectedfile = data.getData();
-            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mActivity)
-                    .setTitle("Uri")
-                    .setMessage(selectedfile.getPath())
-                    .setNegativeButton("Продолжить", new DialogInterface.OnClickListener() {
-
-                        public void onClick(DialogInterface dialog, int which) {
-                            String r = Environment.getExternalStorageDirectory().getPath();
-                            String title = selectedfile.getLastPathSegment().substring(selectedfile.getLastPathSegment().indexOf(":")+1);
-                            if(title.endsWith(".xls")){
-
-                                mFile = new File(r+"/"+title);
-                                if (mFile.exists()){
-                                    Log.d(TAG, "exists");
-                                }
-                                runOnUiThread(new Runnable() {
-                                    public void run() {
-
-                                        scheduleLoading.parceSchedule(mFile);
-                                    }
-                                });
-
-                            }
-                        }
-                    });
-            dialogBuilder.show();
-
+            mMainPresenter.loadSchedule(data, scheduleLoading);
         }
     }
 
@@ -343,9 +264,4 @@ public class MainActivity extends RootActivity implements MainModule.View,
         super.onResume();
         mMainPresenter.setScheduleFilePath(mEtScheduleName);
     }
-
-
-
-
-
 }
