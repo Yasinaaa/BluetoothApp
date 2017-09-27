@@ -30,7 +30,9 @@
     <string name="file_mistake">Файл не является корректным</string>
     <string name="file_saved">Файл загружен</string>
     <string name="connect_to_device">Подключение к устройству\n</string>
-    <!--<string name=""></string>-->
+    <string name="send_request">Отправка запроса</string>
+
+
 
     <string name="latitude_label">Latitude</string>
     <string name="longitude_label">Longitude</string>

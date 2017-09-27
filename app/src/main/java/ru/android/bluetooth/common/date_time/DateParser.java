@@ -1,4 +1,4 @@
-package ru.android.bluetooth.common;
+package ru.android.bluetooth.common.date_time;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -14,6 +14,7 @@ import java.util.Calendar;
 
 public class DateParser {
 
+    private final String TAG = "DateParser";
     public final String PREF_BEGIN_DAY = "begin_day_pref";
     private Calendar mCurrentDay;
     private Context mContext;
@@ -32,16 +33,7 @@ public class DateParser {
                 + setZeros(month);
     }
 
-    public String getDate(String dayNum){
-        /*if(mCurrentDay == null){
-            mCurrentDay = Calendar.getInstance();
-            String result = setCorrectDateView(mCurrentDay);
-            saveBeginDay(result);
-            return result;
-        }else {
-
-            return setCorrectDateView(mCurrentDay);
-        }*/
+    public String getDate(){
         String result = setCorrectDateView(mCurrentDay);
         mCurrentDay.add(Calendar.DATE, 1);
         return result;
@@ -56,7 +48,7 @@ public class DateParser {
             String min = setZeros(String.valueOf(timeMin % 60));
             return hour + ":" + min;
         }catch (java.lang.NumberFormatException e){
-            Log.d("ddd", "time = " + time);
+            Log.d(TAG, "time = " + time);
         }
         return null;
     }
@@ -88,17 +80,13 @@ public class DateParser {
         sp.edit().putString(PREF_BEGIN_DAY, date).apply();
     }
 
-    public int getNumDate(String dayNum){
-      return 0;
-    }
-
     public int getNumTime(String time){
         try {
             int hour = Integer.parseInt(removeExtraZeros(time.substring(0, time.indexOf(":"))));
             int min = Integer.parseInt(removeExtraZeros(time.substring(time.indexOf(":")+1)));
             return hour*60 + min;
         }catch (java.lang.NumberFormatException e){
-            Log.d("ddd", "time = " + time);
+            Log.d(TAG, "time = " + time);
         }
         return -999;
     }
@@ -114,9 +102,5 @@ public class DateParser {
         mCurrentDay = Calendar.getInstance();
         mCurrentDay.set(Calendar.DAY_OF_MONTH, 1);
         mCurrentDay.set(Calendar.MONTH, Calendar.JANUARY);
-
-        /*mFinishDate = Calendar.getInstance();
-        mFinishDate.set(Calendar.DAY_OF_MONTH, 31);
-        mFinishDate.set(Calendar.MONTH, Calendar.DECEMBER);*/
     }
 }

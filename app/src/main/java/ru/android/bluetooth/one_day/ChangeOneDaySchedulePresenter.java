@@ -1,24 +1,17 @@
 package ru.android.bluetooth.one_day;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.support.design.widget.FloatingActionButton;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
 import java.util.Calendar;
 
-import ru.android.bluetooth.R;
-import ru.android.bluetooth.bluetooth.BluetoothCommands;
-import ru.android.bluetooth.common.DateParser;
-import ru.android.bluetooth.main.MainActivity;
+import ru.android.bluetooth.common.date_time.DateParser;
 
 /**
  * Created by yasina on 23.08.17.

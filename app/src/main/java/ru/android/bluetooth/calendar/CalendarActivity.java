@@ -21,7 +21,7 @@ import java.util.Calendar;
 import butterknife.BindView;
 import ru.android.bluetooth.R;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
-import ru.android.bluetooth.common.LocationActivity;
+import ru.android.bluetooth.common.location.LocationActivity;
 import ru.android.bluetooth.one_day.ChangeOneDayScheduleActivity;
 
 /**
@@ -54,7 +54,7 @@ public class CalendarActivity extends LocationActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_schedule_neee);
+        setContentView(R.layout.activity_schedule);
         start();
     }
 
@@ -92,8 +92,6 @@ public class CalendarActivity extends LocationActivity
             case R.id.fab_generate_schedule_sunrise_set:
                 mIsScheduleGeneration = true;
                 updateLocation();
-                fabMenu.collapseImmediately();
-                fabMenu.setSelected(false);
                 break;
         }
     }
@@ -172,7 +170,7 @@ public class CalendarActivity extends LocationActivity
 
     @Override
     public void setTag() {
-        TAG = "CalendarACtivity";
+        TAG = "CalendarActivity";
     }
 
     @Override

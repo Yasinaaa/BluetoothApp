@@ -1,4 +1,4 @@
-package ru.android.bluetooth.common;
+package ru.android.bluetooth.common.location;
 
 import android.Manifest;
 import android.app.Activity;

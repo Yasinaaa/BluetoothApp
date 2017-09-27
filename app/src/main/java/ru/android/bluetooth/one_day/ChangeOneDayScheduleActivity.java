@@ -9,9 +9,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import ru.android.bluetooth.R;
-import ru.android.bluetooth.common.DateParser;
+import ru.android.bluetooth.common.date_time.DateParser;
 import ru.android.bluetooth.root.RootActivity;
 
 /**

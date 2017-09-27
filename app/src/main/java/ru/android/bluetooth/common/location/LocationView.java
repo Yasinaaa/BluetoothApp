@@ -1,4 +1,4 @@
-package ru.android.bluetooth.common;
+package ru.android.bluetooth.common.location;
 
 /**
  * Created by yasina on 26.09.17.

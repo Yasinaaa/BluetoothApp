@@ -35,9 +35,8 @@ import jxl.write.biff.RowsExceededException;
 import ru.android.bluetooth.R;
 import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
-import ru.android.bluetooth.common.DateParser;
+import ru.android.bluetooth.common.date_time.DateParser;
 import ru.android.bluetooth.schedule.ScheduleGenerator;
-import ru.android.bluetooth.utils.ActivityHelper;
 import ru.android.bluetooth.utils.CacheHelper;
 import ru.android.bluetooth.utils.DialogHelper;
 
@@ -116,9 +115,12 @@ public class CalendarPresenter implements CalendarModule.Presenter,
 
                     for (int j=0; j<underTextArray.length; j++){
                         try {
-                            sheet.addCell(new Label(0, i, mDateParser.getDate(underTextArray[j].
+                            sheet.addCell(new Label(0, i, mDateParser.getDate()));
+                            /*
+                            underTextArray[j].
                                     substring(underTextArray[j].indexOf("=") + 1,
-                                            underTextArray[j].indexOf(",")))));
+                                            underTextArray[j].indexOf(",")))
+                             */
 
                         }catch (java.lang.StringIndexOutOfBoundsException e){
 
@@ -240,7 +242,8 @@ public class CalendarPresenter implements CalendarModule.Presenter,
                                 final TextView on = (TextView) view.findViewById(R.id.tv_on_time);
                                 final TextView off = (TextView) view.findViewById(R.id.tv_off_time);
 
-                                day.setText(mDateParser.getDate(dayStr));
+                                day.setText(mDateParser.getDate());
+                            //dayStr
                                 on.setText(mDateParser.getTime(onNum));
                                 off.setText(mDateParser.getTime(offNum));
                                 onList[idNum-1] = Integer.parseInt(onNum);
