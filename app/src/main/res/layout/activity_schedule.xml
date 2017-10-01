@@ -21,7 +21,6 @@
             android:layout_margin="10dp">
         </TableLayout>
 
-
     </android.support.v4.widget.NestedScrollView>
 
         <com.getbase.floatingactionbutton.FloatingActionsMenu

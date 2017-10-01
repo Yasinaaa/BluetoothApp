@@ -128,11 +128,11 @@ public class MainActivity extends RootActivity implements MainModule.View,
         TAG = "MainActivity";
     }
 
-    /*@Override
+    @Override
     public void dataCreated(int[] onList, int[] offList) {
         mBluetoothMessage.mStatus = BluetoothCommands.GET_TABLE;
         mBluetoothMessage.writeMessage(mActivity, onList, offList);
-    }*/
+    }
 
     @Override
     public void setStatus(String status) {
