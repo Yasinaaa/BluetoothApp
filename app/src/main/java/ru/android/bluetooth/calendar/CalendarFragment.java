@@ -1,6 +1,5 @@
 package ru.android.bluetooth.calendar;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -14,7 +13,6 @@ import android.widget.TextView;
 
 import ru.android.bluetooth.R;
 import ru.android.bluetooth.common.date_time.DateParser;
-import ru.android.bluetooth.main.MainModule;
 
 /**
  * Created by yasina on 02.10.17.
@@ -25,11 +23,11 @@ public class CalendarFragment extends Fragment {
     public static final String MONTH = "MONTH";
     public static final String ON_LIST = "ON_LIST";
     public static final String OFF_LIST = "OFF_LIST";
-    private String[] mListOn, mListOff;
+    public int[] mListOn, mListOff;
     private TableLayout mTableLayout;
     private DateParser mDateParser;
     private int selectedItem = 999;
-    private int mCurrentMonth;
+    public int mCurrentMonth;
     private CalendarModule.OnItemClicked mOnClick;
 
     public CalendarFragment() {
@@ -39,8 +37,8 @@ public class CalendarFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(getArguments() != null){
-            mListOn = getArguments().getStringArray(ON_LIST);
-            mListOff = getArguments().getStringArray(OFF_LIST);
+            mListOn = getArguments().getIntArray(ON_LIST);
+            mListOff = getArguments().getIntArray(OFF_LIST);
             mCurrentMonth = getArguments().getInt(MONTH);
         }
     }

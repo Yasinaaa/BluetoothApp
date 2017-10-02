@@ -305,8 +305,6 @@ public class CalendarPresenter implements CalendarModule.Presenter,
     private ArrayList<Day> readFile(){
 
         ArrayList<Day> scheduleMap = new ArrayList<Day>();
-        String[] onListTime = new String[366];
-        String[] offListTime = new String[366];
 
         if (mTable != null) {
             String[] textArray = mTable.split("\r\n");
@@ -341,10 +339,11 @@ public class CalendarPresenter implements CalendarModule.Presenter,
                                     underTextArray[j].lastIndexOf(","));
 
                             int idNum = Integer.parseInt(dayStr);
-                            onListTime[idNum] = onNum;
-                            offListTime[idNum] = offNum;
+                            onList[idNum] = Integer.parseInt(onNum);
+                            offList[idNum] = Integer.parseInt(offNum);
 
                         } catch (Exception e) {
+                            Log.d("d", e.getMessage());
                             DialogHelper.hideProgressBar(mDialog);
                         }
                     }
@@ -360,7 +359,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
                 monthCalendar = new GregorianCalendar(calendar.get(Calendar.YEAR), month, 0);
                 daysOnMonth = monthCalendar.getActualMaximum(Calendar.DAY_OF_MONTH);
 
-                cutTheScheduleByMonth(daysOnMonth, daysPast, scheduleMap, onListTime, offListTime);
+                cutTheScheduleByMonth(daysOnMonth, daysPast, scheduleMap);
                 daysPast = daysPast + daysOnMonth;
             }
         }
@@ -368,13 +367,11 @@ public class CalendarPresenter implements CalendarModule.Presenter,
     }
 
     private void cutTheScheduleByMonth(int daysCount, int beginDay,
-                                       ArrayList<Day> scheduleMap,
-                                       String[] onListTime,
-                                       String[] offListTime){
+                                       ArrayList<Day> scheduleMap){
 
-        String[] on,off;
-        on = Arrays.copyOfRange(onListTime, beginDay, beginDay + daysCount);
-        off = Arrays.copyOfRange(offListTime, beginDay, beginDay + daysCount);
+        int[] on,off;
+        on = Arrays.copyOfRange(onList, beginDay, beginDay + daysCount);
+        off = Arrays.copyOfRange(offList, beginDay, beginDay + daysCount);
         if(on != null && off != null)
             scheduleMap.add(new Day(on, off));
     }
@@ -494,17 +491,21 @@ public class CalendarPresenter implements CalendarModule.Presenter,
     }
 
     @Override
-    public void saveChanges(int day, int on, int off, TableLayout tableLayout) {
-        View view = tableLayout.getChildAt(day);
-        final TextView onTv = (TextView) view.findViewById(R.id.tv_on_time);
-        final TextView offTv = (TextView) view.findViewById(R.id.tv_off_time);
-        onTv.setText(String.valueOf(on));
-        offTv.setText(String.valueOf(off));
-        tableLayout.removeViewAt(day);
-        tableLayout.addView(view, day);
+    public void saveChanges(int dayOfYear, int dayOfMonth, int on, int off, CalendarFragment calendarFragment) {
 
-        onList[day] = on;
-        offList[day] = off;
+        TableLayout tableLayout = calendarFragment.getTableLayout();
+        View view = tableLayout.getChildAt(dayOfMonth+1);
+        TextView onTv = (TextView) view.findViewById(R.id.tv_on_time);
+        TextView offTv = (TextView) view.findViewById(R.id.tv_off_time);
+        onTv.setText(mDateParser.getTime(on));
+        offTv.setText(mDateParser.getTime(off));
+        view.setBackgroundColor(mContext.getResources().getColor(R.color.white_overlay));
+        selectedItem = 999;
+        calendarFragment.mListOn[dayOfMonth] = on;
+        calendarFragment.mListOff[dayOfMonth] = off;
+
+        onList[dayOfYear] = on;
+        offList[dayOfYear] = off;
     }
 
     @Override

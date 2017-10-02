@@ -6,11 +6,10 @@ package ru.android.bluetooth.calendar;
 
 public class Day {
 
-    public String[] onTime, offTime;
+    public int[] onTime, offTime;
 
-    public Day(String[] onTime, String[] offTime) {
+    public Day(int[] onTime, int[] offTime) {
         this.onTime = onTime;
         this.offTime = offTime;
     }
-
 }

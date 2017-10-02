@@ -11,21 +11,16 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.TableLayout;
+
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 import butterknife.BindView;
 import ru.android.bluetooth.R;
@@ -65,7 +60,7 @@ public class CalendarActivity extends LocationActivity
     private String mDayToChange = "";
     private String mOnDay = "";
     private String mOffDay = "";
-    private int mId;
+    private int mDayOfYear, mDayOfMonth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -181,7 +176,7 @@ public class CalendarActivity extends LocationActivity
 
             @Override
             public void onMenuCollapsed() {
-                mCoordinatorLayout.getBackground().setAlpha(0);
+               // mCoordinatorLayout.getBackground().setAlpha(0);
             }
         });
 
@@ -256,8 +251,8 @@ public class CalendarActivity extends LocationActivity
         for (int month=0; month< schedule.size(); month++) {
             Bundle bundle = new Bundle();
             bundle.putInt(CalendarFragment.MONTH, month);
-            bundle.putStringArray(CalendarFragment.ON_LIST, schedule.get(month).onTime);
-            bundle.putStringArray(CalendarFragment.OFF_LIST, schedule.get(month).offTime);
+            bundle.putIntArray(CalendarFragment.ON_LIST, schedule.get(month).onTime);
+            bundle.putIntArray(CalendarFragment.OFF_LIST, schedule.get(month).offTime);
 
             CalendarFragment calendarFragment = new CalendarFragment();
             calendarFragment.setArguments(bundle);
@@ -267,13 +262,16 @@ public class CalendarActivity extends LocationActivity
         mTabLayout.setupWithViewPager(mViewPager);
     }
 
+
     @Override
     public void onItemClick(int month, int day, String text, String on, String off) {
+
         Calendar clickedDate = mStartDate;
         clickedDate.set(Calendar.MONTH, month);
         clickedDate.set(Calendar.DAY_OF_MONTH, day);
 
-        mId = clickedDate.get(Calendar.DAY_OF_YEAR);
+        mDayOfYear = clickedDate.get(Calendar.DAY_OF_YEAR);
+        mDayOfMonth = day;
         mDayToChange = text;
         mOnDay = on;
         mOffDay = off;
@@ -301,9 +299,9 @@ public class CalendarActivity extends LocationActivity
             }
 
             CalendarFragment calendarFragment = mMonthAdapter.getItem(mViewPager.getCurrentItem());
-            TableLayout tableLayout = calendarFragment.getTableLayout();
-            mCalendarPresenter.saveChanges(mId, on, off, tableLayout);
-            //mCalendarPresenter.generateSchedule(mId, on, off);
+
+            mCalendarPresenter.saveChanges(mDayOfYear, mDayOfMonth, on, off, calendarFragment);
+            //mCalendarPresenter.generateSchedule(mDayOfYear, on, off);
         }
 
     }

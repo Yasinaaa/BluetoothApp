@@ -92,13 +92,27 @@ public class DateParser {
 
     public int getNumTime(String time){
         try {
-            int hour = Integer.parseInt(removeExtraZeros(time.substring(0, time.indexOf(":"))));
-            int min = Integer.parseInt(removeExtraZeros(time.substring(time.indexOf(":")+1)));
-            return hour*60 + min;
+            if (time.contains(":")) {
+                int hour = Integer.parseInt(removeExtraZeros(time.substring(0, time.indexOf(":"))));
+                int min = Integer.parseInt(removeExtraZeros(time.substring(time.indexOf(":") + 1)));
+                return hour * 60 + min;
+            }
         }catch (java.lang.NumberFormatException e){
             Log.d(TAG, "time = " + time);
         }
         return -999;
+    }
+
+    public String getTime(int time){
+        try {
+            int hour = time/60;
+            int min = time%60;
+            return setZeros(hour) + ":" + setZeros(min);
+
+        }catch (java.lang.NumberFormatException e){
+            Log.d(TAG, "time = " + time);
+        }
+        return null;
     }
 
     private String removeExtraZeros(String value){

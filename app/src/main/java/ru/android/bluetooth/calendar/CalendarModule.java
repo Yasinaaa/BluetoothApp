@@ -27,7 +27,10 @@ public interface CalendarModule {
         void searchDay(String date, CalendarFragment calendarFragment, ViewPager viewPager);
         void generateSchedule(Calendar startDate, Calendar endDate, double latitude, double longitude, int zone);
         void generateSchedule();
-        void saveChanges(int day, int on, int off, TableLayout tableLayout);
+
+
+        void saveChanges(int dayOfYear, int dayOfMonth, int on, int off, CalendarFragment calendarFragment);
+
 
     }
 
