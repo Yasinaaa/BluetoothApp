@@ -41,12 +41,22 @@ public class DateParser {
 
     public String getTime(String time){
         try {
-            time = time.replace("\r","");
-            time = time.replaceAll("[^\\d.]", "");
-            int timeMin = Integer.parseInt(time);
-            String hour = setZeros(String.valueOf(timeMin / 60));
-            String min = setZeros(String.valueOf(timeMin % 60));
-            return hour + ":" + min;
+            try {
+                if (time.length() == 1){
+                    return "00:0" + time;
+                }else {
+                    time = time.replace("\r","");
+                    time = time.replaceAll("[^\\d.]", "");
+                    int timeMin = Integer.parseInt(time);
+                    String hour = setZeros(String.valueOf(timeMin / 60));
+                    String min = setZeros(String.valueOf(timeMin % 60));
+                    return hour + ":" + min;
+                }
+
+            }catch (NullPointerException e){
+                Log.d(TAG, "time=" + time);
+            }
+
         }catch (java.lang.NumberFormatException e){
             Log.d(TAG, "time = " + time);
         }

@@ -93,11 +93,10 @@ public class MainActivity extends RootActivity implements MainModule.View,
         }
 
         mActivity = this;
-        mMainPresenter = new MainPresenter(mActivity, mBluetoothMessage);
-        mMainPresenter.setScheduleFilePath(mEtScheduleName);
-
         mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
         mBluetoothMessage.setBluetoothMessageListener(this);
+        mMainPresenter = new MainPresenter(mActivity, mBluetoothMessage);
+        mMainPresenter.setScheduleFilePath(mEtScheduleName);
         mMainPresenter.sendStatusMessage();
 
     }
@@ -195,7 +194,6 @@ public class MainActivity extends RootActivity implements MainModule.View,
         });
 
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,6 +71,8 @@ public class CalendarFragment extends Fragment {
                         setView(i + 1, "Выкл", "Вкл");
                     }else {
                         setView(i + 1, mDateParser.getTime(mListOn[i]), mDateParser.getTime(mListOff[i]));
+                        if (mDateParser.getTime(mListOn[i]) == null)
+                            Log.d("TAG", (i+1) + " " + mListOn[i] + " " + mListOff[i]);
                     }
 
                 }
@@ -88,6 +91,9 @@ public class CalendarFragment extends Fragment {
 
         if (onText == null && offText == null){
             setLastRow(day, on, off);
+        }else if (onText.equals("Выкл") && offText.equals("Вкл")) {
+            on.setText(onText);
+            off.setText(offText);
         }else {
             day.setText(String.valueOf(i));
             on.setText(onText);

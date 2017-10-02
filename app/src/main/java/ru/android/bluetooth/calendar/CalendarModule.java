@@ -4,6 +4,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.NestedScrollView;
 import android.widget.TableLayout;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 
@@ -20,7 +21,7 @@ public interface CalendarModule {
 
     interface Presenter{
         //void setTable(TableLayout tableLayout);
-        HashMap<String[],String[]> setTable();
+        ArrayList<Day> setTable();
         void getSchedule();
         void setLoadSchedule();
         void searchDay(String date, CalendarFragment calendarFragment, ViewPager viewPager);

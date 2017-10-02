@@ -302,9 +302,9 @@ public class CalendarPresenter implements CalendarModule.Presenter,
 
     }*/
 
-    private HashMap<String[],String[]> readFile(){
+    private ArrayList<Day> readFile(){
 
-        HashMap<String[], String[]> scheduleMap = new HashMap<String[],String[]>();
+        ArrayList<Day> scheduleMap = new ArrayList<Day>();
         String[] onListTime = new String[366];
         String[] offListTime = new String[366];
 
@@ -340,7 +340,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
                             String offNum = underTextArray[j].substring(underTextArray[j].indexOf(",") + 1,
                                     underTextArray[j].lastIndexOf(","));
 
-                            int idNum = Integer.parseInt(dayStr) + 1;
+                            int idNum = Integer.parseInt(dayStr);
                             onListTime[idNum] = onNum;
                             offListTime[idNum] = offNum;
 
@@ -368,7 +368,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
     }
 
     private void cutTheScheduleByMonth(int daysCount, int beginDay,
-                                       HashMap<String[],String[]> scheduleMap,
+                                       ArrayList<Day> scheduleMap,
                                        String[] onListTime,
                                        String[] offListTime){
 
@@ -376,11 +376,11 @@ public class CalendarPresenter implements CalendarModule.Presenter,
         on = Arrays.copyOfRange(onListTime, beginDay, beginDay + daysCount);
         off = Arrays.copyOfRange(offListTime, beginDay, beginDay + daysCount);
         if(on != null && off != null)
-            scheduleMap.put(on, off);
+            scheduleMap.add(new Day(on, off));
     }
 
     @Override
-    public HashMap<String[],String[]> setTable(){
+    public ArrayList<Day> setTable(){
         //tableLayout.removeAllViews();
         //readFile(tableLayout);
         return readFile();

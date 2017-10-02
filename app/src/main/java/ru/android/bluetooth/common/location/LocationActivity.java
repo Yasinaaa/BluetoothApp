@@ -74,8 +74,7 @@ public abstract class LocationActivity extends RootActivity
         }
     }
 
-    @Override
-    public void init() {
+    public void initMain() {
 
         mActivity = this;
         mIsScheduleGeneration = setScheduleGeneration();
@@ -116,7 +115,9 @@ public abstract class LocationActivity extends RootActivity
 
         if (mLocation == null) {
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-            setDialog();
+            if (mIsScheduleGeneration) {
+                setDialog();
+            }
         } else {
             mCurrentLatitude = mLocation.getLatitude();
             mCurrentLongitude = mLocation.getLongitude();

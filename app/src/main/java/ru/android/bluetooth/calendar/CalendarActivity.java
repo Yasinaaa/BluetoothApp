@@ -20,6 +20,8 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TableLayout;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -69,6 +71,7 @@ public class CalendarActivity extends LocationActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_schedule);
+        initMain();
         start();
     }
 
@@ -153,12 +156,12 @@ public class CalendarActivity extends LocationActivity
         mCalendarPresenter = new CalendarPresenter(this, mBluetoothMessage, this, this);
         mCalendarPresenter.getSchedule();
 
-        mCoordinatorLayout.getBackground().setAlpha(0);
+//        mCoordinatorLayout.getBackground().setAlpha(0);
 
         fabMenu.setOnFloatingActionsMenuUpdateListener(new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
             @Override
             public void onMenuExpanded() {
-                mCoordinatorLayout.getBackground().setAlpha(240);
+               // mCoordinatorLayout.getBackground().setAlpha(240);
                 mCoordinatorLayout.setOnTouchListener(new View.OnTouchListener() {
                     @Override
                     public boolean onTouch(View v, MotionEvent event) {
@@ -184,8 +187,7 @@ public class CalendarActivity extends LocationActivity
 
         scheduleLoading = new ScheduleLoading(this, this);
         mMonthAdapter = new MonthAdapter(getSupportFragmentManager());
-        mCalendarPresenter.setupViewPager(mTabLayout, mViewPager, mMonthAdapter);
-        mTabLayout.setupWithViewPager(mViewPager);
+
     }
 
 
@@ -249,22 +251,20 @@ public class CalendarActivity extends LocationActivity
 
     @Override
     public void onLoadingScheduleFinished() {
-        HashMap<String[],String[]> schedule = mCalendarPresenter.setTable();
-        int month = 0;
-        for (Map.Entry<String[],String[]> entry : schedule.entrySet()) {
-            String[] key = entry.getKey();
-            String[] value = entry.getValue();
+        ArrayList<Day> schedule = mCalendarPresenter.setTable();
 
+        for (int month=0; month< schedule.size(); month++) {
             Bundle bundle = new Bundle();
             bundle.putInt(CalendarFragment.MONTH, month);
-            bundle.putStringArray(CalendarFragment.ON_LIST, key);
-            bundle.putStringArray(CalendarFragment.OFF_LIST, value);
+            bundle.putStringArray(CalendarFragment.ON_LIST, schedule.get(month).onTime);
+            bundle.putStringArray(CalendarFragment.OFF_LIST, schedule.get(month).offTime);
 
             CalendarFragment calendarFragment = new CalendarFragment();
             calendarFragment.setArguments(bundle);
             mMonthAdapter.addFragment(calendarFragment);
-            month++;
         }
+        mCalendarPresenter.setupViewPager(mTabLayout, mViewPager, mMonthAdapter);
+        mTabLayout.setupWithViewPager(mViewPager);
     }
 
     @Override
