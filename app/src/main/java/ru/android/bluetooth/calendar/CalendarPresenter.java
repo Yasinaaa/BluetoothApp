@@ -8,6 +8,9 @@ import android.content.res.Resources;
 import android.os.Environment;
 import android.os.Looper;
 import android.os.SystemClock;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
+import android.support.v4.view.animation.FastOutLinearInInterpolator;
 import android.support.v4.widget.NestedScrollView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,8 +23,13 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import android.os.Handler;
 
@@ -37,6 +45,8 @@ import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
 import ru.android.bluetooth.common.date_time.DateParser;
 import ru.android.bluetooth.schedule.ScheduleGenerator;
+import ru.android.bluetooth.temp.OneFragment;
+import ru.android.bluetooth.temp.Temp;
 import ru.android.bluetooth.utils.CacheHelper;
 import ru.android.bluetooth.utils.DialogHelper;
 
@@ -174,7 +184,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
         }
     }
 
-    private void readFile(final TableLayout tableLayout){
+    /*private void readFile(final TabLayout tabLayout){
 
         selectedItem = 999;
         mDateParser.setNewCurrentDay();
@@ -290,12 +300,90 @@ public class CalendarPresenter implements CalendarModule.Presenter,
             }
         }
 
+    }*/
+
+    private HashMap<String[],String[]> readFile(){
+
+        HashMap<String[], String[]> scheduleMap = new HashMap<String[],String[]>();
+        String[] onListTime = new String[366];
+        String[] offListTime = new String[366];
+
+        if (mTable != null) {
+            String[] textArray = mTable.split("\r\n");
+
+            for (int i = 0; i < textArray.length-1; i++) {
+
+                String[] underTextArray;
+                if (StringUtils.countMatches(textArray[i], "i") > 1) {
+                    underTextArray = textArray[i].split("i");
+                } else {
+                    underTextArray = new String[1];
+                    underTextArray[0] = textArray[i];
+                }
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        DialogHelper.hideProgressBar(mDialog);
+                    }
+                });
+
+                for (int j = 0; j < underTextArray.length; j++) {
+
+                    if (underTextArray[j].matches("(.*)=\\d+,\\d+,\\d+")) {
+
+                        try {
+
+                            String dayStr = underTextArray[j].substring(underTextArray[j].indexOf("=") + 1,
+                                    underTextArray[j].indexOf(","));
+                            String onNum = underTextArray[j].substring(
+                                    underTextArray[j].lastIndexOf(",") + 1, underTextArray[j].length());
+                            String offNum = underTextArray[j].substring(underTextArray[j].indexOf(",") + 1,
+                                    underTextArray[j].lastIndexOf(","));
+
+                            int idNum = Integer.parseInt(dayStr) + 1;
+                            onListTime[idNum] = onNum;
+                            offListTime[idNum] = offNum;
+
+                        } catch (Exception e) {
+                            DialogHelper.hideProgressBar(mDialog);
+                        }
+                    }
+                }
+            }
+
+            Calendar calendar = Calendar.getInstance();
+            Calendar monthCalendar;
+            int daysOnMonth;
+            int daysPast = 0;
+
+            for (int month=0; month<12; month++) {
+                monthCalendar = new GregorianCalendar(calendar.get(Calendar.YEAR), month, 0);
+                daysOnMonth = monthCalendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+
+                cutTheScheduleByMonth(daysOnMonth, daysPast, scheduleMap, onListTime, offListTime);
+                daysPast = daysPast + daysOnMonth;
+            }
+        }
+        return scheduleMap;
+    }
+
+    private void cutTheScheduleByMonth(int daysCount, int beginDay,
+                                       HashMap<String[],String[]> scheduleMap,
+                                       String[] onListTime,
+                                       String[] offListTime){
+
+        String[] on,off;
+        on = Arrays.copyOfRange(onListTime, beginDay, beginDay + daysCount);
+        off = Arrays.copyOfRange(offListTime, beginDay, beginDay + daysCount);
+        if(on != null && off != null)
+            scheduleMap.put(on, off);
     }
 
     @Override
-    public void setTable(TableLayout tableLayout){
-        tableLayout.removeAllViews();
-        readFile(tableLayout);
+    public HashMap<String[],String[]> setTable(){
+        //tableLayout.removeAllViews();
+        //readFile(tableLayout);
+        return readFile();
     }
 
     @Override
@@ -352,13 +440,15 @@ public class CalendarPresenter implements CalendarModule.Presenter,
     }
 
     @Override
-    public void searchDay(String date, TableLayout tableLayout, NestedScrollView nestedScrollView) {
+    public void searchDay(String date, CalendarFragment calendarFragment, ViewPager viewPager) {
+
+        TableLayout tableLayout = calendarFragment.getTableLayout();
 
         for (int i = 0; i < 366; i++){
             View child = tableLayout.getChildAt(i);
             TextView textView = (TextView) child.findViewById(R.id.tv_day);
             if(textView.getText().equals(date)){
-                nestedScrollView.scrollTo(0, child.getTop());
+                viewPager.scrollTo(0, child.getTop());
                 child.setBackgroundColor(mContext.getResources().getColor(R.color.silver));
             }
         }
@@ -402,11 +492,15 @@ public class CalendarPresenter implements CalendarModule.Presenter,
             mBluetoothMessage.writeMessage(mActivity, onList, offList);
         }
     }
-    @Override
-    public void generateSchedule(int day, int on, int off) {
 
+    @Override
+    public void saveChanges(int day, int on, int off) {
         onList[day] = on;
         offList[day] = off;
+    }
+
+    @Override
+    public void generateSchedule() {
 
         if(onList != null & offList != null){
             mTable = "";
@@ -416,5 +510,26 @@ public class CalendarPresenter implements CalendarModule.Presenter,
 
     }
 
+    public void setupViewPager(TabLayout tabLayout, final ViewPager viewPager, MonthAdapter adapter) {
+
+        viewPager.setAdapter(adapter);
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+    }
 
 }

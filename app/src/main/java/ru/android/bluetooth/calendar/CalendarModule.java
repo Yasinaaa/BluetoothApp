@@ -1,9 +1,11 @@
 package ru.android.bluetooth.calendar;
 
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.NestedScrollView;
 import android.widget.TableLayout;
 
 import java.util.Calendar;
+import java.util.HashMap;
 
 /**
  * Created by yasina on 17.09.17.
@@ -16,15 +18,18 @@ public interface CalendarModule {
     }
 
     interface Presenter{
-        void setTable(TableLayout tableLayout);
+        //void setTable(TableLayout tableLayout);
+        HashMap<String[],String[]> setTable();
         void getSchedule();
         void setLoadSchedule();
-        void searchDay(String date, TableLayout tableLayout, NestedScrollView mNestedScrollView);
+        void searchDay(String date, CalendarFragment calendarFragment, ViewPager viewPager);
         void generateSchedule(Calendar startDate, Calendar endDate, double latitude, double longitude, int zone);
-        void generateSchedule(int day, int on, int off);
+        void generateSchedule();
+        void saveChanges(int day, int on, int off);
+
     }
 
     interface OnItemClicked {
-        void onItemClick(int id, String day, String on, String off);
+        void onItemClick(int month, int day, String text, String on, String off);
     }
 }

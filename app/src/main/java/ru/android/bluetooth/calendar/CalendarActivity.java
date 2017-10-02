@@ -7,7 +7,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.TabLayout;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
@@ -18,6 +21,10 @@ import android.widget.FrameLayout;
 import android.widget.TableLayout;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 import butterknife.BindView;
 import ru.android.bluetooth.R;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
@@ -33,16 +40,17 @@ public class CalendarActivity extends LocationActivity
 
     private static final int REQUEST_WRITE_PERMISSION = 786;
 
-    @BindView(R.id.tableLayout)
-    TableLayout mTableLayout;
-    @BindView(R.id.nested_scroll_view)
-    NestedScrollView mNestedScrollView;
-    @BindView(R.id.frame_layout)
-    FrameLayout frameLayout;
+    @BindView(R.id.tab_layout)
+    TabLayout mTabLayout;
+    @BindView(R.id.view_pager)
+    ViewPager mViewPager;
     @BindView(R.id.fab_menu)
     FloatingActionsMenu fabMenu;
+    @BindView(R.id.coordinator_layout)
+    CoordinatorLayout mCoordinatorLayout;
 
     private CalendarPresenter mCalendarPresenter;
+    private MonthAdapter mMonthAdapter;
     private BluetoothMessage mBluetoothMessage;
     private Calendar mStartDate, mFinishDate;
 
@@ -127,13 +135,13 @@ public class CalendarActivity extends LocationActivity
         mCalendarPresenter = new CalendarPresenter(this, mBluetoothMessage, this, this);
         mCalendarPresenter.getSchedule();
 
-        frameLayout.getBackground().setAlpha(0);
+        mCoordinatorLayout.getBackground().setAlpha(0);
 
         fabMenu.setOnFloatingActionsMenuUpdateListener(new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
             @Override
             public void onMenuExpanded() {
-                frameLayout.getBackground().setAlpha(240);
-                frameLayout.setOnTouchListener(new View.OnTouchListener() {
+                mCoordinatorLayout.getBackground().setAlpha(240);
+                mCoordinatorLayout.setOnTouchListener(new View.OnTouchListener() {
                     @Override
                     public boolean onTouch(View v, MotionEvent event) {
                         fabMenu.collapse();
@@ -141,7 +149,7 @@ public class CalendarActivity extends LocationActivity
                         return true;
                     }
                 });
-                frameLayout.setOnClickListener(new View.OnClickListener() {
+                mCoordinatorLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         fabClicked(view);
@@ -152,9 +160,14 @@ public class CalendarActivity extends LocationActivity
 
             @Override
             public void onMenuCollapsed() {
-                frameLayout.getBackground().setAlpha(0);
+                mCoordinatorLayout.getBackground().setAlpha(0);
             }
         });
+
+        mMonthAdapter = new MonthAdapter(getSupportFragmentManager());
+
+        mCalendarPresenter.setupViewPager(mTabLayout, mViewPager, mMonthAdapter);
+        mTabLayout.setupWithViewPager(mViewPager);
     }
 
     @Override
@@ -182,7 +195,8 @@ public class CalendarActivity extends LocationActivity
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String date) {
-                mCalendarPresenter.searchDay(date, mTableLayout, mNestedScrollView);
+                CalendarFragment calendarFragment = mMonthAdapter.getItem(mViewPager.getCurrentItem());
+                mCalendarPresenter.searchDay(date, calendarFragment, mViewPager);
                 return false;
             }
 
@@ -205,12 +219,31 @@ public class CalendarActivity extends LocationActivity
 
     @Override
     public void onLoadingScheduleFinished() {
-        mCalendarPresenter.setTable(mTableLayout);
+        HashMap<String[],String[]> schedule = mCalendarPresenter.setTable();
+        int month = 0;
+        for (Map.Entry<String[],String[]> entry : schedule.entrySet()) {
+            String[] key = entry.getKey();
+            String[] value = entry.getValue();
+
+            Bundle bundle = new Bundle();
+            bundle.putInt(CalendarFragment.MONTH, month);
+            bundle.putStringArray(CalendarFragment.ON_LIST, key);
+            bundle.putStringArray(CalendarFragment.OFF_LIST, value);
+
+            CalendarFragment calendarFragment = new CalendarFragment();
+            calendarFragment.setArguments(bundle);
+            mMonthAdapter.addFragment(calendarFragment);
+            month++;
+        }
     }
 
     @Override
-    public void onItemClick(int id, String text, String on, String off) {
-        this.mId = id;
+    public void onItemClick(int month, int day, String text, String on, String off) {
+        Calendar clickedDate = mStartDate;
+        clickedDate.set(Calendar.MONTH, month);
+        clickedDate.set(Calendar.DAY_OF_MONTH, day);
+
+        mId = clickedDate.get(Calendar.DAY_OF_YEAR);
         mDayToChange = text;
         mOnDay = on;
         mOffDay = off;
@@ -233,7 +266,9 @@ public class CalendarActivity extends LocationActivity
                 off = 0;
             }
 
-            mCalendarPresenter.generateSchedule(mId, on, off);
+
+            mCalendarPresenter.saveChanges(mId, on, off);
+            //mCalendarPresenter.generateSchedule(mId, on, off);
         }
 
     }
