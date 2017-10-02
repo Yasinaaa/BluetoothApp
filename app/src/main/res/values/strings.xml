@@ -31,8 +31,7 @@
     <string name="file_saved">Файл загружен</string>
     <string name="connect_to_device">Подключение к устройству\n</string>
     <string name="send_request">Отправка запроса</string>
-
-
+    <string name="schedule_saved">Рассписание было успешно записано в Автореле </string>
 
     <string name="latitude_label">Latitude</string>
     <string name="longitude_label">Longitude</string>

@@ -29,6 +29,8 @@ public class CalendarFragment extends Fragment {
     private int selectedItem = 999;
     public int mCurrentMonth;
     private CalendarModule.OnItemClicked mOnClick;
+    private LayoutInflater inflater;
+    private View mView;
 
     public CalendarFragment() {
     }
@@ -46,10 +48,11 @@ public class CalendarFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.temp2, container, false);
-        mTableLayout = view.findViewById(R.id.tableLayout);
+        mView = inflater.inflate(R.layout.temp2, container, false);
+        mTableLayout = mView.findViewById(R.id.tableLayout);
         mDateParser = new DateParser();
         mDateParser.setNewCurrentDay();
+
 
         try {
             mOnClick = (CalendarModule.OnItemClicked) getActivity();
@@ -58,10 +61,10 @@ public class CalendarFragment extends Fragment {
         }
 
         readFile();
-        return view;
+        return mView;
     }
 
-    private void readFile(){
+    public void readFile(){
         if (mListOn != null && mListOff != null){
             if(mListOn.length == mListOff.length){
                 for (int i = -1; i < mListOn.length; i++) {
@@ -79,8 +82,14 @@ public class CalendarFragment extends Fragment {
         }
     }
 
+    public void reWriteFile(TableLayout t){
+
+
+    }
+
     private void setView(int i, String onText, String offText){
-        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.item_schedule_day, null);
 
         final TextView day = (TextView) view.findViewById(R.id.tv_day);

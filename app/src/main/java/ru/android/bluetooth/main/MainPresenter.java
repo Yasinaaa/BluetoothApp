@@ -155,13 +155,16 @@ public class MainPresenter implements DateTimeView{
         if (answer.contains("Not") || answer.contains("command")) {
             mBluetoothMessage.setMessage(mTable, mActivity, BluetoothCommands.STATUS, true);
         }
+        mTable = "";
     }
 
     public void sendStatusMessage(){
         mBluetoothMessage.setMessage(mTable, mActivity, BluetoothCommands.STATUS);
+        mTable = "";
     }
 
     public void sendVersionMessage(){
         mBluetoothMessage.setMessage(mTable, mActivity, BluetoothCommands.VERSION);
+        mTable = "";
     }
 }

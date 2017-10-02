@@ -13,7 +13,7 @@ import java.util.List;
 
 public class MonthAdapter extends FragmentPagerAdapter {
 
-    private final List<CalendarFragment> mFragmentList = new ArrayList<>();
+    public List<CalendarFragment> mFragmentList = new ArrayList<>();
     private final String[] mFragmentTitleList = new String[]{
         "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август","Сентябрь","Октябрь","Ноябрь","Декабрь"
     };

@@ -28,6 +28,20 @@ public class DialogHelper {
         return dialog1;
     }
 
+    public static AlertDialog showSuccessMessage(Activity activity, String title, String text){
+        AlertDialog.Builder dialog = new AlertDialog.Builder(activity)
+                .setTitle(title)
+                .setMessage(text)
+                .setNegativeButton(activity.getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog dialog1 = dialog.create();
+        dialog.show();
+        return dialog1;
+    }
+
     public static AlertDialog showErrorMessage(Activity activity, String text){
         AlertDialog.Builder dialog = new AlertDialog.Builder(activity)
                 .setTitle(activity.getString(R.string.mistake))

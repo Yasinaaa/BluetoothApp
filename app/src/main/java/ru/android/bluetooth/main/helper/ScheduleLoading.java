@@ -44,6 +44,7 @@ public class ScheduleLoading {
     private Handler mHandler;
 
     public interface View{
+        void setResult();
         void setScheduleTitle(String title);
         void dataCreated(int[] onList, int[] offList);
     }
@@ -72,7 +73,7 @@ public class ScheduleLoading {
 
     }
 
-    public void parceSchedule(File file){
+    public void parceSchedule(Workbook w, String title){
 
         checkPermission();
         List<String> dateList = new ArrayList<String>();
@@ -80,53 +81,38 @@ public class ScheduleLoading {
         List<String> offList = new ArrayList<String>();
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mActivity);
 
-        if(file.exists()){
-            Workbook w;
-            try {
-                w = Workbook.getWorkbook(file);
-                Sheet sheet = w.getSheet(0);
-                for (int j = 0; j < sheet.getRows(); j++) {
-                    Cell cell = sheet.getCell(0, j);
-                    dateList.add(sheet.getCell(0, j).getContents());
-                    onList.add(sheet.getCell(1, j).getContents());
-                    offList.add(sheet.getCell(2, j).getContents());
-                }
-
-                if(!createTimeList(dialogBuilder, onList, offList)){
-                    mView.setScheduleTitle(file.getPath());
-                    dialogBuilder
-                            .setTitle(mActivity.getString(R.string.schedule))
-                            .setMessage(mActivity.getString(R.string.file_saved) + " " + file.getPath())
-                            .setNegativeButton(mActivity.getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                }
-                            });
-                    dialogBuilder.show();
-                }
-
-            } catch (BiffException e) {
-                Log.d(TAG, e.getMessage());
-                showErrorDialog(dialogBuilder, file.getPath());
-
-            } catch (Exception e) {
-                Log.d(TAG, e.getMessage());
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    if (!e.getClass().equals(FileNotFoundException.class)){
-                        showErrorDialog(dialogBuilder);
-                    }
-                }
-
+        try {
+            Sheet sheet = w.getSheet(0);
+            for (int j = 0; j < sheet.getRows(); j++) {
+                Cell cell = sheet.getCell(0, j);
+                dateList.add(sheet.getCell(0, j).getContents());
+                onList.add(sheet.getCell(1, j).getContents());
+                offList.add(sheet.getCell(2, j).getContents());
             }
-        }
-        else
-        {
-            //dateList.add("File not found..!");
-        }
-        if(dateList.size()==0){
-            //dateList.add("Data not found..!");
-        }
 
+            if(!createTimeList(dialogBuilder, onList, offList)){
+                mView.setScheduleTitle(title);
+                dialogBuilder
+                        .setTitle(mActivity.getString(R.string.schedule))
+                        .setMessage(mActivity.getString(R.string.file_saved))
+                        .setNegativeButton("Перезагрузить таблицу", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                mView.setResult();
+                            }
+                        });
+                dialogBuilder.show();
+            }
+
+        } catch (Exception e) {
+            Log.d(TAG, e.getMessage());
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                if (!e.getClass().equals(FileNotFoundException.class)){
+                    showErrorDialog(dialogBuilder);
+                }
+            }
+
+        }
 
     }
 

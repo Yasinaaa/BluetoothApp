@@ -54,6 +54,7 @@ public abstract class LocationActivity extends RootActivity
     @Override
     protected void onStart() {
         super.onStart();
+
         mGoogleApiClient.connect();
     }
 
@@ -95,6 +96,7 @@ public abstract class LocationActivity extends RootActivity
         updateLocation();
     }
 
+    int c = 0;
     public void updateLocation(){
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED &&
@@ -115,8 +117,11 @@ public abstract class LocationActivity extends RootActivity
 
         if (mLocation == null) {
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-            if (mIsScheduleGeneration) {
+            if (mIsScheduleGeneration && c==0) {
                 setDialog();
+                c++;
+            }else if(c>0){
+                updateLocation();
             }
         } else {
             mCurrentLatitude = mLocation.getLatitude();

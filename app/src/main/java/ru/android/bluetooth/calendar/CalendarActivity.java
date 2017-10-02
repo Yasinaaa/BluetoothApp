@@ -12,25 +12,30 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
 
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 
 import butterknife.BindView;
 import ru.android.bluetooth.R;
 import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
+import ru.android.bluetooth.common.date_time.DateParser;
 import ru.android.bluetooth.common.location.LocationActivity;
 import ru.android.bluetooth.main.helper.ScheduleLoading;
 import ru.android.bluetooth.one_day.ChangeOneDayScheduleActivity;
 import ru.android.bluetooth.utils.ActivityHelper;
 import ru.android.bluetooth.utils.CacheHelper;
+import ru.android.bluetooth.utils.DialogHelper;
 
 /**
  * Created by itisioslab on 03.08.17.
@@ -61,6 +66,8 @@ public class CalendarActivity extends LocationActivity
     private String mOnDay = "";
     private String mOffDay = "";
     private int mDayOfYear, mDayOfMonth;
+    Calendar clickedDate;
+    DateParser mDateParser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,14 +84,16 @@ public class CalendarActivity extends LocationActivity
                 break;
 
             case R.id.fab_save_schedule:
-
+                mCalendarPresenter.generateSchedule();
                 break;
 
             case R.id.fab_generate_shedule_hand_one_day:
 
                 if (!mDayToChange.equals("")) {
                     Intent intent = new Intent(CalendarActivity.this, ChangeOneDayScheduleActivity.class);
-                    intent.putExtra(ChangeOneDayScheduleActivity.DAY_LOG, mDayToChange);
+                    intent.putExtra(ChangeOneDayScheduleActivity.DAY_LOG,
+                            mDateParser.setZeros(clickedDate.get(Calendar.DAY_OF_MONTH))
+                            + "." + mDateParser.setZeros((clickedDate.get(Calendar.MONTH)+1)));
                     intent.putExtra(ChangeOneDayScheduleActivity.ON_LOG, mOnDay);
                     intent.putExtra(ChangeOneDayScheduleActivity.OFF_LOG, mOffDay);
                     startActivityForResult(intent, ChangeOneDayScheduleActivity.REQUEST_CODE);
@@ -130,7 +139,7 @@ public class CalendarActivity extends LocationActivity
             mCalendarPresenter.setLoadSchedule();
         }
         if (requestCode == ActivityHelper.REQUEST_READ_PERMISSION && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            mFilePresenter.parseFile(scheduleLoading);
+            mFilePresenter.openIntent();
         }
     }
 
@@ -150,6 +159,7 @@ public class CalendarActivity extends LocationActivity
         mFilePresenter = new FilePresenter(this);
         mCalendarPresenter = new CalendarPresenter(this, mBluetoothMessage, this, this);
         mCalendarPresenter.getSchedule();
+        mDateParser = new DateParser();
 
 //        mCoordinatorLayout.getBackground().setAlpha(0);
 
@@ -187,13 +197,19 @@ public class CalendarActivity extends LocationActivity
 
 
     @Override
+    public void setResult() {
+        finish();
+        startActivity(getIntent());
+    }
+
+    @Override
     public void setScheduleTitle(String title) {
         CacheHelper.setSchedulePath(getApplicationContext(), title);
     }
 
     @Override
     public void dataCreated(int[] onList, int[] offList) {
-        mBluetoothMessage.mStatus = BluetoothCommands.GET_TABLE;
+        mBluetoothMessage.mStatus = BluetoothCommands.GET_TABLE + "2";
         mBluetoothMessage.writeMessage(this, onList, offList);
     }
 
@@ -247,28 +263,76 @@ public class CalendarActivity extends LocationActivity
     @Override
     public void onLoadingScheduleFinished() {
         ArrayList<Day> schedule = mCalendarPresenter.setTable();
+        fabMenu.collapse();
+        fabMenu.collapseImmediately();
 
-        for (int month=0; month< schedule.size(); month++) {
-            Bundle bundle = new Bundle();
-            bundle.putInt(CalendarFragment.MONTH, month);
-            bundle.putIntArray(CalendarFragment.ON_LIST, schedule.get(month).onTime);
-            bundle.putIntArray(CalendarFragment.OFF_LIST, schedule.get(month).offTime);
 
-            CalendarFragment calendarFragment = new CalendarFragment();
-            calendarFragment.setArguments(bundle);
-            mMonthAdapter.addFragment(calendarFragment);
+        if(mMonthAdapter.getCount() > 1){
+
+
+           // for (int month=0; month< schedule.size(); month++) {
+
+                /*CalendarFragment c = mMonthAdapter.mFragmentList.get(month);
+                //mMonthAdapter.getItem(month);
+                if(!Arrays.equals(c.mListOn, schedule.get(month).onTime) &&
+                        !Arrays.equals(c.mListOff, schedule.get(month).offTime)){
+
+                    c.mListOn = schedule.get(month).onTime;
+                    c.mListOff = schedule.get(month).offTime;
+
+                    if (c.mListOn != null && c.mListOff != null){
+                        if(c.mListOn.length == c.mListOff.length){
+
+                            for (int i = 0; i < c.mListOn.length; i++) {
+
+                                View view = c.getTableLayout().getChildAt(i+1);
+                                final TextView on = (TextView) view.findViewById(R.id.tv_on_time);
+                                final TextView off = (TextView) view.findViewById(R.id.tv_off_time);
+
+                                try {
+                                    on.setText(mDateParser.getTime(c.mListOn[i]));
+                                    off.setText(mDateParser.getTime(c.mListOff[i]));
+
+                                }catch (NullPointerException e){
+                                    Log.d("TAG", "i=" + i);
+                                }
+
+                            }
+                        }
+                    }
+                }*/
+
+
+            //}
+
+            //DialogHelper.showSuccessMessage(this, getString(R.string.schedule), getString(R.string.schedule_saved));
+
+        }else {
+
+            for (int month=0; month< schedule.size(); month++) {
+                Bundle bundle = new Bundle();
+                bundle.putInt(CalendarFragment.MONTH, month);
+                bundle.putIntArray(CalendarFragment.ON_LIST, schedule.get(month).onTime);
+                bundle.putIntArray(CalendarFragment.OFF_LIST, schedule.get(month).offTime);
+
+                CalendarFragment calendarFragment = new CalendarFragment();
+                calendarFragment.setArguments(bundle);
+                mMonthAdapter.addFragment(calendarFragment);
+            }
+            mCalendarPresenter.setupViewPager(mTabLayout, mViewPager, mMonthAdapter);
+            mTabLayout.setupWithViewPager(mViewPager);
         }
-        mCalendarPresenter.setupViewPager(mTabLayout, mViewPager, mMonthAdapter);
-        mTabLayout.setupWithViewPager(mViewPager);
+
+
     }
 
 
     @Override
     public void onItemClick(int month, int day, String text, String on, String off) {
 
-        Calendar clickedDate = mStartDate;
+        clickedDate = mStartDate;
         clickedDate.set(Calendar.MONTH, month);
-        clickedDate.set(Calendar.DAY_OF_MONTH, day);
+        clickedDate.set(Calendar.DAY_OF_MONTH, day+1);
 
         mDayOfYear = clickedDate.get(Calendar.DAY_OF_YEAR);
         mDayOfMonth = day;

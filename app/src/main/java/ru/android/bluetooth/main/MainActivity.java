@@ -119,7 +119,7 @@ public class MainActivity extends RootActivity implements MainModule.View,
 
     @Override
     public void onResponse(String answer) {
-        Log.d(TAG, mBluetoothMessage.mStatus + " " + answer);
+        //Log.d(TAG, mBluetoothMessage.mStatus + " " + answer);
 
         if(mBluetoothMessage.mStatus!= null) {
             switch (mBluetoothMessage.mStatus) {
