@@ -72,5 +72,30 @@
             app:fab_size="normal"
             android:onClick="fabClicked"
             app:fab_title="Выгрузить расписание в Excel файл" />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_download_schedule"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_colorNormal="@color/colorPrimary"
+            app:fab_colorPressed="@color/colorPrimaryDark"
+            app:fab_plusIconColor="@color/white"
+            app:fab_icon="@drawable/pdf"
+            app:fab_size="normal"
+            android:onClick="fabClicked"
+            app:fab_title="Загрузить расписание" />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_save_schedule"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_colorNormal="@color/colorPrimary"
+            app:fab_colorPressed="@color/colorPrimaryDark"
+            app:fab_plusIconColor="@color/white"
+            app:fab_icon="@drawable/pdf"
+            app:fab_size="normal"
+            android:onClick="fabClicked"
+            app:fab_title="Сохранить измененное расписание" />
+
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
 </android.support.design.widget.CoordinatorLayout>

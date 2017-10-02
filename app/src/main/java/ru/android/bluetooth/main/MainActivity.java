@@ -61,8 +61,6 @@ public class MainActivity extends RootActivity implements MainModule.View,
     TextView mTvEditSchedule;
     @BindView(R.id.tv_generate_schedule)
     TextView mTvGenerateSchedule;
-    @BindView(R.id.tv_new_schedule)
-    TextView mTvNewSchedule;
     @BindView(R.id.rl)
     RelativeLayout mRl;
     @BindView(R.id.tv_time)
@@ -73,14 +71,9 @@ public class MainActivity extends RootActivity implements MainModule.View,
     EditText mEtScheduleName;
     @BindView(R.id.btn_edit_schedule)
     Button mBtnEditSchedule;
-    @BindView(R.id.btn_load_schedule)
-    Button mBtnLoadSchedule;
-
 
     private BluetoothMessage mBluetoothMessage;
     private MainPresenter mMainPresenter;
-    private ScheduleLoading scheduleLoading;
-
     private Activity mActivity;
 
     @Override
@@ -88,13 +81,6 @@ public class MainActivity extends RootActivity implements MainModule.View,
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         start();
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode == ActivityHelper.REQUEST_READ_PERMISSION && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            mMainPresenter.parseFile(scheduleLoading);
-        }
     }
 
     @Override
@@ -114,7 +100,6 @@ public class MainActivity extends RootActivity implements MainModule.View,
         mBluetoothMessage.setBluetoothMessageListener(this);
         mMainPresenter.sendStatusMessage();
 
-        scheduleLoading = new ScheduleLoading(this, mActivity);
     }
 
     @Override
@@ -126,12 +111,6 @@ public class MainActivity extends RootActivity implements MainModule.View,
     @Override
     public void setTag() {
         TAG = "MainActivity";
-    }
-
-    @Override
-    public void dataCreated(int[] onList, int[] offList) {
-        mBluetoothMessage.mStatus = BluetoothCommands.GET_TABLE;
-        mBluetoothMessage.writeMessage(mActivity, onList, offList);
     }
 
     @Override
@@ -201,12 +180,6 @@ public class MainActivity extends RootActivity implements MainModule.View,
             }
         });
 
-        mBtnLoadSchedule.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mMainPresenter.setChooseFileDialog();
-            }
-        });
         mIbSyncStatus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -243,20 +216,6 @@ public class MainActivity extends RootActivity implements MainModule.View,
     protected void onDestroy() {
         super.onDestroy();
 
-    }
-
-    @Override
-    public void setScheduleTitle(String title){
-        mEtScheduleName.setText(title);
-        CacheHelper.setSchedulePath(getApplicationContext(), title);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==123 && resultCode==RESULT_OK) {
-            mMainPresenter.loadSchedule(data, scheduleLoading);
-        }
     }
 
     @Override

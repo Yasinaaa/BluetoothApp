@@ -27,16 +27,20 @@ import java.util.Set;
 
 import butterknife.BindView;
 import ru.android.bluetooth.R;
+import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
 import ru.android.bluetooth.common.location.LocationActivity;
+import ru.android.bluetooth.main.helper.ScheduleLoading;
 import ru.android.bluetooth.one_day.ChangeOneDayScheduleActivity;
+import ru.android.bluetooth.utils.ActivityHelper;
+import ru.android.bluetooth.utils.CacheHelper;
 
 /**
  * Created by itisioslab on 03.08.17.
  */
 
 public class CalendarActivity extends LocationActivity
-        implements CalendarModule.View, CalendarModule.OnItemClicked {
+        implements CalendarModule.View, CalendarModule.OnItemClicked, ScheduleLoading.View {
 
     private static final int REQUEST_WRITE_PERMISSION = 786;
 
@@ -49,10 +53,12 @@ public class CalendarActivity extends LocationActivity
     @BindView(R.id.coordinator_layout)
     CoordinatorLayout mCoordinatorLayout;
 
+    private FilePresenter mFilePresenter;
     private CalendarPresenter mCalendarPresenter;
     private MonthAdapter mMonthAdapter;
     private BluetoothMessage mBluetoothMessage;
     private Calendar mStartDate, mFinishDate;
+    private ScheduleLoading scheduleLoading;
 
     private String mDayToChange = "";
     private String mOnDay = "";
@@ -68,6 +74,14 @@ public class CalendarActivity extends LocationActivity
 
     public void fabClicked(View v) {
         switch (v.getId()) {
+            case R.id.fab_download_schedule:
+                mFilePresenter.setChooseFileDialog();
+                break;
+
+            case R.id.fab_save_schedule:
+
+                break;
+
             case R.id.fab_generate_shedule_hand_one_day:
 
                 if (!mDayToChange.equals("")) {
@@ -78,6 +92,7 @@ public class CalendarActivity extends LocationActivity
                     startActivityForResult(intent, ChangeOneDayScheduleActivity.REQUEST_CODE);
                     fabMenu.collapse();
                     fabMenu.collapseImmediately();
+
                 } else {
                     AlertDialog.Builder dialog2 = new AlertDialog.Builder(CalendarActivity.this)
                             .setTitle("Ошибка")
@@ -90,9 +105,8 @@ public class CalendarActivity extends LocationActivity
                             });
                     dialog2.show();
                 }
-
-
                 break;
+
             case R.id.fab_load_schedule:
                 requestWritePermission();
                 break;
@@ -117,6 +131,9 @@ public class CalendarActivity extends LocationActivity
         if (requestCode == REQUEST_WRITE_PERMISSION && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             mCalendarPresenter.setLoadSchedule();
         }
+        if (requestCode == ActivityHelper.REQUEST_READ_PERMISSION && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            mFilePresenter.parseFile(scheduleLoading);
+        }
     }
 
     @Override
@@ -132,6 +149,7 @@ public class CalendarActivity extends LocationActivity
 
         mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
 
+        mFilePresenter = new FilePresenter(this);
         mCalendarPresenter = new CalendarPresenter(this, mBluetoothMessage, this, this);
         mCalendarPresenter.getSchedule();
 
@@ -164,10 +182,22 @@ public class CalendarActivity extends LocationActivity
             }
         });
 
+        scheduleLoading = new ScheduleLoading(this, this);
         mMonthAdapter = new MonthAdapter(getSupportFragmentManager());
-
         mCalendarPresenter.setupViewPager(mTabLayout, mViewPager, mMonthAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
+    }
+
+
+    @Override
+    public void setScheduleTitle(String title) {
+        CacheHelper.setSchedulePath(getApplicationContext(), title);
+    }
+
+    @Override
+    public void dataCreated(int[] onList, int[] offList) {
+        mBluetoothMessage.mStatus = BluetoothCommands.GET_TABLE;
+        mBluetoothMessage.writeMessage(this, onList, offList);
     }
 
     @Override
@@ -252,6 +282,10 @@ public class CalendarActivity extends LocationActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==123 && resultCode==RESULT_OK) {
+            mFilePresenter.loadSchedule(data, scheduleLoading);
+        }
+
         if (requestCode == ChangeOneDayScheduleActivity.REQUEST_CODE){
 
             int on, off;
@@ -266,8 +300,9 @@ public class CalendarActivity extends LocationActivity
                 off = 0;
             }
 
-
-            mCalendarPresenter.saveChanges(mId, on, off);
+            CalendarFragment calendarFragment = mMonthAdapter.getItem(mViewPager.getCurrentItem());
+            TableLayout tableLayout = calendarFragment.getTableLayout();
+            mCalendarPresenter.saveChanges(mId, on, off, tableLayout);
             //mCalendarPresenter.generateSchedule(mId, on, off);
         }
 

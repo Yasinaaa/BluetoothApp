@@ -112,11 +112,13 @@ public class CalendarFragment extends Fragment {
             public void onClick(View view) {
 
                 if (selectedItem == i) {
+
                     view.setBackgroundColor(resource.getColor(R.color.white_overlay));
                     selectedItem = 999;
                     mOnClick.onItemClick(mCurrentMonth, 0, "", "", "");
 
                 } else {
+
                     view.setBackgroundColor(resource.getColor(R.color.silver));
                     if (selectedItem != 999) {
                         mTableLayout.getChildAt(selectedItem).
@@ -129,7 +131,6 @@ public class CalendarFragment extends Fragment {
                             on.getText().toString(),
                             off.getText().toString());
                 }
-
             }
         });
     }

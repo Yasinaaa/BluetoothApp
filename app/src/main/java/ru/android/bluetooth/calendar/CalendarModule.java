@@ -15,6 +15,7 @@ public interface CalendarModule {
 
     interface View{
         void onLoadingScheduleFinished();
+        void dataCreated(int[] onList, int[] offList);
     }
 
     interface Presenter{
@@ -25,7 +26,7 @@ public interface CalendarModule {
         void searchDay(String date, CalendarFragment calendarFragment, ViewPager viewPager);
         void generateSchedule(Calendar startDate, Calendar endDate, double latitude, double longitude, int zone);
         void generateSchedule();
-        void saveChanges(int day, int on, int off);
+        void saveChanges(int day, int on, int off, TableLayout tableLayout);
 
     }
 

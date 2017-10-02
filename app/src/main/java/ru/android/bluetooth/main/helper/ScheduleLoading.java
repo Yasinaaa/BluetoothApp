@@ -22,6 +22,7 @@ import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
 import ru.android.bluetooth.R;
+import ru.android.bluetooth.calendar.CalendarModule;
 import ru.android.bluetooth.common.date_time.DateParser;
 import ru.android.bluetooth.main.MainModule;
 import ru.android.bluetooth.utils.ActivityHelper;
@@ -39,10 +40,15 @@ public class ScheduleLoading {
     private DateParser mDateParser;
     private Context mContext;
     private Activity mActivity;
-    private MainModule.View mView;
+    private ScheduleLoading.View mView;
     private Handler mHandler;
 
-    public ScheduleLoading(MainModule.View mView, Activity activity) {
+    public interface View{
+        void setScheduleTitle(String title);
+        void dataCreated(int[] onList, int[] offList);
+    }
+
+    public ScheduleLoading(ScheduleLoading.View mView, Activity activity) {
 
         this.mView = mView;
         this.mActivity = activity;

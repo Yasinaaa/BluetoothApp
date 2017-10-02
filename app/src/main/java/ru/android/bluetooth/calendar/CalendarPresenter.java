@@ -494,7 +494,15 @@ public class CalendarPresenter implements CalendarModule.Presenter,
     }
 
     @Override
-    public void saveChanges(int day, int on, int off) {
+    public void saveChanges(int day, int on, int off, TableLayout tableLayout) {
+        View view = tableLayout.getChildAt(day);
+        final TextView onTv = (TextView) view.findViewById(R.id.tv_on_time);
+        final TextView offTv = (TextView) view.findViewById(R.id.tv_off_time);
+        onTv.setText(String.valueOf(on));
+        offTv.setText(String.valueOf(off));
+        tableLayout.removeViewAt(day);
+        tableLayout.addView(view, day);
+
         onList[day] = on;
         offList[day] = off;
     }

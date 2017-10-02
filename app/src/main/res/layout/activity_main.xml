@@ -239,27 +239,6 @@
                 android:layout_below="@+id/tv_edit_schedule"
                 />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/tv_new_schedule"
-                android:text="Загрузить расписание"
-                android:drawableLeft="@drawable/pdf"
-                android:layout_marginTop="35dp"
-                android:drawablePadding="15dp"
-                android:textSize="15sp"
-                android:layout_below="@+id/tv_generate_schedule" />
-
-            <Button
-                android:layout_width="90dp"
-                android:layout_height="50dp"
-                android:id="@+id/btn_load_schedule"
-                android:text="OK"
-                android:layout_marginTop="10dp"
-                android:layout_below="@+id/btn_edit_schedule"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true" />
-
         </RelativeLayout>
 
 

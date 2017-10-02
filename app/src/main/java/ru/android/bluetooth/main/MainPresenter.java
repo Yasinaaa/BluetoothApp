@@ -84,27 +84,6 @@ public class MainPresenter implements DateTimeView{
         mBluetoothMessage.setMessage(mTable, mActivity, BluetoothCommands.SET_TIME, BluetoothCommands.setTime(hour, min), true);
     }
 
-    public void setChooseFileDialog(){
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mActivity)
-                .setTitle(mActivity.getString(R.string.generate_dialog_title))
-                .setMessage("Выберите Excel файл")
-                .setPositiveButton("Загрузить", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        Intent intent = new Intent()
-                                .setType("*/*")
-                                .setAction(Intent.ACTION_GET_CONTENT);
-
-                        mActivity.startActivityForResult(Intent.createChooser(intent, "Select a file"), 123);
-                    }
-                })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                });
-        dialogBuilder.show();
-    }
-
     public void parseStatus(String status, TextView mTvDate, TextView mTvTime){
         String[] parameters = status.replaceAll("\r","").split("\n");
         for(String s: parameters){
@@ -176,38 +155,6 @@ public class MainPresenter implements DateTimeView{
         if (answer.contains("Not") || answer.contains("command")) {
             mBluetoothMessage.setMessage(mTable, mActivity, BluetoothCommands.STATUS, true);
         }
-    }
-
-    public void loadSchedule(Intent data, final ScheduleLoading scheduleLoading){
-        final Uri selectedfile = data.getData();
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mActivity)
-                .setTitle("Uri")
-                .setMessage(selectedfile.getPath())
-                .setNegativeButton("Продолжить", new DialogInterface.OnClickListener() {
-
-                    public void onClick(DialogInterface dialog, int which) {
-                        String r = Environment.getExternalStorageDirectory().getPath();
-                        String title = selectedfile.getLastPathSegment().substring(selectedfile.getLastPathSegment().indexOf(":")+1);
-                        if(title.endsWith(".xls")){
-
-                            mFile = new File(r+"/"+title);
-                            if (mFile.exists()){
-                                Log.d(TAG, "exists");
-                            }
-                            mActivity.runOnUiThread(new Runnable() {
-                                public void run() {
-                                    parseFile(scheduleLoading);
-                                }
-                            });
-
-                        }
-                    }
-                });
-        dialogBuilder.show();
-    }
-
-    public void parseFile(final ScheduleLoading scheduleLoading){
-        scheduleLoading.parceSchedule(mFile);
     }
 
     public void sendStatusMessage(){
