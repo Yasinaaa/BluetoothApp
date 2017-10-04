@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
@@ -50,10 +51,10 @@ public class CalendarActivity extends LocationActivity
     TabLayout mTabLayout;
     @BindView(R.id.view_pager)
     ViewPager mViewPager;
-    @BindView(R.id.fab_menu)
-    FloatingActionsMenu fabMenu;
     @BindView(R.id.coordinator_layout)
     CoordinatorLayout mCoordinatorLayout;
+    @BindView(R.id.fab_menu)
+    FloatingActionsMenu mFloatingActionsMenu;
 
     private FilePresenter mFilePresenter;
     private CalendarPresenter mCalendarPresenter;
@@ -97,8 +98,8 @@ public class CalendarActivity extends LocationActivity
                     intent.putExtra(ChangeOneDayScheduleActivity.ON_LOG, mOnDay);
                     intent.putExtra(ChangeOneDayScheduleActivity.OFF_LOG, mOffDay);
                     startActivityForResult(intent, ChangeOneDayScheduleActivity.REQUEST_CODE);
-                    fabMenu.collapse();
-                    fabMenu.collapseImmediately();
+                    mFloatingActionsMenu.collapse();
+                    mFloatingActionsMenu.collapseImmediately();
 
                 } else {
                     AlertDialog.Builder dialog2 = new AlertDialog.Builder(CalendarActivity.this)
@@ -106,8 +107,8 @@ public class CalendarActivity extends LocationActivity
                             .setMessage("Вы не выбрали день")
                             .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
-                                    fabMenu.collapse();
-                                    fabMenu.collapseImmediately();
+                                    mFloatingActionsMenu.collapse();
+                                    mFloatingActionsMenu.collapseImmediately();
                                 }
                             });
                     dialog2.show();
@@ -161,16 +162,17 @@ public class CalendarActivity extends LocationActivity
         mCalendarPresenter.getSchedule();
         mDateParser = new DateParser();
 
-//        mCoordinatorLayout.getBackground().setAlpha(0);
 
-        fabMenu.setOnFloatingActionsMenuUpdateListener(new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
+        //mFrameLayout.getBackground().setAlpha(0);
+
+        mFloatingActionsMenu.setOnFloatingActionsMenuUpdateListener(new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
             @Override
             public void onMenuExpanded() {
-               // mCoordinatorLayout.getBackground().setAlpha(240);
+                //mFrameLayout.getBackground().setAlpha(240);
                 mCoordinatorLayout.setOnTouchListener(new View.OnTouchListener() {
                     @Override
                     public boolean onTouch(View v, MotionEvent event) {
-                        fabMenu.collapse();
+                        mFloatingActionsMenu.collapse();
 
                         return true;
                     }
@@ -186,7 +188,7 @@ public class CalendarActivity extends LocationActivity
 
             @Override
             public void onMenuCollapsed() {
-               // mCoordinatorLayout.getBackground().setAlpha(0);
+               // mFrameLayout.getBackground().setAlpha(0);
             }
         });
 
@@ -263,8 +265,8 @@ public class CalendarActivity extends LocationActivity
     @Override
     public void onLoadingScheduleFinished() {
         ArrayList<Day> schedule = mCalendarPresenter.setTable();
-        fabMenu.collapse();
-        fabMenu.collapseImmediately();
+        mFloatingActionsMenu.collapse();
+        mFloatingActionsMenu.collapseImmediately();
 
 
         if(mMonthAdapter.getCount() > 1){
@@ -353,18 +355,16 @@ public class CalendarActivity extends LocationActivity
             int on, off;
             try {
                 on = data.getIntExtra(ChangeOneDayScheduleActivity.ON_LOG, 0);
-            }catch (RuntimeException e){
-                on = 0;
-            }
-            try {
                 off = data.getIntExtra(ChangeOneDayScheduleActivity.OFF_LOG, 0);
+
+                CalendarFragment calendarFragment = mMonthAdapter.getItem(mViewPager.getCurrentItem());
+                mCalendarPresenter.saveChanges(mDayOfYear, mDayOfMonth, on, off, calendarFragment);
+
             }catch (RuntimeException e){
-                off = 0;
+
             }
 
-            CalendarFragment calendarFragment = mMonthAdapter.getItem(mViewPager.getCurrentItem());
 
-            mCalendarPresenter.saveChanges(mDayOfYear, mDayOfMonth, on, off, calendarFragment);
             //mCalendarPresenter.generateSchedule(mDayOfYear, on, off);
         }
 
@@ -374,8 +374,8 @@ public class CalendarActivity extends LocationActivity
     public void setLonLat(double lat, double lon) {
         mIsScheduleGeneration = false;
         mCalendarPresenter.generateSchedule(mStartDate, mFinishDate, lat, lon, getTimeZone());
-        fabMenu.collapseImmediately();
-        fabMenu.setSelected(false);
+        mFloatingActionsMenu.collapseImmediately();
+        mFloatingActionsMenu.setSelected(false);
     }
 
     @Override

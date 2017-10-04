@@ -238,14 +238,49 @@ public class CalendarPresenter implements CalendarModule.Presenter,
             int daysPast = 0;
 
             for (int month=0; month<12; month++) {
-                monthCalendar = new GregorianCalendar(calendar.get(Calendar.YEAR), month, 0);
-                daysOnMonth = monthCalendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+                //monthCalendar = new GregorianCalendar(calendar.get(Calendar.YEAR), month, 0);
+
+                //daysOnMonth = monthCalendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+
+                calendar.set(Calendar.MONTH, returnCorrectMonth(month));
+                daysOnMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
 
                 cutTheScheduleByMonth(daysOnMonth, daysPast, scheduleMap);
                 daysPast = daysPast + daysOnMonth;
             }
         }
         return scheduleMap;
+    }
+
+    private int returnCorrectMonth(int month){
+        switch (month){
+            case 0:
+                return Calendar.JANUARY;
+            case 1:
+                return Calendar.FEBRUARY;
+            case 2:
+                return Calendar.MARCH;
+            case 3:
+                return Calendar.APRIL;
+            case 4:
+                return Calendar.MAY;
+            case 5:
+                return Calendar.JUNE;
+            case 6:
+                return Calendar.JULY;
+            case 7:
+                return Calendar.AUGUST;
+            case 8:
+                return Calendar.SEPTEMBER;
+            case 9:
+                return Calendar.OCTOBER;
+            case 10:
+                return Calendar.NOVEMBER;
+            case 11:
+                return Calendar.DECEMBER;
+
+        }
+        return 99;
     }
 
     private void cutTheScheduleByMonth(int daysCount, int beginDay,
