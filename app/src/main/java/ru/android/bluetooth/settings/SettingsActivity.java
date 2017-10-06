@@ -94,6 +94,7 @@ public class SettingsActivity extends LocationActivity
     private BluetoothMessage mBluetoothMessage;
     private String mStatus;
     private AlertDialog mDialog;
+    private String mNewDeviceTitle;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -224,7 +225,7 @@ public class SettingsActivity extends LocationActivity
 
 
                 TextInputLayout textInputLayout = dialogView.findViewById(R.id.til_password);
-                textInputLayout.setHint("Новое название устройства");
+                textInputLayout.setHint("Новое название для устройства");
                 final EditText mPasswordView = (EditText) dialogView.findViewById(R.id.et_password);
                 mPasswordView.setInputType(InputType.TYPE_CLASS_TEXT);
 
@@ -239,7 +240,7 @@ public class SettingsActivity extends LocationActivity
                                         ResponseView.SET_PASSWORD);
                                 setMessage(BluetoothCommands.SET_NAME,
                                         BluetoothCommands.setName(mPasswordView.getText().toString()));
-                                mTvDeviceTitle.setText(mPasswordView.getText().toString());
+                               mNewDeviceTitle = mPasswordView.getText().toString();
 
                             }
                         })
@@ -301,26 +302,29 @@ public class SettingsActivity extends LocationActivity
 
             switch (mStatus) {
                 case BluetoothCommands.SET_PASSWORD:
-
+                   // mBluetoothMessage.iAmBusy = false;
                     break;
 
                 case BluetoothCommands.SET_NAME:
-
+                 //   mBluetoothMessage.iAmBusy = false;
+                    mTvDeviceTitle.setText(mNewDeviceTitle);
+                    BluetoothHelper.saveBluetoothDeviceTitle(getApplicationContext(), mNewDeviceTitle);
                     break;
 
                 case BluetoothCommands.STATUS:
-
+                 //   mBluetoothMessage.iAmBusy = false;
                     parseStatus(answer);
                     DialogHelper.hideProgressBar(mDialog);
                     break;
 
                 case BluetoothCommands.RESET:
                     //mTvReset.setText(answer);
-
+                   // mBluetoothMessage.iAmBusy = false;
 
                     break;
 
                 case BluetoothCommands.ON:
+                   // mBluetoothMessage.iAmBusy = false;
                     setDeviceModeColor(false);
                     /*ResponseView.showSnackbar(mRl,
                             ResponseView.ON);*/
@@ -328,18 +332,22 @@ public class SettingsActivity extends LocationActivity
 
                     break;
                 case BluetoothCommands.OFF:
+                   // mBluetoothMessage.iAmBusy = false;
                     setDeviceModeColor(true);
                     //ResponseView.showSnackbar(mRl, ResponseView.OFF);
+                   // mBluetoothMessage.iAmBusy = false;
                     setMessage(BluetoothCommands.STATUS);
                     break;
 
                 case BluetoothCommands.MANUAL_ON:
+                  //  mBluetoothMessage.iAmBusy = false;
                     setMessage(BluetoothCommands.STATUS);
                     mCbAutoMode.setChecked(false);
                     mCbManualMode.setChecked(true);
                     break;
 
                 case BluetoothCommands.MANUAL_OFF:
+                  //  mBluetoothMessage.iAmBusy = false;
                     setMessage(BluetoothCommands.STATUS);
                     mCbAutoMode.setChecked(true);
                     mCbManualMode.setChecked(false);
@@ -422,5 +430,13 @@ public class SettingsActivity extends LocationActivity
     @Override
     public boolean setScheduleGeneration() {
         return true;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(mBluetoothModule != null) {
+            mBluetoothModule.unregister();
+        }
     }
 }

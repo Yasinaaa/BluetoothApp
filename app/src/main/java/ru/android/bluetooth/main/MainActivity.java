@@ -24,10 +24,12 @@ import butterknife.BindView;
 import ru.android.bluetooth.R;
 import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
+import ru.android.bluetooth.bluetooth.BluetoothModule;
 import ru.android.bluetooth.main.helper.ScheduleLoading;
 import ru.android.bluetooth.root.RootActivity;
 import ru.android.bluetooth.settings.SettingsActivity;
 import ru.android.bluetooth.start.ChooseDeviceActivity;
+import ru.android.bluetooth.start.ChooseDeviceView;
 import ru.android.bluetooth.utils.ActivityHelper;
 import ru.android.bluetooth.utils.CacheHelper;
 import ru.android.bluetooth.calendar.CalendarActivity;
@@ -92,11 +94,20 @@ public class MainActivity extends RootActivity implements MainModule.View,
 
         }
 
+
         mActivity = this;
         mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
         mBluetoothMessage.setBluetoothMessageListener(this);
+
+
+       /* mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
+        mBluetoothMessage.setBluetoothMessageListener(this);
+        mBluetoothMessage.mStatus = BluetoothCommands.STATUS;
+        mBluetoothMessage.writeMessage(mActivity, BluetoothCommands.STATUS);*/
+
         mMainPresenter = new MainPresenter(mActivity, mBluetoothMessage);
         mMainPresenter.setScheduleFilePath(mEtScheduleName);
+        mMainPresenter.callDialog();
         mMainPresenter.sendStatusMessage();
 
     }
@@ -119,7 +130,7 @@ public class MainActivity extends RootActivity implements MainModule.View,
 
     @Override
     public void onResponse(String answer) {
-        //Log.d(TAG, mBluetoothMessage.mStatus + " " + answer);
+        Log.d(TAG, mBluetoothMessage.mStatus + " " + answer);
 
         if(mBluetoothMessage.mStatus!= null) {
             switch (mBluetoothMessage.mStatus) {
@@ -129,7 +140,22 @@ public class MainActivity extends RootActivity implements MainModule.View,
                     mMainPresenter.parseResponse(answer, new MainPresenter.ResponseParseView() {
                         @Override
                         public void nextJob(String text) {
-                            mTvStatus.setText(text);
+                            mIbSyncStatus.setEnabled(true);
+                            String[] parse = text.split("\n");
+                            mTvStatus.setText("");
+                            for(String s: parse){
+
+                                if(s.contains("Manual")){
+                                    if (s.contains("On")){
+                                        s = "Manual On";
+                                    }else if(s.contains("Off")){
+                                        s = "Manual Off";
+                                    }
+                                }
+                                mTvStatus.setText(mTvStatus.getText().toString() + s + "\n");
+                            }
+
+                           // mTvStatus.setText(text);
                             mMainPresenter.parseStatus(text, mTvDate, mTvTime);
                         }
                     });
@@ -140,6 +166,7 @@ public class MainActivity extends RootActivity implements MainModule.View,
                     mMainPresenter.parseResponse(answer, new MainPresenter.ResponseParseView() {
                         @Override
                         public void nextJob(String text) {
+                            mIbSyncVersion.setEnabled(true);
                             mTvVersion.setText(text);
                         }
                     });
@@ -157,6 +184,7 @@ public class MainActivity extends RootActivity implements MainModule.View,
                     break;
 
                 case BluetoothCommands.SET_DATE:
+
                     mMainPresenter.setTimeDateResponse(answer, mTvDate);
                     break;
 
@@ -182,6 +210,8 @@ public class MainActivity extends RootActivity implements MainModule.View,
         mIbSyncStatus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mMainPresenter.callDialog();
+                mIbSyncStatus.setEnabled(false);
                 mMainPresenter.sendStatusMessage();
             }
         });
@@ -189,6 +219,8 @@ public class MainActivity extends RootActivity implements MainModule.View,
         mIbSyncVersion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mMainPresenter.callDialog();
+                mIbSyncVersion.setEnabled(false);
                 mMainPresenter.sendVersionMessage();
             }
         });
@@ -220,5 +252,7 @@ public class MainActivity extends RootActivity implements MainModule.View,
     protected void onResume() {
         super.onResume();
         mMainPresenter.setScheduleFilePath(mEtScheduleName);
+        mBluetoothMessage.setBluetoothMessageListener(this);
+
     }
 }

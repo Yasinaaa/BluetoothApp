@@ -53,6 +53,26 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceHold
 
     }
 
+    public void clear() {
+        int size = mList.size();
+        if (size > 0) {
+            for (int i = 0; i < size; i++) {
+                mList.remove(0);
+            }
+
+            this.notifyItemRangeRemoved(0, size);
+        }
+    }
+
+    public void getItem(String address, String newName){
+        for (View v: allView){
+            TextView textView = (TextView) v.findViewById(R.id.tv_device_title);
+            if (textView.getText().toString().contains(address)){
+                textView.setText(newName  + "\n" +  address);
+            }
+        }
+    }
+
     @Override
     public DeviceHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         mContext = parent.getContext();

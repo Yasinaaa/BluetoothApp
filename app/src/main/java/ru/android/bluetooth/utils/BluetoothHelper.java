@@ -3,6 +3,7 @@ package ru.android.bluetooth.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 /**
@@ -45,6 +46,16 @@ public class BluetoothHelper {
                 PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
         sp.edit().putString(PREF_ADDRESS, address).apply();
         sp.edit().putString(PREF_NAME, name).apply();
+    }
+
+    private static SharedPreferences getSharedPreferences(@NonNull final Context context) {
+        SharedPreferences sp =
+                PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
+        return sp;
+    }
+
+    public static void saveBluetoothDeviceTitle(@NonNull final Context context, @Nullable String name){
+        getSharedPreferences(context).edit().putString(PREF_NAME, name).apply();
     }
 
     public static void clearPreferences(@Nullable Context context) {

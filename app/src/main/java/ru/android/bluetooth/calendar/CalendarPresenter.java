@@ -243,7 +243,14 @@ public class CalendarPresenter implements CalendarModule.Presenter,
                 //daysOnMonth = monthCalendar.getActualMaximum(Calendar.DAY_OF_MONTH);
 
                 calendar.set(Calendar.MONTH, returnCorrectMonth(month));
-                daysOnMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+
+                if (month == 1){
+                    daysOnMonth = 29;
+                }else {
+                    daysOnMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+                }
+
+
 
                 cutTheScheduleByMonth(daysOnMonth, daysPast, scheduleMap);
                 daysPast = daysPast + daysOnMonth;
@@ -387,7 +394,8 @@ public class CalendarPresenter implements CalendarModule.Presenter,
         int d = 0;
 
 
-        while (startDate.compareTo(endDate) <= 0) {
+        //while (startDate.compareTo(endDate) <= 0) {
+        while (d != 365) {
             currentDate = startDate;
 
             double JD = ScheduleGenerator.calcJD(startDate);  //OR   JD = Util.calcJD(2014, 6, 1);

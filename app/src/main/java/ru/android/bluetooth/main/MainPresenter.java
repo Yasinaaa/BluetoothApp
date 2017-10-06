@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.SystemClock;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.View;
@@ -68,8 +69,23 @@ public class MainPresenter implements DateTimeView{
     }
 
     public void setDateTimeClickListeners(Button timeBtn, Button dateBtn){
-        mDateTimeClickListener.setDateClickListener(dateBtn, mActivity);
-        mDateTimeClickListener.setTimeClickListener(timeBtn, mActivity);
+
+        dateBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                callDialog();
+                mDateTimeClickListener.setDateClickListener(mActivity);
+            }
+        });
+
+        timeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                callDialog();
+                mDateTimeClickListener.setTimeClickListener(mActivity);
+            }
+        });
+
     }
 
     @Override
@@ -124,7 +140,7 @@ public class MainPresenter implements DateTimeView{
             DialogHelper.hideProgressBar(mBluetoothMessage.mDialog);
             answer = answer.replaceAll("[Notcomand ]", "");
             mTable += answer;
-
+            //mBluetoothMessage.iAmBusy = false;
             responseView.nextJob(mTable);
 
 
@@ -153,18 +169,32 @@ public class MainPresenter implements DateTimeView{
     public void setTimeDateResponse(String answer, TextView textView){
         textView.setText(mThisTextNeedToSetTextView);
         if (answer.contains("Not") || answer.contains("command")) {
-            mBluetoothMessage.setMessage(mTable, mActivity, BluetoothCommands.STATUS, true);
+           // mBluetoothMessage.iAmBusy = false;
+            sendStatusMessage();
         }
         mTable = "";
     }
 
+    public void callDialog(){
+        mBluetoothMessage.mDialog = DialogHelper.showProgressBar(mActivity, mActivity.getString(R.string.send_request));
+    }
+
     public void sendStatusMessage(){
-        mBluetoothMessage.setMessage(mTable, mActivity, BluetoothCommands.STATUS);
+        //mBluetoothMessage.setMessage(mTable, mActivity, BluetoothCommands.STATUS);
+
+        mBluetoothMessage.mStatus = BluetoothCommands.STATUS;
+        mBluetoothMessage.writeMessage(mActivity, BluetoothCommands.STATUS);
+        SystemClock.sleep(2000);
+        mBluetoothMessage.writeMessage(mActivity, "dd\r\n");
         mTable = "";
+
     }
 
     public void sendVersionMessage(){
-        mBluetoothMessage.setMessage(mTable, mActivity, BluetoothCommands.VERSION);
+        mBluetoothMessage.mStatus = BluetoothCommands.VERSION;
+        mBluetoothMessage.writeMessage(mActivity, BluetoothCommands.VERSION);
+        SystemClock.sleep(2000);
+        mBluetoothMessage.writeMessage(mActivity, "dd\r\n");
         mTable = "";
     }
 }

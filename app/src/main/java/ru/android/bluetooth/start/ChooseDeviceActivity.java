@@ -10,6 +10,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -67,7 +68,7 @@ public class ChooseDeviceActivity
 
         mActivity = this;
         BluetoothHelper.saveBluetoothOpened(getApplicationContext(), false);
-        mBluetoothModule = BluetoothModule.createBluetoothModule(this, this);
+        mBluetoothModule = new BluetoothModule(this, this);
         ActivityHelper.setVisibleLogoIcon(ChooseDeviceActivity.this);
 
         mRvDevicesList.setItemAnimator(new DefaultItemAnimator());
@@ -155,12 +156,22 @@ public class ChooseDeviceActivity
 
     @Override
     public void goNext(){
+        Log.d("t","t");
         ActivityHelper.startActivity(ChooseDeviceActivity.this, MainActivity.class);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        String[] user = BluetoothHelper.getBluetoothUser(getApplicationContext());
+        String newDevice = user[1] + "\n" + user[0];
+
+        if (!newDevice.equals(mDeviceTitle) && mDeviceTitle != null){
+            mDeviceTitle = user[1] + "\n" + user[0];
+            mDeviceAdapter.getItem(user[0], user[1]);
+            mBluetoothModule.setView(this);
+        }
+
     }
 
     @Override

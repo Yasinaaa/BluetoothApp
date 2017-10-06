@@ -55,6 +55,7 @@
                 android:layout_width="70dp"
                 android:layout_height="60dp"
                 android:text="OK"
+                android:focusable="true"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true" />

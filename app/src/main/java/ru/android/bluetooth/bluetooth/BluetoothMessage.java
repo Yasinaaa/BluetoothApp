@@ -28,6 +28,7 @@ public class BluetoothMessage {
     private ConnectedThread mConnectedThread;
     public String mStatus;
     public AlertDialog mDialog;
+    //public boolean iAmBusy = false;
 
     private BluetoothMessage() {
 
@@ -46,6 +47,9 @@ public class BluetoothMessage {
                             Log.d(TAG, e.getMessage());
                         }
                     }
+                }else {
+                    String r = (String) msg.obj;
+                    Log.d(TAG, r);
                 }
             }
         };
@@ -69,10 +73,12 @@ public class BluetoothMessage {
 
     public void writeMessage(Activity activity, String message){
         mConnectedThread.writeData(activity, message);
+       // mBluetoothMessage.iAmBusy = true;
     }
 
     public void writeMessage(Activity activity, int[] listOn, int[] listOff){
         mConnectedThread.write(activity, listOn, listOff);
+       // mBluetoothMessage.iAmBusy = true;
     }
 
     public Handler getHandler() {
@@ -90,6 +96,7 @@ public class BluetoothMessage {
     private void setBasic(String responseText, String status){
         responseText = "";
         mStatus = status;
+
     }
 
     private void set(String responseText, Activity activity, String status){
@@ -110,7 +117,7 @@ public class BluetoothMessage {
     }
 
     public void setMessage(String responseText, Activity activity, String status){
-        set(responseText, activity, status);
+        //set(responseText, activity, status);
         setMessageOnly(activity, status);
     }
 
@@ -125,9 +132,11 @@ public class BluetoothMessage {
     }
 
     private void setMessageOnly(Activity activity, String text){
-        writeMessage(activity, text);
-        SystemClock.sleep(2000);
-        writeMessage(activity, FINISH_SENDING);
+      //  if (!iAmBusy){
+            writeMessage(activity, text);
+            SystemClock.sleep(2000);
+            writeMessage(activity, FINISH_SENDING);
+       // }
     }
 
 }

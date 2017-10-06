@@ -43,7 +43,7 @@ public class BluetoothModule implements BluetoothStarter.BluetoothView{
     private BluetoothStarter mBluetoothStarter;
     private String mAddress, mName;
 
-    private BluetoothModule(Activity mActivity, ChooseDeviceView view) {
+    public BluetoothModule(Activity mActivity, ChooseDeviceView view) {
         this.mActivity = mActivity;
         this.mContext = mActivity.getBaseContext();
         this.mView = view;
@@ -164,6 +164,10 @@ public class BluetoothModule implements BluetoothStarter.BluetoothView{
 
     private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException {
         return  device.createRfcommSocketToServiceRecord(BTMODULEUUID);
+    }
+
+    public void setView(ChooseDeviceView chooseDeviceView){
+        mView = chooseDeviceView;
     }
 
     @Override

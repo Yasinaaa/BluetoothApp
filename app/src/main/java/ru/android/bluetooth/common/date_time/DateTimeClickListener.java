@@ -27,44 +27,34 @@ public class DateTimeClickListener {
         this.mDateParser = dateParser;
     }
 
-    public void setDateClickListener(Button setDateBtn, final Activity activity){
+    public void setDateClickListener(final Activity activity){
         final Calendar calendar = Calendar.getInstance();
-        setDateBtn.setOnClickListener(new View.OnClickListener() {
+        final DatePickerDialog mDatePicker = new DatePickerDialog(activity, new DatePickerDialog.OnDateSetListener() {
             @Override
-            public void onClick(View view) {
-                final DatePickerDialog mDatePicker = new DatePickerDialog(activity, new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
-                        int year = datePicker.getYear();
-                        int month = datePicker.getMonth() + 1;
-                        int day = datePicker.getDayOfMonth();
+            public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
+                int year = datePicker.getYear();
+                int month = datePicker.getMonth();
+                int day = datePicker.getDayOfMonth();
 
-                        mDateTimeView.sendDateMessage(String.format("%s-%s-%s", new String[]{
-                                mDateParser.setZeros(day), mDateParser.setZeros(month), String.valueOf(year) }),
-                                year, month, day);
+                mDateTimeView.sendDateMessage(String.format("%s-%s-%s", new String[]{
+                                mDateParser.setZeros(day), mDateParser.setZeros(month+1), String.valueOf(year) }),
+                        year, month, day);
 
-                    }
-                }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-                mDatePicker.show();
             }
-        });
+        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+        mDatePicker.show();
     }
 
-    public void setTimeClickListener(Button setTimeBtn, final Activity activity){
+    public void setTimeClickListener(final Activity activity){
         final Calendar calendar = Calendar.getInstance();
-        setTimeBtn.setOnClickListener(new View.OnClickListener() {
+        TimePickerDialog timePickerDialog = new TimePickerDialog(activity, new TimePickerDialog.OnTimeSetListener() {
             @Override
-            public void onClick(View view) {
-                TimePickerDialog timePickerDialog = new TimePickerDialog(activity, new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker timePicker, int i, int i1) {
-                        mDateTimeView.sendTimeMessage(String.format("%s:%s", new String[]{
-                                mDateParser.setZeros(i), mDateParser.setZeros(i1)}), i, i1);
+            public void onTimeSet(TimePicker timePicker, int i, int i1) {
+                mDateTimeView.sendTimeMessage(String.format("%s:%s", new String[]{
+                        mDateParser.setZeros(i), mDateParser.setZeros(i1)}), i, i1);
 
-                    }
-                },calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true);
-                timePickerDialog.show();
             }
-        });
+        },calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true);
+        timePickerDialog.show();
     }
 }
