@@ -89,7 +89,7 @@ public class ChooseDeviceActivity
         });
     }
 
-    @Override
+    /*@Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return true;
     }
@@ -128,7 +128,7 @@ public class ChooseDeviceActivity
             }
         });
         return true;
-    }
+    }*/
 
     @Override
     protected void onStop() {

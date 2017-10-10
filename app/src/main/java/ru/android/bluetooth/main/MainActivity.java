@@ -145,6 +145,9 @@ public class MainActivity extends RootActivity implements MainModule.View,
                             mTvStatus.setText("");
                             for(String s: parse){
 
+                                if (s.contains("soft")){
+                                    s = s.replaceAll("N", "");
+                                }
                                 if(s.contains("Manual")){
                                     if (s.contains("On")){
                                         s = "Manual On";

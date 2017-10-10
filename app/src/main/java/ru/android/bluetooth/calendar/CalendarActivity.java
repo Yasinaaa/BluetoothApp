@@ -220,18 +220,18 @@ public class CalendarActivity extends LocationActivity
 
     }
 
-    @Override
+    /*@Override
     public boolean onOptionsItemSelected(MenuItem item) {
         onBackPressed();
         return true;
-    }
+    }*/
 
     @Override
     public void setTag() {
         TAG = "CalendarActivity";
     }
 
-    @Override
+   /* @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_search, menu);
 
@@ -259,7 +259,7 @@ public class CalendarActivity extends LocationActivity
             }
         });
         return true;
-    }
+    }*/
 
 
     @Override
