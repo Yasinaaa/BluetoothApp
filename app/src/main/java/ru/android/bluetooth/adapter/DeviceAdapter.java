@@ -3,6 +3,7 @@ package ru.android.bluetooth.adapter;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ import ru.android.bluetooth.R;
 
 public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceHolder> implements Filterable{
 
+    private final String TAG = "DeviceAdapter";
     private List<String> mList;
     private List<String> mFilteredList;
     private Context mContext;
@@ -43,12 +45,10 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceHold
     }
 
     public void add(String item){
+        Log.d(TAG, item);
         if (!mList.contains(item)) {
             mList.add(item);
-            //mFilteredList.add(item);
             notifyItemChanged(mList.size()-1);
-            //notifyItemChanged(mFilteredList.size()-1);
-            notifyDataSetChanged();
         }
 
     }

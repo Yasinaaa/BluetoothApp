@@ -5,5 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary">
+
     <include layout="@layout/view_logo"/>
+
 </FrameLayout>

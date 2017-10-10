@@ -1,47 +1,101 @@
 <resources>
+    <!-- app -->
     <string name="app_name">Автореле</string>
     <string name="app_packages">ru.android.bluetooth</string>
 
-    <string name="change_device_name">Изменить</string>
-    <string name="generate_hand_one_day">Изменить выбранный день</string>
-    <string name="generate_hand">Сгенерировать в ручную на год</string>
-    <string name="generate_sunrise_sunset">Генерация по Восходу/Закату солнца</string>
+    <!-- file dialog -->
     <string name="generate_dialog_title">Выберите способ генерации</string>
-    <string name="choose_type_"></string>
-    <string name="choose_device">Выберите устройство</string>
-    <string name="connect">Cоединиться</string>
-    <string name="action_search">Search</string>
-    <string name="input_password">Введите пароль</string>
-    <string name="title_activity_login">Sign in</string>
-    <string name="password">Пароль</string>
-    <string name="manual_mode">Ручной режим</string>
-    <string name="auto_mode">Авто режим</string>
-    <string name="power">Мощность</string>
-    <string name="repeat">Повторы</string>
-    <string name="no_bluetooth_connection">Не подключен Bluetooth</string>
-    <string name="generate_schedule">Генерация рассписания</string>
-    <string name="loading_schedule">Запись рассписания</string>
-    <string name="connection_failed">Соединение разорвано</string>
-    <string name="mistake">Ошибка</string>
-    <string name="device_is_not_on_net">Устройство не находится в сети</string>
-    <string name="cancel">Выход</string>
-    <string name="ok">Ok</string>
-    <string name="schedule">Рассписание</string>
     <string name="file_mistake">Файл не является корректным</string>
     <string name="file_saved">Файл загружен</string>
+
+    <!-- dialog -->
+    <string name="mistake">Ошибка</string>
+    <string name="cancel">Выход</string>
+    <string name="connection_failed">Соединение разорвано</string>
+
+    <!-- dialog_loading.xml -->
     <string name="connect_to_device">Подключение к устройству\n</string>
     <string name="send_request">Отправка запроса</string>
+    <string name="loading">Загрузка</string>
+
+    <!-- buttons -->
+    <string name="ok">Ok</string>
+
+    <!-- dialog_password.xml -->
+    <string name="input_password">Введите пароль</string>
+    <string name="password">Пароль</string>
+
+    <!-- activity_change_choosed_day.xml -->
+    <string name="sunrise">восход</string>
+    <string name="sunset">закат</string>
+
+    <!-- activity_choose_device.xml -->
+    <string name="choose_device">Выберите устройство</string>
+    <string name="connect">Cоединиться</string>
+    <string name="device_is_not_on_net">Устройство не находится в сети</string>
+
+    <!-- activity_main.xml -->
+    <string name="commands">Команды</string>
+    <string name="status">Статус</string>
+    <string name="version">Версия</string>
+    <string name="date">Дата</string>
+    <string name="time">Время</string>
+    <string name="change">Изменить</string>
+    <string name="schedule">Расписание</string>
+    <string name="choose_or_change">Посмотреть/Изменить</string>
+    <string name="generate_schedule_main">Сгенерировать\n расписание</string>
+
+    <!-- activity_calendar -->
+    <string name="generate_hand_one_day">Изменить выбранный день</string>
+    <string name="generate_sunrise_sunset">Генерация по Восходу/Закату солнца</string>
+    <string name="save_schedule_as_file">Выгрузить расписание в Excel файл</string>
+    <string name="load_schedule">Загрузить расписание</string>
+    <string name="save_schedule_in_autorele">Сохранить измененное расписание\n в автореле</string>
+    <string name="loading_schedule">Запись рассписания</string>
     <string name="schedule_saved">Рассписание было успешно записано в Автореле </string>
 
-    <string name="latitude_label">Latitude</string>
-    <string name="longitude_label">Longitude</string>
+    <!-- calendar's months tab -->
+    <string name="january">Январь</string>
+    <string name="february">Февраль</string>
+    <string name="march">Март</string>
+    <string name="april">Апрель</string>
+    <string name="may">Май</string>
+    <string name="june">Июнь</string>
+    <string name="july">Июль</string>
+    <string name="august">Август</string>
+    <string name="september">Сентябрь</string>
+    <string name="october">Октябрь</string>
+    <string name="november">Ноябрь</string>
+    <string name="december">Декабрь</string>
 
-    <string name="no_location_detected">
-        No location detected. Make sure location is enabled on the device.
-    </string>
+    <string-array name="months">
+        <item>@string/january</item>
+        <item>@string/february</item>
+        <item>@string/march</item>
+        <item>@string/april</item>
+        <item>@string/may</item>
+        <item>@string/june</item>
+        <item>@string/july</item>
+        <item>@string/august</item>
+        <item>@string/september</item>
+        <item>@string/october</item>
+        <item>@string/november</item>
+        <item>@string/december</item>
+    </string-array>
 
-    <string name="permission_rationale">Location permission is needed for core functionality</string>
-    <string name="permission_denied_explanation">Permission was denied, but is needed for core
-        functionality.</string>
-    <string name="settings">Settings</string>
+    <!-- activity_settings -->
+    <string name="on">Вкл</string>
+    <string name="off">Выкл</string>
+    <string name="manual_mode">Ручной режим</string>
+    <string name="auto_mode">Авто режим</string>
+    <string name="change_device_name">Изменить название устройства</string>
+    <string name="change_password">Изменить пароль</string>
+    <string name="reset_controller">Сброс контроллера</string>
+    <string name="latitude">Широта</string>
+    <string name="longitude">Долгота</string>
+    <string name="set_coordinates_by_hand">Ввести координаты вручную</string>
+    <string name="timezone">Временная зона</string>
+    <string name="set_timezone_by_hand">Ввести временную зону вручную</string>
+    <string name="sync">Обновить</string>
+
 </resources>

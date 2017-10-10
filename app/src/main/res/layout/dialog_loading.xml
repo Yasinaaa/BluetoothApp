@@ -1,31 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="300dp"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/dialog_loading_width"
     android:layout_height="wrap_content">
 
     <ProgressBar
         android:id="@+id/progress_bar"
-        android:paddingLeft="10dp"
-        android:paddingBottom="10dp"
-        android:paddingRight="10dp"
+        android:paddingLeft="@dimen/padding_normal"
+        android:paddingBottom="@dimen/padding_normal"
+        android:paddingRight="@dimen/padding_normal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="10dp"/>
-
-    <!--     android:layout_centerVertical="true" -->
+        android:layout_marginTop="@dimen/margin_large"
+        android:layout_marginBottom="@dimen/margin_small"/>
 
     <TextView
         android:id="@+id/tv_loading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Загрузка"
-        android:textSize="20sp"
-        android:layout_marginTop="10dp"
+        android:text="@string/loading"
+        android:textSize="@dimen/text_size_small"
+        android:layout_marginTop="@dimen/margin_small"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/progress_bar"
-        android:layout_marginBottom="20dp"
-       />
+        android:layout_marginBottom="@dimen/margin_large" />
 
 </RelativeLayout>

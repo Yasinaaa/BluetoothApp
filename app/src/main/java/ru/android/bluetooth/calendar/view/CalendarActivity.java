@@ -1,4 +1,4 @@
-package ru.android.bluetooth.calendar;
+package ru.android.bluetooth.calendar.view;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -9,34 +9,29 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.SearchView;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.TextView;
 
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 
 import butterknife.BindView;
 import ru.android.bluetooth.R;
 import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
+import ru.android.bluetooth.calendar.CalendarModule;
+import ru.android.bluetooth.calendar.Day;
+import ru.android.bluetooth.calendar.MonthAdapter;
+import ru.android.bluetooth.calendar.presenter.CalendarPresenter;
+import ru.android.bluetooth.calendar.presenter.FilePresenter;
 import ru.android.bluetooth.common.date_time.DateParser;
 import ru.android.bluetooth.common.location.LocationActivity;
 import ru.android.bluetooth.main.helper.ScheduleLoading;
-import ru.android.bluetooth.one_day.ChangeOneDayScheduleActivity;
 import ru.android.bluetooth.utils.ActivityHelper;
 import ru.android.bluetooth.utils.CacheHelper;
-import ru.android.bluetooth.utils.DialogHelper;
 
 /**
  * Created by itisioslab on 03.08.17.
@@ -73,7 +68,7 @@ public class CalendarActivity extends LocationActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_schedule);
+        setContentView(R.layout.activity_calendar);
         initMain();
         start();
     }
@@ -91,13 +86,13 @@ public class CalendarActivity extends LocationActivity
             case R.id.fab_generate_shedule_hand_one_day:
 
                 if (!mDayToChange.equals("")) {
-                    Intent intent = new Intent(CalendarActivity.this, ChangeOneDayScheduleActivity.class);
-                    intent.putExtra(ChangeOneDayScheduleActivity.DAY_LOG,
+                    Intent intent = new Intent(CalendarActivity.this, ChangeChoosedDayActivity.class);
+                    intent.putExtra(ChangeChoosedDayActivity.DAY_LOG,
                             mDateParser.setZeros(clickedDate.get(Calendar.DAY_OF_MONTH))
                             + "." + mDateParser.setZeros((clickedDate.get(Calendar.MONTH)+1)));
-                    intent.putExtra(ChangeOneDayScheduleActivity.ON_LOG, mOnDay);
-                    intent.putExtra(ChangeOneDayScheduleActivity.OFF_LOG, mOffDay);
-                    startActivityForResult(intent, ChangeOneDayScheduleActivity.REQUEST_CODE);
+                    intent.putExtra(ChangeChoosedDayActivity.ON_LOG, mOnDay);
+                    intent.putExtra(ChangeChoosedDayActivity.OFF_LOG, mOffDay);
+                    startActivityForResult(intent, ChangeChoosedDayActivity.REQUEST_CODE);
                     mFloatingActionsMenu.collapse();
                     mFloatingActionsMenu.collapseImmediately();
 
@@ -193,7 +188,7 @@ public class CalendarActivity extends LocationActivity
         });
 
         scheduleLoading = new ScheduleLoading(this, this);
-        mMonthAdapter = new MonthAdapter(getSupportFragmentManager());
+        mMonthAdapter = new MonthAdapter(getSupportFragmentManager(), getApplicationContext());
 
     }
 
@@ -350,12 +345,12 @@ public class CalendarActivity extends LocationActivity
             mFilePresenter.loadSchedule(data, scheduleLoading);
         }
 
-        if (requestCode == ChangeOneDayScheduleActivity.REQUEST_CODE){
+        if (requestCode == ChangeChoosedDayActivity.REQUEST_CODE){
 
             int on, off;
             try {
-                on = data.getIntExtra(ChangeOneDayScheduleActivity.ON_LOG, 0);
-                off = data.getIntExtra(ChangeOneDayScheduleActivity.OFF_LOG, 0);
+                on = data.getIntExtra(ChangeChoosedDayActivity.ON_LOG, 0);
+                off = data.getIntExtra(ChangeChoosedDayActivity.OFF_LOG, 0);
 
                 CalendarFragment calendarFragment = mMonthAdapter.getItem(mViewPager.getCurrentItem());
                 mCalendarPresenter.saveChanges(mDayOfYear, mDayOfMonth, on, off, calendarFragment);

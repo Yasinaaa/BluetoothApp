@@ -1,13 +1,7 @@
 package ru.android.bluetooth.main;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.Menu;
@@ -18,22 +12,15 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.io.File;
-
 import butterknife.BindView;
 import ru.android.bluetooth.R;
 import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
-import ru.android.bluetooth.bluetooth.BluetoothModule;
-import ru.android.bluetooth.main.helper.ScheduleLoading;
 import ru.android.bluetooth.root.RootActivity;
 import ru.android.bluetooth.settings.SettingsActivity;
 import ru.android.bluetooth.start.ChooseDeviceActivity;
-import ru.android.bluetooth.start.ChooseDeviceView;
 import ru.android.bluetooth.utils.ActivityHelper;
-import ru.android.bluetooth.utils.CacheHelper;
-import ru.android.bluetooth.calendar.CalendarActivity;
-import ru.android.bluetooth.utils.DialogHelper;
+import ru.android.bluetooth.calendar.view.CalendarActivity;
 
 
 /**
@@ -61,8 +48,6 @@ public class MainActivity extends RootActivity implements MainModule.View,
     CardView mCvSchedule;
     @BindView(R.id.tv_edit_schedule)
     TextView mTvEditSchedule;
-    @BindView(R.id.tv_generate_schedule)
-    TextView mTvGenerateSchedule;
     @BindView(R.id.rl)
     RelativeLayout mRl;
     @BindView(R.id.tv_time)
@@ -109,6 +94,10 @@ public class MainActivity extends RootActivity implements MainModule.View,
         mMainPresenter.setScheduleFilePath(mEtScheduleName);
         mMainPresenter.callDialog();
         mMainPresenter.sendStatusMessage();
+
+        //TODO: CHANGE!
+        mTvVersion.setText("+VERSION:hc01.comV2.1\nOK");
+        //TODO: CHANGE!
 
     }
 

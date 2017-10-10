@@ -1,4 +1,4 @@
-package ru.android.bluetooth.calendar;
+package ru.android.bluetooth.calendar.presenter;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -7,16 +7,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
-import android.util.Log;
 import android.Manifest;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;
 
-import jxl.Cell;
-import jxl.Sheet;
 import jxl.Workbook;
 import jxl.WorkbookSettings;
 import jxl.read.biff.BiffException;

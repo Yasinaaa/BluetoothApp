@@ -1,43 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="10dp">
+    android:layout_margin="@dimen/margin_small"
+    tools:context="ru.android.bluetooth.calendar.view.ChangeChoosedDayActivity">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/tv_current_day"
         android:gravity="center"
-        android:text="20.09.2017"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="10dp"
-        android:textSize="20sp"
-        />
+        android:layout_marginTop="@dimen/margin_large"
+        android:layout_marginBottom="@dimen/margin_small"
+        android:textSize="@dimen/text_size_small" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/tv_sunrise"
-        android:text="03:54"
         android:gravity="center"
-        android:textSize="50sp"
-        android:layout_below="@+id/tv_current_day"
-       />
+        android:textSize="@dimen/text_size_time"
+        android:layout_below="@+id/tv_current_day" />
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/tv_sunrise_title"
-        android:text="восход"
+        android:text="@string/sunrise"
         android:gravity="center"
-        android:textSize="30sp"
-        android:layout_below="@id/tv_sunrise"
-        />
+        android:textSize="@dimen/text_size_time_title"
+        android:layout_below="@id/tv_sunrise" />
 
     <ImageButton
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="@dimen/image_button_alarm_size"
+        android:layout_height="@dimen/image_button_alarm_size"
         android:id="@+id/ib_change_sunrise_time"
         android:background="@drawable/alarm"
         android:layout_alignTop="@+id/tv_sunrise"
@@ -48,24 +47,23 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/tv_sunset"
-        android:text="19:50"
         android:gravity="center_horizontal"
-        android:textSize="50sp"
+        android:textSize="@dimen/text_size_time"
         android:layout_below="@+id/tv_sunrise_title"
-        android:layout_marginTop="20dp"/>
+        android:layout_marginTop="@dimen/margin_large"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/tv_sunset_title"
-        android:text="закат"
+        android:text="@string/sunset"
         android:gravity="center_horizontal"
-        android:textSize="30sp"
+        android:textSize="@dimen/text_size_time_title"
         android:layout_below="@+id/tv_sunset"/>
 
     <ImageButton
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="@dimen/image_button_alarm_size"
+        android:layout_height="@dimen/image_button_alarm_size"
         android:id="@+id/ib_change_sunset_time"
         android:background="@drawable/alarm"
         android:layout_alignTop="@+id/tv_sunset"
@@ -77,31 +75,31 @@
         android:layout_height="wrap_content"
         android:id="@+id/tv_sunrise_min"
         android:layout_below="@+id/tv_sunset_title"
-        android:text="Восход мин.: 480"
-        android:textSize="20sp"
+        android:textSize="@dimen/text_size_small"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:layout_marginTop="20dp"/>
+        android:layout_marginTop="@dimen/margin_large"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/tv_sunset_min"
-        android:text="Закат мин.: 907"
-        android:textSize="20sp"
-        android:layout_marginTop="10dp"
+        android:textSize="@dimen/text_size_small"
+        android:layout_marginTop="@dimen/margin_small"
         android:layout_below="@+id/tv_sunrise_min"
         android:layout_alignLeft="@+id/tv_sunrise_min"
         android:layout_alignStart="@+id/tv_sunrise_min" />
 
     <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_save_one_day_schedule"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_small"
+        android:padding="@dimen/padding_small"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:id="@+id/fab_save_one_day_schedule"
         android:src="@android:drawable/ic_menu_save"
-        android:padding="20dp"/>
+       />
 
 </RelativeLayout>

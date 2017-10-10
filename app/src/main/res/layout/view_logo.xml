@@ -7,8 +7,7 @@
     android:layout_height="wrap_content"
     android:layout_alignParentTop="true"
     android:layout_centerHorizontal="true"
-    android:layout_marginLeft="66dp"
-    android:layout_marginRight="66dp"
+    android:layout_marginLeft="@dimen/margin_logo"
+    android:layout_marginRight="@dimen/margin_logo"
     android:layout_gravity="center"
-    app:srcCompat="@drawable/runline"
-    />
+    app:srcCompat="@drawable/runline" />

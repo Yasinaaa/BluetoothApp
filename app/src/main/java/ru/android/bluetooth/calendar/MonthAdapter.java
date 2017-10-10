@@ -1,11 +1,14 @@
 package ru.android.bluetooth.calendar;
 
-import android.support.v4.app.Fragment;
+import android.content.Context;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import ru.android.bluetooth.R;
+import ru.android.bluetooth.calendar.view.CalendarFragment;
 
 /**
  * Created by yasina on 01.10.17.
@@ -14,12 +17,13 @@ import java.util.List;
 public class MonthAdapter extends FragmentPagerAdapter {
 
     public List<CalendarFragment> mFragmentList = new ArrayList<>();
-    private final String[] mFragmentTitleList = new String[]{
-        "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август","Сентябрь","Октябрь","Ноябрь","Декабрь"
-    };
+    private Context mContext;
+    private final String[] mFragmentTitleList;
 
-    public MonthAdapter(FragmentManager manager) {
+    public MonthAdapter(FragmentManager manager, Context context) {
         super(manager);
+        mContext = context;
+        mFragmentTitleList = mContext.getResources().getStringArray(R.array.months);
     }
 
     @Override

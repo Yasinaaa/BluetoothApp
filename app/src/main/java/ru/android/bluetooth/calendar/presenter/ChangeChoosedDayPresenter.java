@@ -1,4 +1,4 @@
-package ru.android.bluetooth.one_day;
+package ru.android.bluetooth.calendar.presenter;
 
 import android.app.Activity;
 import android.app.TimePickerDialog;
@@ -17,13 +17,13 @@ import ru.android.bluetooth.common.date_time.DateParser;
  * Created by yasina on 23.08.17.
  */
 
-public class ChangeOneDaySchedulePresenter {
+public class ChangeChoosedDayPresenter {
 
     private Activity mActivity;
     private Context mContext;
     private DateParser mDateParser;
 
-    public ChangeOneDaySchedulePresenter(Activity activity) {
+    public ChangeChoosedDayPresenter(Activity activity) {
         this.mActivity = activity;
         this.mContext = activity.getApplicationContext();
         mDateParser = new DateParser();

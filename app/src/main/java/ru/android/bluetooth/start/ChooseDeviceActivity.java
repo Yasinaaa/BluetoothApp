@@ -44,8 +44,6 @@ public class ChooseDeviceActivity
     RecyclerView mRvDevicesList;
     @BindView(R.id.btn_connect)
     Button mBtnConnect;
-    @BindView(R.id.scrollView)
-    ScrollView scrollView;
 
     private DeviceAdapter mDeviceAdapter;
     private List<String> mDeviceList = new ArrayList<String>();
@@ -68,12 +66,17 @@ public class ChooseDeviceActivity
 
         mActivity = this;
         BluetoothHelper.saveBluetoothOpened(getApplicationContext(), false);
+
+        mDeviceAdapter = new DeviceAdapter(mDeviceList, this);
+        mRvDevicesList.setAdapter(mDeviceAdapter);
+
         mBluetoothModule = new BluetoothModule(this, this);
         ActivityHelper.setVisibleLogoIcon(ChooseDeviceActivity.this);
 
         mRvDevicesList.setItemAnimator(new DefaultItemAnimator());
         mRvDevicesList.setHasFixedSize(true);
         mRvDevicesList.setLayoutManager(new LinearLayoutManager(this));
+
     }
 
     @Override
@@ -142,10 +145,6 @@ public class ChooseDeviceActivity
 
     @Override
     public void addDevice(String text) {
-        if (mDeviceAdapter == null) {
-            mDeviceAdapter = new DeviceAdapter(mDeviceList, this);
-            mRvDevicesList.setAdapter(mDeviceAdapter);
-        }
         mDeviceAdapter.add(text);
     }
 
@@ -185,6 +184,7 @@ public class ChooseDeviceActivity
     @Override
     public void error(String message){
         dialog.cancel();
+        Log.d(TAG, message);
         DialogHelper.showErrorMessage(mActivity, getString(R.string.device_is_not_on_net));
     }
 

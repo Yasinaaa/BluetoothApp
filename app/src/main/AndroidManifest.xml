@@ -80,10 +80,8 @@
 
         </activity>
         <activity android:name=".settings.SettingsActivity" android:screenOrientation="portrait"  android:configChanges="keyboardHidden"></activity>
-        <activity android:screenOrientation="portrait" android:name=".calendar.CalendarActivity"></activity>
-        <activity android:screenOrientation="portrait" android:name=".one_day.ChangeOneDayScheduleActivity"></activity>
-        <activity android:screenOrientation="portrait" android:name=".hand_generation.GenerateHandActivity"></activity>
-
+        <activity android:screenOrientation="portrait" android:name=".calendar.view.CalendarActivity"></activity>
+        <activity android:screenOrientation="portrait" android:name=".calendar.view.ChangeChoosedDayActivity"></activity>
 
         <meta-data
             android:name="com.google.android.gms.version"

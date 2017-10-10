@@ -1,4 +1,4 @@
-package ru.android.bluetooth.calendar;
+package ru.android.bluetooth.calendar.view;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -12,6 +12,7 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 
 import ru.android.bluetooth.R;
+import ru.android.bluetooth.calendar.CalendarModule;
 import ru.android.bluetooth.common.date_time.DateParser;
 
 /**
@@ -48,7 +49,7 @@ public class CalendarFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mView = inflater.inflate(R.layout.temp2, container, false);
+        mView = inflater.inflate(R.layout.fragment_calendar, container, false);
         mTableLayout = mView.findViewById(R.id.tableLayout);
         mDateParser = new DateParser();
         mDateParser.setNewCurrentDay();

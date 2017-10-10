@@ -4,14 +4,19 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanResult;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Handler;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,6 +34,7 @@ import ru.android.bluetooth.utils.BluetoothHelper;
 
 public class BluetoothModule implements BluetoothStarter.BluetoothView{
 
+    private final String TAG = "BluetoothModule";
     private UUID BTMODULEUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     private ConnectedThread mConnectedThread;
     private BluetoothSocket mBTSocket = null;
@@ -67,6 +73,7 @@ public class BluetoothModule implements BluetoothStarter.BluetoothView{
             mBTAdapter.enable();
             discoverDevices();
         }catch (NullPointerException e){
+            Log.d(TAG, e.getMessage());
             accessLocationPermission();
         }
     }
@@ -99,6 +106,7 @@ public class BluetoothModule implements BluetoothStarter.BluetoothView{
         this.mHandler = mBluetoothMessage.getHandler();
     }
 
+
     public void discoverDevices(){
         mBTAdapter.startDiscovery();
 
@@ -110,6 +118,7 @@ public class BluetoothModule implements BluetoothStarter.BluetoothView{
         mActivity.registerReceiver(blReceiver, filter);
 
         getPairedDevices();
+
     }
 
     public void unregister(){
@@ -119,9 +128,10 @@ public class BluetoothModule implements BluetoothStarter.BluetoothView{
 
         }
     }
-    
+
     private void getPairedDevices(){
         mPairedDevices = mBTAdapter.getBondedDevices();
+
         if(mBTAdapter.isEnabled()) {
             for (BluetoothDevice device : mPairedDevices) {
                 mView.addDevice(device.getName() + "\n" + device.getAddress());

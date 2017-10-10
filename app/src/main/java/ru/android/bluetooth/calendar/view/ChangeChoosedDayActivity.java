@@ -1,4 +1,4 @@
-package ru.android.bluetooth.one_day;
+package ru.android.bluetooth.calendar.view;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import butterknife.BindView;
 import ru.android.bluetooth.R;
+import ru.android.bluetooth.calendar.presenter.ChangeChoosedDayPresenter;
 import ru.android.bluetooth.common.date_time.DateParser;
 import ru.android.bluetooth.root.RootActivity;
 
@@ -17,7 +18,7 @@ import ru.android.bluetooth.root.RootActivity;
  * Created by itisioslab on 03.08.17.
  */
 
-public class ChangeOneDayScheduleActivity extends RootActivity {
+public class ChangeChoosedDayActivity extends RootActivity {
 
     public static String DAY_LOG = "DAY";
     public static String ON_LOG = "ON";
@@ -41,7 +42,7 @@ public class ChangeOneDayScheduleActivity extends RootActivity {
     @BindView(R.id.tv_current_day)
     TextView mTvCurentDay;
 
-    private ChangeOneDaySchedulePresenter mChangeOneDaySchedulePresenter;
+    private ChangeChoosedDayPresenter mChangeOneDaySchedulePresenter;
     private String mStatusSunrise = "Восход мин.:";
     private String mStatusSunset = "Закат мин.:";
     private String mDay, mOnTime, mOffTime;
@@ -67,7 +68,7 @@ public class ChangeOneDayScheduleActivity extends RootActivity {
         mTvSunriseMin.setText(mStatusSunrise + " " + String.valueOf(mDateParser.getNumTime(mOnTime)));
         mTvSunsetMin.setText(mStatusSunset + " " +  String.valueOf(mDateParser.getNumTime(mOffTime)));
 
-        mChangeOneDaySchedulePresenter = new ChangeOneDaySchedulePresenter(this);
+        mChangeOneDaySchedulePresenter = new ChangeChoosedDayPresenter(this);
         mChangeOneDaySchedulePresenter.setOnClickListenerImageButton(mIbSunrise, mTvSunrise, mTvSunriseMin, mStatusSunrise);
         mChangeOneDaySchedulePresenter.setOnClickListenerImageButton(mIbSunset, mTvSunset, mTvSunsetMin, mStatusSunset);
         //mChangeOneDaySchedulePresenter.setNotAvailableDialog(mFabSave);

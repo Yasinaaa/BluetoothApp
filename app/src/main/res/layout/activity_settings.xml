@@ -2,30 +2,32 @@
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/scrollView"
+    tools:context="ru.android.bluetooth.settings.SettingsActivity">
 
-    android:id="@+id/scrollView">
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/cl"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <RelativeLayout
             android:id="@+id/rl"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:focusableInTouchMode="true"
-            android:padding="10dp">
+            android:padding="@dimen/padding_normal">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/tv_device_title"
                 android:gravity="center"
-                android:text="yasina"
                 android:layout_centerHorizontal="true"
-                android:textSize="30sp"
+                android:textSize="@dimen/text_size_very_large"
                 android:layout_alignParentTop="true"/>
 
             <TextView
@@ -33,16 +35,15 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/tv_device_address"
                 android:gravity="center"
-                android:text="Runtime"
-                android:textSize="20sp"
+                android:textSize="@dimen/text_size_small"
                 android:layout_below="@+id/tv_device_title"
                 android:layout_centerHorizontal="true" />
 
             <Button
                 android:id="@+id/btn_on_device"
-                android:layout_width="60dp"
-                android:layout_height="40dp"
-                android:text="ON"
+                android:layout_width="@dimen/btn_on_off_width"
+                android:layout_height="@dimen/btn_on_off_height"
+                android:text="@string/on"
                 android:background="@drawable/btn_off"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentRight="true"
@@ -51,9 +52,9 @@
 
             <Button
                 android:id="@+id/btn_off_device"
-                android:layout_width="60dp"
-                android:layout_height="40dp"
-                android:text="OFF"
+                android:layout_width="@dimen/btn_on_off_width"
+                android:layout_height="@dimen/btn_on_off_height"
+                android:text="@string/off"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/btn_off"
                 android:layout_below="@+id/btn_on_device"
@@ -65,14 +66,14 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/cb_manual_mode"
                 android:layout_below="@+id/tv_device_address"
-                android:text="Ручной режим"/>
+                android:text="@string/manual_mode"/>
 
             <CheckBox
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/cb_auto_mode"
-                android:text="Авто режим"
-                android:layout_marginLeft="10dp"
+                android:text="@string/auto_mode"
+                android:layout_marginLeft="@dimen/margin_small"
                 android:layout_below="@+id/tv_device_address"
                 android:layout_toRightOf="@+id/cb_manual_mode"/>
 
@@ -81,54 +82,53 @@
                 android:layout_gravity="center"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                card_view:cardCornerRadius="4dp"
-                android:layout_marginTop="10dp"
+                card_view:cardCornerRadius="@dimen/cardview_corner_radius"
+                android:layout_marginTop="@dimen/margin_small"
                 android:layout_below="@+id/cb_auto_mode"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
+                    android:padding="@dimen/padding_normal">
 
-                    android:padding="10dp">
+                    <Button
+                        android:layout_width="@dimen/btn_ok_width"
+                        android:layout_height="@dimen/btn_on_off_height"
+                        android:id="@+id/btn_change_name"
+                        android:text="@string/ok"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true" />
 
                     <TextView
                         android:id="@+id/tv_status_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="11dp"
-                        android:layout_marginStart="11dp"
-                        android:layout_marginTop="10dp"
-                        android:padding="5dp"
-                        android:textSize="15sp"
-                        android:text="Изменить название устройства" />
-                    <Button
-                        android:layout_width="60dp"
-                        android:layout_height="40dp"
-                        android:id="@+id/btn_change_name"
-                        android:text="Ok"
-                        android:layout_above="@+id/btn_change_password"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignParentEnd="true" />
+                        android:layout_marginLeft="@dimen/margin_small"
+                        android:layout_marginStart="@dimen/margin_small"
+                        android:layout_marginTop="@dimen/margin_small"
+                        android:padding="@dimen/padding_small"
+                        android:textSize="@dimen/text_size_very_small"
+                        android:text="@string/change_device_name" />
 
                     <TextView
                         android:id="@+id/tv_change_password"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Изменить пароль"
-                        android:padding="5dp"
-                        android:layout_marginLeft="11dp"
-                        android:layout_marginTop="10dp"
-                        android:textSize="15sp"
-                        android:layout_below="@+id/tv_status_title"/>
+                        android:text="@string/change_password"
+                        android:layout_marginLeft="@dimen/margin_small"
+                        android:layout_marginTop="@dimen/margin_small"
+                        android:padding="@dimen/padding_small"
+                        android:textSize="@dimen/text_size_very_small"
+                        android:layout_below="@+id/btn_change_name"/>
 
                     <Button
-                        android:layout_width="60dp"
-                        android:layout_height="40dp"
+                        android:layout_width="@dimen/btn_ok_width"
+                        android:layout_height="@dimen/btn_on_off_height"
                         android:id="@+id/btn_change_password"
-                        android:text="OK"
-                        android:layout_alignTop="@+id/tv_change_password"
+                        android:text="@string/ok"
+                        android:layout_below="@+id/btn_change_name"
                         android:layout_alignParentRight="true"
                         android:layout_alignParentEnd="true" />
 
@@ -136,46 +136,41 @@
                         android:id="@+id/tv_reset"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginTop="10dp"
-                        android:padding="5dp"
-                        android:textSize="15sp"
-                        android:layout_below="@+id/tv_change_password"
-                        android:text="Сброс контроллера" />
+                        android:layout_marginLeft="@dimen/margin_small"
+                        android:layout_marginStart="@dimen/margin_small"
+                        android:layout_marginTop="@dimen/margin_small"
+                        android:padding="@dimen/padding_small"
+                        android:textSize="@dimen/text_size_very_small"
+                        android:layout_below="@+id/btn_change_password"
+                        android:text="@string/reset_controller" />
 
                     <Button
                         android:id="@+id/btn_reset_controller"
-                        android:layout_width="60dp"
-                        android:layout_height="40dp"
+                        android:layout_width="@dimen/btn_ok_width"
+                        android:layout_height="@dimen/btn_on_off_height"
+                        android:text="@string/ok"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
-                        android:layout_below="@+id/btn_change_password"
-                        android:text="OK" />
+                        android:layout_below="@+id/btn_change_password" />
 
-                    <!--
-                    android:focusable="false"
-                        android:focusableInTouchMode="false"
-                    -->
                     <android.support.design.widget.TextInputLayout
                         android:id="@+id/til_latitude"
                         android:layout_below="@+id/btn_reset_controller"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginTop="5dp"
-                        android:padding="5dp">
+                        android:layout_marginTop="@dimen/margin_very_small"
+                        android:layout_marginLeft="@dimen/margin_small"
+                        android:layout_marginStart="@dimen/margin_small"
+                        android:padding="@dimen/padding_small">
 
                         <AutoCompleteTextView
                             android:id="@+id/actv_latitude"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="Широта"
+                            android:hint="@string/latitude"
                             android:inputType="numberDecimal"
-                            android:maxLines="1"
+                            android:maxLines="@integer/max_lines_small"
                             android:enabled="false"
-
                             android:singleLine="true" />
 
                     </android.support.design.widget.TextInputLayout>
@@ -185,18 +180,18 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/til_latitude"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginTop="10dp"
-                        android:padding="5dp">
+                        android:layout_marginTop="@dimen/margin_very_small"
+                        android:layout_marginLeft="@dimen/margin_small"
+                        android:layout_marginStart="@dimen/margin_small"
+                        android:padding="@dimen/padding_small">
 
                         <AutoCompleteTextView
                             android:id="@+id/actv_longitude"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="Долгота"
+                            android:hint="@string/longitude"
                             android:inputType="numberDecimal"
-                            android:maxLines="1"
+                            android:maxLines="@integer/max_lines_small"
                             android:enabled="false"
                             android:singleLine="true" />
 
@@ -206,30 +201,30 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/cb_set_coordinates_by_hand"
-                        android:text="Ввести координаты вручную"
+                        android:text="@string/set_coordinates_by_hand"
                         android:layout_below="@+id/til_longitude"
-                        android:layout_marginLeft="11dp"
-                        android:layout_marginStart="11dp"
-                        android:layout_marginTop="10dp"
-                        android:padding="5dp"/>
+                        android:layout_marginTop="@dimen/margin_very_small"
+                        android:layout_marginLeft="@dimen/margin_small"
+                        android:layout_marginStart="@dimen/margin_small"
+                        android:padding="@dimen/padding_small"/>
 
                     <android.support.design.widget.TextInputLayout
                         android:id="@+id/til_timezone"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="@dimen/margin_small"
                         android:layout_below="@+id/cb_set_coordinates_by_hand"
-                        android:layout_marginLeft="11dp"
-                        android:layout_marginStart="11dp"
-                        android:padding="5dp">
+                        android:layout_marginLeft="@dimen/margin_small"
+                        android:layout_marginStart="@dimen/margin_small"
+                        android:padding="@dimen/padding_small">
 
                         <AutoCompleteTextView
                             android:id="@+id/actv_timezone"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="Временная зона"
+                            android:hint="@string/timezone"
                             android:inputType="number"
-                            android:maxLines="1"
+                            android:maxLines="@integer/max_lines_small"
                             android:enabled="false"
                             android:singleLine="true" />
 
@@ -239,26 +234,25 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:id="@+id/cb_set_timezone_by_hand"
-                        android:text="Ввести временную зону вручную"
+                        android:text="@string/set_timezone_by_hand"
                         android:layout_below="@+id/til_timezone"
-                        android:layout_marginLeft="11dp"
-                        android:layout_marginStart="11dp"
-                        android:layout_marginTop="10dp"
-                        android:padding="5dp"/>
+                        android:layout_marginTop="@dimen/margin_small"
+                        android:layout_marginLeft="@dimen/margin_small"
+                        android:layout_marginStart="@dimen/margin_small"
+                        android:padding="@dimen/padding_small"/>
 
                     <Button
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/btn_sync_geolocation"
-                        android:text="Обновить"
-                        android:layout_marginLeft="11dp"
-                        android:layout_marginStart="11dp"
-                        android:layout_marginTop="10dp"
+                        android:text="@string/sync"
+                        android:layout_marginTop="@dimen/margin_small"
+                        android:layout_marginLeft="@dimen/margin_small"
+                        android:layout_marginStart="@dimen/margin_small"
                         android:layout_below="@+id/cb_set_timezone_by_hand"/>
+
                 </RelativeLayout>
             </android.support.v7.widget.CardView>
-
         </RelativeLayout>
-
     </android.support.design.widget.CoordinatorLayout>
 </ScrollView>

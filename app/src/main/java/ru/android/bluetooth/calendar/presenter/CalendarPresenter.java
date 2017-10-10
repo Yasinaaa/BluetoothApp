@@ -1,19 +1,15 @@
-package ru.android.bluetooth.calendar;
+package ru.android.bluetooth.calendar.presenter;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.res.Resources;
 import android.os.Environment;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
-import android.support.v4.view.animation.FastOutLinearInInterpolator;
-import android.support.v4.widget.NestedScrollView;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TableLayout;
 import android.widget.TextView;
@@ -26,10 +22,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 import android.os.Handler;
 
@@ -43,10 +36,12 @@ import jxl.write.biff.RowsExceededException;
 import ru.android.bluetooth.R;
 import ru.android.bluetooth.bluetooth.BluetoothCommands;
 import ru.android.bluetooth.bluetooth.BluetoothMessage;
+import ru.android.bluetooth.calendar.view.CalendarFragment;
+import ru.android.bluetooth.calendar.CalendarModule;
+import ru.android.bluetooth.calendar.Day;
+import ru.android.bluetooth.calendar.MonthAdapter;
 import ru.android.bluetooth.common.date_time.DateParser;
 import ru.android.bluetooth.schedule.ScheduleGenerator;
-import ru.android.bluetooth.temp.OneFragment;
-import ru.android.bluetooth.temp.Temp;
 import ru.android.bluetooth.utils.CacheHelper;
 import ru.android.bluetooth.utils.DialogHelper;
 
@@ -369,7 +364,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
 
     }
 
-    @Override
+    /*@Override
     public void searchDay(String date, CalendarFragment calendarFragment, ViewPager viewPager) {
 
         TableLayout tableLayout = calendarFragment.getTableLayout();
@@ -382,7 +377,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
                 child.setBackgroundColor(mContext.getResources().getColor(R.color.silver));
             }
         }
-    }
+    }*/
 
     public boolean dst = false;
 

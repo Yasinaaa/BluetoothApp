@@ -3,41 +3,39 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="10dp"
+    android:layout_margin="@dimen/margin_small"
     android:orientation="horizontal">
 
     <TextView
-        android:layout_width="0dp"
+        android:layout_width="@dimen/height_large_item_linear_layout"
         android:layout_height="wrap_content"
         android:id="@+id/tv_day"
-        android:layout_weight="1"
-        android:textSize="17sp"
+        android:layout_weight="@integer/weight_large_item_linear_layout"
+        android:textSize="@dimen/text_size_schedule_table_item"
         android:textColor="@color/cardview_dark_background"
         android:background="@drawable/cell_shape"
-        android:padding="5dp"
-        />
+        android:padding="@dimen/padding_small" />
 
     <TextView
-        android:layout_width="0dp"
+        android:layout_width="@dimen/height_large_item_linear_layout"
         android:layout_height="wrap_content"
         android:id="@+id/tv_on_time"
-        android:layout_weight="1"
+        android:layout_weight="@integer/weight_large_item_linear_layout"
         android:textAlignment="center"
-        android:textSize="17sp"
-        android:padding="5dp"
+        android:textSize="@dimen/text_size_schedule_table_item"
+        android:padding="@dimen/padding_small"
         android:textColor="@color/cardview_dark_background"
-        android:background="@drawable/cell_shape"
-        />
+        android:background="@drawable/cell_shape" />
 
     <TextView
-        android:layout_width="0dp"
+        android:layout_width="@dimen/height_large_item_linear_layout"
         android:layout_height="wrap_content"
         android:id="@+id/tv_off_time"
-        android:layout_weight="1"
+        android:layout_weight="@integer/weight_large_item_linear_layout"
         android:textAlignment="center"
-        android:textSize="17sp"
-        android:padding="5dp"
+        android:textSize="@dimen/text_size_schedule_table_item"
+        android:padding="@dimen/padding_small"
         android:textColor="@color/cardview_dark_background"
-        android:background="@drawable/cell_shape"
-        />
+        android:background="@drawable/cell_shape" />
+
 </LinearLayout>
