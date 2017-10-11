@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="@dimen/margin_small"
-    tools:context="ru.android.bluetooth.calendar.view.ChangeChoosedDayActivity">
+    tools:context="ru.android.autorele.calendar.view.ChangeChoosedDayActivity">
 
     <TextView
         android:layout_width="match_parent"
