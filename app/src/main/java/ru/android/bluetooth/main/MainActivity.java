@@ -62,6 +62,7 @@ public class MainActivity extends RootActivity implements MainModule.View,
     private BluetoothMessage mBluetoothMessage;
     private MainPresenter mMainPresenter;
     private Activity mActivity;
+    private boolean isFirstOpen = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +80,7 @@ public class MainActivity extends RootActivity implements MainModule.View,
 
         }
 
-
+        mRl.setVisibility(View.GONE);
         mActivity = this;
         mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
         mBluetoothMessage.setBluetoothMessageListener(this);
@@ -95,9 +96,6 @@ public class MainActivity extends RootActivity implements MainModule.View,
         mMainPresenter.callDialog();
         mMainPresenter.sendStatusMessage();
 
-        //TODO: CHANGE!
-        mTvVersion.setText("+VERSION:hc01.comV2.1\nOK");
-        //TODO: CHANGE!
 
     }
 
@@ -126,7 +124,8 @@ public class MainActivity extends RootActivity implements MainModule.View,
 
                 case BluetoothCommands.STATUS:
 
-                    mMainPresenter.parseResponse(answer, new MainPresenter.ResponseParseView() {
+
+                    mMainPresenter.parseResponse(isFirstOpen, answer, new MainPresenter.ResponseParseView() {
                         @Override
                         public void nextJob(String text) {
                             mIbSyncStatus.setEnabled(true);
@@ -149,6 +148,9 @@ public class MainActivity extends RootActivity implements MainModule.View,
 
                            // mTvStatus.setText(text);
                             mMainPresenter.parseStatus(text, mTvDate, mTvTime);
+                            if (isFirstOpen){
+                                mMainPresenter.sendVersionMessage();
+                            }
                         }
                     });
                     break;
@@ -160,6 +162,10 @@ public class MainActivity extends RootActivity implements MainModule.View,
                         public void nextJob(String text) {
                             mIbSyncVersion.setEnabled(true);
                             mTvVersion.setText(text);
+                            if (isFirstOpen){
+                                mRl.setVisibility(View.VISIBLE);
+                                isFirstOpen = false;
+                            }
                         }
                     });
                     break;

@@ -100,8 +100,9 @@ public class CalendarFragment extends Fragment {
         if (onText == null && offText == null){
             setLastRow(day, on, off);
         }else if (onText.equals("Выкл") && offText.equals("Вкл")) {
-            on.setText(onText);
-            off.setText(offText);
+            day.setText("День \nмесяца");
+            on.setText(onText + "\n");
+            off.setText(offText + "\n");
         }else {
             day.setText(String.valueOf(i));
             on.setText(onText);

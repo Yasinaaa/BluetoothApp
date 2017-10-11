@@ -114,16 +114,20 @@ public class MainPresenter implements DateTimeView{
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yy hh:mm:ss", Locale.ENGLISH);
         try {
             Date result = dateFormat.parse(data);
+            String s = dateFormat.format(result);
+
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(result);
-
             mTvDate.setText(mDateParser.setZeros(calendar.get(Calendar.DAY_OF_MONTH)) + "-" +
-                            mDateParser.setZeros((calendar.get(Calendar.MONTH) + 1)) + "-" +
-                            mDateParser.setZeros(calendar.get(Calendar.YEAR)));
+                    mDateParser.setZeros((calendar.get(Calendar.MONTH) + 1)) + "-" +
+                    mDateParser.setZeros(calendar.get(Calendar.YEAR)));
+            /*
 
             mTvTime.setText(mDateParser.setZeros(result.getHours()) + ":" +
                     mDateParser.setZeros(result.getMinutes()) + ":" +
-                    mDateParser.setZeros(result.getSeconds()));
+                    mDateParser.setZeros(result.getSeconds()));*/
+            //mTvDate.setText(" " + allData[0].trim());
+            mTvTime.setText(allData[1]);
 
         } catch (ParseException e) {
             Log.d(TAG, e.getMessage());
@@ -135,9 +139,9 @@ public class MainPresenter implements DateTimeView{
         void nextJob(String mTable);
     }
 
-    public void parseResponse(String answer, ResponseParseView responseView){
+    public void parseResponse(boolean isFirstOpen, String answer, ResponseParseView responseView){
         if (answer.contains("Not") || answer.contains("command")) {
-            DialogHelper.hideProgressBar(mBluetoothMessage.mDialog);
+            if(!isFirstOpen) DialogHelper.hideProgressBar(mBluetoothMessage.mDialog);
             answer = answer.replaceAll("[Notcomand ]", "");
             mTable += answer;
             //mBluetoothMessage.iAmBusy = false;
@@ -145,10 +149,14 @@ public class MainPresenter implements DateTimeView{
 
 
         }else if(answer.equals("")){
-            DialogHelper.hideProgressBar(mBluetoothMessage.mDialog);
+            if(!isFirstOpen) DialogHelper.hideProgressBar(mBluetoothMessage.mDialog);
         }else {
             mTable += answer;
         }
+    }
+
+    public void parseResponse(String answer, ResponseParseView responseView){
+        parseResponse(false, answer, responseView);
     }
 
     public void getTimeResponse(String text, TextView mTvDate, TextView mTvTime){

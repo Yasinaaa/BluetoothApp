@@ -8,7 +8,7 @@
 
     <TextView
         android:layout_width="@dimen/height_large_item_linear_layout"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:id="@+id/tv_day"
         android:layout_weight="@integer/weight_large_item_linear_layout"
         android:textSize="@dimen/text_size_schedule_table_item"
@@ -18,7 +18,7 @@
 
     <TextView
         android:layout_width="@dimen/height_large_item_linear_layout"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:id="@+id/tv_on_time"
         android:layout_weight="@integer/weight_large_item_linear_layout"
         android:textAlignment="center"
@@ -29,7 +29,7 @@
 
     <TextView
         android:layout_width="@dimen/height_large_item_linear_layout"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:id="@+id/tv_off_time"
         android:layout_weight="@integer/weight_large_item_linear_layout"
         android:textAlignment="center"
