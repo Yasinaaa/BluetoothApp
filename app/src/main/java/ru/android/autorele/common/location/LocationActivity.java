@@ -127,7 +127,7 @@ public abstract class LocationActivity extends RootActivity
         } else {
             mCurrentLatitude = mLocation.getLatitude();
             mCurrentLongitude = mLocation.getLongitude();
-            CacheHelper.setCoordinatesAndTimezone(getApplicationContext(), mCurrentLongitude, mCurrentLongitude, getTimeZone());
+            //CacheHelper.setCoordinatesAndTimezone(getApplicationContext(), mCurrentLongitude, mCurrentLongitude, getTimeZone());
 
             if (mIsScheduleGeneration){
                 Log.d(TAG,"send =");

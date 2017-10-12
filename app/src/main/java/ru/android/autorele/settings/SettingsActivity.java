@@ -2,6 +2,7 @@ package ru.android.autorele.settings;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -114,14 +116,30 @@ public class SettingsActivity extends LocationActivity
         setMessage(BluetoothCommands.STATUS);
 
         mBluetoothModule = BluetoothModule.createBluetoothModule(this, this);
-
-        mCbSetCoordinatesByHand.setSelected(false);
-        mCbSetTimezoneByHand.setSelected(false);
-
         mActivity = this;
         mSettingsPresenter = new SettingsPresenter(this);
 
-        mActvTimezone.setText(getTimeZone() + "");
+        String[] data = CacheHelper.getCoordinatesAndTimezone(getApplicationContext());
+        if (data != null){
+            mActvLatitude.setText(data[0]);
+            mActvLongitude.setText(data[1]);
+            if (String.valueOf(true).equals(data[2])){
+                mCbSetCoordinatesByHand.setChecked(true);
+                mSettingsPresenter.setCheckBoxLocation(mCbSetCoordinatesByHand, mTilLatitude, mTilLongitude);
+            }
+            mActvTimezone.setText(data[3]);
+            if (String.valueOf(true).equals(data[4])){
+                mCbSetTimezoneByHand.setChecked(true);
+                mSettingsPresenter.setCheckBoxTimezone(mCbSetTimezoneByHand, mTilTimezone);
+            }
+            mIsScheduleGeneration = false;
+
+        }else {
+            mActvTimezone.setText(getTimeZone() + "");
+            mIsScheduleGeneration = true;
+            mCbSetCoordinatesByHand.setSelected(false);
+            mCbSetTimezoneByHand.setSelected(false);
+        }
 
         String[] device = BluetoothHelper.getBluetoothUser(getApplicationContext());
         mTvDeviceAddress.setText(device[0]);
@@ -167,8 +185,8 @@ public class SettingsActivity extends LocationActivity
                 mBluetoothModule.connectDevice(null);
             }
         });
-        mSettingsPresenter.setCheckBoxLocation(mCbSetCoordinatesByHand, mTilLatitude, mTilLongitude);
-        mSettingsPresenter.setCheckBoxTimezone(mCbSetTimezoneByHand, mTilTimezone);
+        mSettingsPresenter.setCheckBoxLocationClickListener(mCbSetCoordinatesByHand, mTilLatitude, mTilLongitude);
+        mSettingsPresenter.setCheckBoxTimezoneClickListener(mCbSetTimezoneByHand, mTilTimezone);
 
         mBtnSyncGeolocation.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -177,7 +195,9 @@ public class SettingsActivity extends LocationActivity
                 mActvLongitude.setText(String.valueOf(mCurrentLongitude));
                 mActvTimezone.setText(String.valueOf(getTimeZone()));
                 CacheHelper.setCoordinatesAndTimezone(getApplicationContext(), mCurrentLongitude, mCurrentLatitude,
-                        Integer.parseInt(mActvTimezone.getText().toString()));
+                        mCbSetCoordinatesByHand.isChecked(),
+                        Integer.parseInt(mActvTimezone.getText().toString()),
+                        mCbSetTimezoneByHand.isChecked());
             }
         });
     }
@@ -185,8 +205,10 @@ public class SettingsActivity extends LocationActivity
     private void setCheckedBox(CheckBox checkBox) {
         if (checkBox.isChecked()) {
             checkBox.setChecked(false);
+            mIsScheduleGeneration = false;
         } else {
             checkBox.setChecked(true);
+            mIsScheduleGeneration = true;
         }
     }
 
@@ -279,9 +301,15 @@ public class SettingsActivity extends LocationActivity
             public boolean onMenuItemClick(MenuItem menuItem) {
                 String g = mActvTimezone.getText().toString();
                 CacheHelper.setCoordinatesAndTimezone(getApplicationContext(),
-                        mCurrentLongitude, mCurrentLatitude,
-                        Integer.parseInt(mActvTimezone.getText().toString()));
+                        mActvLongitude.getText().toString(), mActvLatitude.getText().toString(),
+                        mCbSetCoordinatesByHand.isChecked(),
+                        mActvTimezone.getText().toString(), mCbSetTimezoneByHand.isChecked());
 
+                View view = mActvLongitude.getRootView();
+                if (view != null) {
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
                 finish();
                 return false;
             }

@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
 import android.view.MotionEvent;
 import android.view.View;
@@ -116,15 +117,40 @@ public class CalendarActivity extends LocationActivity
 
             case R.id.fab_generate_schedule_sunrise_set:
                 mIsScheduleGeneration = true;
-                updateLocation();
+                String[] data = CacheHelper.getCoordinatesAndTimezone(getApplicationContext());
+                if (data != null){
+
+                    mCalendarPresenter.generateSchedule(mStartDate, mFinishDate,
+                            Double.parseDouble(data[0]),
+                            Double.parseDouble(data[1]),
+                            Integer.parseInt(data[3]));
+                }else {
+                    updateLocation();
+                }
                 break;
         }
     }
 
     public void requestWritePermission() {
+
+            // Check if we have write permission
+       /* int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permission != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                ) {
+                // We don't have permission so prompt the user
+
+        }
+        ActivityCompat.requestPermissions(
+                this,
+                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
+                REQUEST_WRITE_PERMISSION
+        );*/
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_PERMISSION);
-        } else {
+        }else {
             mCalendarPresenter.setLoadSchedule();
         }
     }
@@ -189,6 +215,8 @@ public class CalendarActivity extends LocationActivity
 
         scheduleLoading = new ScheduleLoading(this, this);
         mMonthAdapter = new MonthAdapter(getSupportFragmentManager(), getApplicationContext());
+
+
 
     }
 

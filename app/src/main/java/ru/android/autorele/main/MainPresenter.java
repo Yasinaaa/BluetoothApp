@@ -150,6 +150,11 @@ public class MainPresenter implements DateTimeView{
     public void parseResponse(String answer, ResponseParseView responseView){
         parseResponse(false, answer, responseView);
     }
+    public void parseResponse2(String answer, ResponseParseView responseView){
+        DialogHelper.hideProgressBar(mBluetoothMessage.mDialog);
+        mTable += answer;
+        responseView.nextJob(mTable);
+    }
 
     public void getTimeResponse(String text, TextView mTvDate, TextView mTvTime){
         String[] time = text.split(" ");
@@ -193,8 +198,8 @@ public class MainPresenter implements DateTimeView{
     public void sendVersionMessage(){
         mBluetoothMessage.mStatus = BluetoothCommands.VERSION;
         mBluetoothMessage.writeMessage(mActivity, BluetoothCommands.VERSION);
-        SystemClock.sleep(2000);
-        mBluetoothMessage.writeMessage(mActivity, "dd\r\n");
+        //SystemClock.sleep(2000);
+        //mBluetoothMessage.writeMessage(mActivity, "dd\r\n");
         mTable = "";
     }
 }

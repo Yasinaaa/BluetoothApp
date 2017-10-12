@@ -15,6 +15,8 @@ public class CacheHelper {
     private static final String PREF_TIMEZONE  = "pref_timezone";
     private static final String PREF_LONGITUDE  = "pref_longitude";
     private static final String PREF_LATITUDE  = "pref_latitude";
+    private static final String PREF_IS_MANUAL_LAN_LON = "pref_is_manual_lan_lon";
+    private static final String PREF_IS_MANUAL_TIMEZONE = "pref__is_manual_timezone";
 
     @Nullable
     public static String getSchedulePath(@Nullable final Context context) {
@@ -38,10 +40,13 @@ public class CacheHelper {
 
         SharedPreferences sp =
                 PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
+
         String[] result =  new String[]{
                 sp.getString(PREF_LATITUDE, ""),
                 sp.getString(PREF_LONGITUDE, ""),
-                sp.getString(PREF_TIMEZONE, "")
+                String.valueOf(sp.getBoolean(PREF_IS_MANUAL_LAN_LON, false)),
+                sp.getString(PREF_TIMEZONE, ""),
+                String.valueOf(sp.getBoolean(PREF_IS_MANUAL_TIMEZONE, false))
         };
         if(result[0].equals("") & result[1].equals("") & result[0].equals("")){
             return null;
@@ -49,13 +54,33 @@ public class CacheHelper {
             return result;
     }
 
-    public static void setCoordinatesAndTimezone(@Nullable final Context context, @Nullable double lon,
-                                                 @Nullable double lan, @Nullable int timeZone) {
+    public static void setCoordinatesAndTimezone(@Nullable final Context context,
+                                                 @Nullable double lon,
+                                                 @Nullable double lan, boolean isManualLanLon,
+                                                 @Nullable int timeZone, boolean isManualTimeZone) {
+
         if (context == null || lon == 0 || lan == 0) return;
         SharedPreferences sp =
                 PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
         sp.edit().putString(PREF_LATITUDE, String.valueOf(lan)).apply();
         sp.edit().putString(PREF_LONGITUDE, String.valueOf(lon)).apply();
+        sp.edit().putBoolean(PREF_IS_MANUAL_LAN_LON, isManualLanLon).apply();
         sp.edit().putString(PREF_TIMEZONE, String.valueOf(timeZone)).apply();
+        sp.edit().putBoolean(PREF_IS_MANUAL_TIMEZONE, isManualTimeZone).apply();
+    }
+
+    public static void setCoordinatesAndTimezone(@Nullable final Context context,
+                                                 @Nullable String lon,
+                                                 @Nullable String lan, boolean isManualLanLon,
+                                                 @Nullable String timeZone, boolean isManualTimeZone) {
+
+        if (context == null) return;
+        SharedPreferences sp =
+                PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
+        sp.edit().putString(PREF_LATITUDE, lan).apply();
+        sp.edit().putString(PREF_LONGITUDE, lon).apply();
+        sp.edit().putBoolean(PREF_IS_MANUAL_LAN_LON, isManualLanLon).apply();
+        sp.edit().putString(PREF_TIMEZONE, timeZone).apply();
+        sp.edit().putBoolean(PREF_IS_MANUAL_TIMEZONE, isManualTimeZone).apply();
     }
 }

@@ -157,7 +157,7 @@ public class MainActivity extends RootActivity implements MainModule.View,
 
                 case BluetoothCommands.VERSION:
 
-                    mMainPresenter.parseResponse(answer, new MainPresenter.ResponseParseView() {
+                    mMainPresenter.parseResponse2(answer, new MainPresenter.ResponseParseView() {
                         @Override
                         public void nextJob(String text) {
                             mIbSyncVersion.setEnabled(true);

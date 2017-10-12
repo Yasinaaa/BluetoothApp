@@ -19,31 +19,39 @@ public class SettingsPresenter {
     }
 
 
-    public void setCheckBoxLocation(final CheckBox checkButton, final TextInputLayout latitude, final TextInputLayout longitude){
+    public void setCheckBoxLocationClickListener(final CheckBox checkButton, final TextInputLayout latitude, final TextInputLayout longitude){
         checkButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(checkButton.isChecked()){
-                    latitude.setEnabled(true);
-                    longitude.setEnabled(true);
-                }else {
-                    latitude.setEnabled(false);
-                    longitude.setEnabled(false);
-                }
+               setCheckBoxLocation(checkButton, latitude, longitude);
+            }
+        });
+    }
+
+    public void setCheckBoxLocation(final CheckBox checkButton, final TextInputLayout latitude, final TextInputLayout longitude){
+        if(checkButton.isChecked()){
+            latitude.setEnabled(true);
+            longitude.setEnabled(true);
+        }else {
+            latitude.setEnabled(false);
+            longitude.setEnabled(false);
+        }
+    }
+
+    public void setCheckBoxTimezoneClickListener(final CheckBox checkButton, final TextInputLayout latitude){
+        checkButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setCheckBoxTimezone(checkButton, latitude);
             }
         });
     }
 
     public void setCheckBoxTimezone(final CheckBox checkButton, final TextInputLayout latitude){
-        checkButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(checkButton.isChecked()){
-                    latitude.setEnabled(true);
-                }else {
-                    latitude.setEnabled(false);
-                }
-            }
-        });
+        if(checkButton.isChecked()){
+            latitude.setEnabled(true);
+        }else {
+            latitude.setEnabled(false);
+        }
     }
 }

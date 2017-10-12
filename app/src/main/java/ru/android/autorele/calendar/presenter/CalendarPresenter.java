@@ -89,7 +89,9 @@ public class CalendarPresenter implements CalendarModule.Presenter,
     private void exportToExcel(String table) {
         DialogHelper.changeProgressBarText(mDialog, "Запись расписания в файл");
 
-        File file = new File(Environment.getExternalStorageDirectory(), fileName);
+        //File file = new File(Environment.getExternalStorageDirectory().getAbsoluteFile(), fileName);
+        File file = new File(Environment
+                .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
         try {
             file.createNewFile();
         } catch (IOException e) {
@@ -104,7 +106,13 @@ public class CalendarPresenter implements CalendarModule.Presenter,
             workbook = Workbook.createWorkbook(file, wbSettings);
 
             WritableSheet sheet = workbook.createSheet("schedule", 0);
-            DateParser mDateParser = new DateParser(Calendar.getInstance(), mContext);
+            Calendar mStartDate = Calendar.getInstance();
+            mStartDate = Calendar.getInstance();
+            mStartDate.set(Calendar.YEAR, 2016);
+            mStartDate.set(Calendar.DAY_OF_MONTH, 1);
+            mStartDate.set(Calendar.MONTH, Calendar.JANUARY);
+
+            DateParser mDateParser = new DateParser(mStartDate, mContext);
 
             try {
                 String[] textArray = table.split("\n");
