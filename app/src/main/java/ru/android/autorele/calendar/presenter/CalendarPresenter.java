@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Environment;
 import android.os.Looper;
 import android.os.SystemClock;
@@ -37,9 +38,10 @@ import ru.android.autorele.R;
 import ru.android.autorele.bluetooth.BluetoothCommands;
 import ru.android.autorele.bluetooth.BluetoothMessage;
 import ru.android.autorele.calendar.view.CalendarFragment;
-import ru.android.autorele.calendar.CalendarModule;
+import ru.android.autorele.calendar.module.CalendarModule;
 import ru.android.autorele.calendar.Day;
 import ru.android.autorele.calendar.MonthAdapter;
+import ru.android.autorele.calendar.view.ChangeChoosedDayActivity;
 import ru.android.autorele.common.date_time.DateParser;
 import ru.android.autorele.schedule.ScheduleGenerator;
 import ru.android.autorele.utils.CacheHelper;
@@ -54,9 +56,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
 
     private Context mContext;
     private BluetoothMessage mBluetoothMessage;
-    private Writer output = null;
     private CalendarModule.View mView;
-    private int selectedItem = 999;
     private DateParser mDateParser;
     private Activity mActivity;
     private AlertDialog mDialog;
@@ -65,17 +65,15 @@ public class CalendarPresenter implements CalendarModule.Presenter,
     private int[] onList;
     private int[] offList;
     private String mStatus;
-    private CalendarModule.OnItemClicked mOnClick;
     private Handler mHandler;
+    private Calendar mStartDate;
 
-    public CalendarPresenter(Activity a, BluetoothMessage mBluetoothMessage, CalendarModule.View view,
-                             CalendarModule.OnItemClicked onClick) {
+    public CalendarPresenter(Activity a, BluetoothMessage mBluetoothMessage, CalendarModule.View view) {
         this.mActivity = a;
-        this.mContext = a.getApplicationContext();
+        mContext = mActivity.getApplicationContext();
         this.mBluetoothMessage = mBluetoothMessage;
         this.mDateParser = new DateParser();
         this.mView = view;
-        this.mOnClick = onClick;
         init();
     }
 
@@ -84,10 +82,18 @@ public class CalendarPresenter implements CalendarModule.Presenter,
         mBluetoothMessage.setBluetoothMessageListener(this);
         onList = new int[366];
         offList = new int[366];
+        setBeginDay();
+    }
+
+    private void setBeginDay(){
+        mStartDate = Calendar.getInstance();
+        mStartDate.set(Calendar.YEAR, 2016);
+        mStartDate.set(Calendar.DAY_OF_MONTH, 1);
+        mStartDate.set(Calendar.MONTH, Calendar.JANUARY);
     }
 
     private void exportToExcel(String table) {
-        DialogHelper.changeProgressBarText(mDialog, "Запись расписания в файл");
+        DialogHelper.changeProgressBarText(mDialog, mActivity.getString(R.string.writing_schedule_to_file));
 
         //File file = new File(Environment.getExternalStorageDirectory().getAbsoluteFile(), fileName);
         File file = new File(Environment
@@ -106,11 +112,8 @@ public class CalendarPresenter implements CalendarModule.Presenter,
             workbook = Workbook.createWorkbook(file, wbSettings);
 
             WritableSheet sheet = workbook.createSheet("schedule", 0);
-            Calendar mStartDate = Calendar.getInstance();
-            mStartDate = Calendar.getInstance();
-            mStartDate.set(Calendar.YEAR, 2016);
-            mStartDate.set(Calendar.DAY_OF_MONTH, 1);
-            mStartDate.set(Calendar.MONTH, Calendar.JANUARY);
+            setBeginDay();
+
 
             DateParser mDateParser = new DateParser(mStartDate, mContext);
 
@@ -129,18 +132,11 @@ public class CalendarPresenter implements CalendarModule.Presenter,
                     for (int j=0; j<underTextArray.length; j++){
                         try {
                             sheet.addCell(new Label(0, i, mDateParser.getDate()));
-                            /*
-                            underTextArray[j].
-                                    substring(underTextArray[j].indexOf("=") + 1,
-                                            underTextArray[j].indexOf(",")))
-                             */
-
                         }catch (java.lang.StringIndexOutOfBoundsException e){
 
                         }
 
                         try {
-                            //sheet.addCell(new Label(1, i, "00:01"));
                             sheet.addCell(new Label(1, i, mDateParser.getTime(underTextArray[j].substring(
                                     underTextArray[j].lastIndexOf(",") + 1,
                                     underTextArray[j].length()))));
@@ -149,7 +145,6 @@ public class CalendarPresenter implements CalendarModule.Presenter,
                         }
 
                         try{
-                            //sheet.addCell(new Label(2, i, "00:01"));
                             sheet.addCell(new Label(2, i, mDateParser.getTime(underTextArray[j].substring(underTextArray[j].
                                             indexOf(",") + 1,
                                     underTextArray[j].lastIndexOf(",")))));
@@ -167,14 +162,9 @@ public class CalendarPresenter implements CalendarModule.Presenter,
             }
             workbook.write();
             DialogHelper.hideProgressBar(mDialog);
-            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mActivity)
-                    .setTitle("Файл сохранен")
-                    .setMessage("Сохранен в " + file.getPath())
-                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                        }
-                    });
-            dialogBuilder.show();
+
+            DialogHelper.showSuccessMessage(mActivity, mActivity.getString(R.string.file_saved),
+                    mActivity.getString(R.string.saved_in) + " " + file.getPath());
 
             CacheHelper.setSchedulePath(mContext, file.getPath());
             try {
@@ -235,62 +225,18 @@ public class CalendarPresenter implements CalendarModule.Presenter,
                 }
             }
 
-            Calendar calendar = Calendar.getInstance();
-            Calendar monthCalendar;
+            setBeginDay();
             int daysOnMonth;
             int daysPast = 0;
 
             for (int month=0; month<12; month++) {
-                //monthCalendar = new GregorianCalendar(calendar.get(Calendar.YEAR), month, 0);
-
-                //daysOnMonth = monthCalendar.getActualMaximum(Calendar.DAY_OF_MONTH);
-
-                calendar.set(Calendar.MONTH, returnCorrectMonth(month));
-
-                if (month == 1){
-                    daysOnMonth = 29;
-                }else {
-                    daysOnMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
-                }
-
-
-
+                mStartDate.set(Calendar.MONTH, month);
+                daysOnMonth = mStartDate.getActualMaximum(Calendar.DAY_OF_MONTH);
                 cutTheScheduleByMonth(daysOnMonth, daysPast, scheduleMap);
                 daysPast = daysPast + daysOnMonth;
             }
         }
         return scheduleMap;
-    }
-
-    private int returnCorrectMonth(int month){
-        switch (month){
-            case 0:
-                return Calendar.JANUARY;
-            case 1:
-                return Calendar.FEBRUARY;
-            case 2:
-                return Calendar.MARCH;
-            case 3:
-                return Calendar.APRIL;
-            case 4:
-                return Calendar.MAY;
-            case 5:
-                return Calendar.JUNE;
-            case 6:
-                return Calendar.JULY;
-            case 7:
-                return Calendar.AUGUST;
-            case 8:
-                return Calendar.SEPTEMBER;
-            case 9:
-                return Calendar.OCTOBER;
-            case 10:
-                return Calendar.NOVEMBER;
-            case 11:
-                return Calendar.DECEMBER;
-
-        }
-        return 99;
     }
 
     private void cutTheScheduleByMonth(int daysCount, int beginDay,
@@ -305,8 +251,6 @@ public class CalendarPresenter implements CalendarModule.Presenter,
 
     @Override
     public ArrayList<Day> setTable(){
-        //tableLayout.removeAllViews();
-        //readFile(tableLayout);
         return readFile();
     }
 
@@ -372,21 +316,6 @@ public class CalendarPresenter implements CalendarModule.Presenter,
 
     }
 
-    /*@Override
-    public void searchDay(String date, CalendarFragment calendarFragment, ViewPager viewPager) {
-
-        TableLayout tableLayout = calendarFragment.getTableLayout();
-
-        for (int i = 0; i < 366; i++){
-            View child = tableLayout.getChildAt(i);
-            TextView textView = (TextView) child.findViewById(R.id.tv_day);
-            if(textView.getText().equals(date)){
-                viewPager.scrollTo(0, child.getTop());
-                child.setBackgroundColor(mContext.getResources().getColor(R.color.silver));
-            }
-        }
-    }*/
-
     public boolean dst = false;
 
     @Override
@@ -436,8 +365,8 @@ public class CalendarPresenter implements CalendarModule.Presenter,
         TextView offTv = (TextView) view.findViewById(R.id.tv_off_time);
         onTv.setText(mDateParser.getTime(on));
         offTv.setText(mDateParser.getTime(off));
-        view.setBackgroundColor(mContext.getResources().getColor(R.color.white_overlay));
-        selectedItem = 999;
+        view.setBackgroundColor(mActivity.getResources().getColor(R.color.white_overlay));
+        //selectedItem = 999;
         calendarFragment.mListOn[dayOfMonth] = on;
         calendarFragment.mListOff[dayOfMonth] = off;
 
@@ -476,6 +405,30 @@ public class CalendarPresenter implements CalendarModule.Presenter,
 
             }
         });
+    }
+
+    public void changeSelectedDay(String mDayToChange, Calendar clickedDate, String on, String off){
+        if (!mDayToChange.equals("")) {
+            Intent intent = new Intent(mActivity, ChangeChoosedDayActivity.class);
+            intent.putExtra(ChangeChoosedDayActivity.DAY_LOG,
+                    mDateParser.setZeros(clickedDate.get(Calendar.DAY_OF_MONTH))
+                            + "." + mDateParser.setZeros((clickedDate.get(Calendar.MONTH)+1)));
+            intent.putExtra(ChangeChoosedDayActivity.ON_LOG, on);
+            intent.putExtra(ChangeChoosedDayActivity.OFF_LOG, off);
+            mActivity.startActivityForResult(intent, ChangeChoosedDayActivity.REQUEST_CODE);
+            mView.collapseFab();
+
+        } else {
+            AlertDialog.Builder dialog2 = new AlertDialog.Builder(mActivity)
+                    .setTitle(mActivity.getString(R.string.mistake))
+                    .setMessage(mActivity.getString(R.string.not_choosed_day))
+                    .setNegativeButton(mActivity.getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            mView.collapseFab();
+                        }
+                    });
+            dialog2.show();
+        }
     }
 
 }

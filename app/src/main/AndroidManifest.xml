@@ -14,7 +14,7 @@
     <uses-permission android:name="android.permission.ACCESS_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_GPS" />
     <uses-permission android:name="android.permission.ACCESS_ASSISTED_GPS" />
-    <uses-feature android:name="android.hardware.location.gps" />
+    <uses-feature android:name="android.hardware.location.gps" android:required="false"/>
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -24,6 +24,14 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+
+    <supports-screens
+        android:anyDensity="true"
+        android:largeScreens="true"
+        android:normalScreens="true"
+        android:resizeable="true"
+        android:smallScreens="true"
+        android:xlargeScreens="true"/>
 
     <uses-feature
         android:glEsVersion="0x00020000"
@@ -37,18 +45,6 @@
         android:screenOrientation="portrait"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <provider
-            android:name="com.ianhanniballake.localstorage.LocalStorageProvider"
-            android:authorities="com.ianhanniballake.localstorage.documents"
-            android:enabled="@bool/use_provider"
-            android:exported="true"
-            android:grantUriPermissions="true"
-            android:permission="android.permission.MANAGE_DOCUMENTS" >
-            <intent-filter>
-                <action android:name="android.content.action.DOCUMENTS_PROVIDER" />
-            </intent-filter>
-        </provider>
 
         <activity android:name="ru.android.autorele.start.StartActivity">
            <intent-filter>
@@ -67,9 +63,12 @@
         <activity android:screenOrientation="portrait" android:name="ru.android.autorele.main.MainActivity">
 
         </activity>
-        <activity android:name="ru.android.autorele.settings.SettingsActivity" android:screenOrientation="portrait"  android:configChanges="keyboardHidden"></activity>
-        <activity android:screenOrientation="portrait" android:name="ru.android.autorele.calendar.view.CalendarActivity"></activity>
-        <activity android:screenOrientation="portrait" android:name="ru.android.autorele.calendar.view.ChangeChoosedDayActivity"></activity>
+        <activity android:name="ru.android.autorele.settings.SettingsActivity"
+            android:screenOrientation="portrait"  android:configChanges="keyboardHidden"></activity>
+        <activity android:screenOrientation="portrait"
+            android:name="ru.android.autorele.calendar.view.CalendarActivity"></activity>
+        <activity android:screenOrientation="portrait"
+            android:name="ru.android.autorele.calendar.view.ChangeChoosedDayActivity"></activity>
 
         <meta-data
             android:name="com.google.android.gms.version"

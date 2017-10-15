@@ -28,8 +28,6 @@ public class BluetoothMessage {
     private ConnectedThread mConnectedThread;
     public String mStatus;
     public AlertDialog mDialog;
-    //public boolean iAmBusy = false;
-
     private BluetoothMessage() {
 
         this.mHandler = new Handler(){
@@ -73,12 +71,10 @@ public class BluetoothMessage {
 
     public void writeMessage(Activity activity, String message){
         mConnectedThread.writeData(activity, message);
-       // mBluetoothMessage.iAmBusy = true;
     }
 
     public void writeMessage(Activity activity, int[] listOn, int[] listOff){
         mConnectedThread.write(activity, listOn, listOff);
-       // mBluetoothMessage.iAmBusy = true;
     }
 
     public Handler getHandler() {
@@ -93,50 +89,10 @@ public class BluetoothMessage {
         this.mBluetoothMessageListener = mBluetoothMessageListener;
     }
 
-    private void setBasic(String responseText, String status){
-        responseText = "";
-        mStatus = status;
-
-    }
-
-    private void set(String responseText, Activity activity, String status){
-        setBasic(responseText, status);
-        mDialog = DialogHelper.showProgressBar(activity, activity.getString(R.string.send_request));
-    }
-
-    private void setWithCheckDialog(String responseText, Activity activity, String status, boolean noDialog){
-        setBasic(responseText, status);
-        if (!noDialog){
-            mDialog = DialogHelper.showProgressBar(activity, activity.getString(R.string.send_request));
-        }
-    }
-
-    public void setMessage(String responseText, Activity activity, String status, boolean noDialog){
-        setWithCheckDialog(responseText, activity, status, noDialog);
-        setMessageOnly(activity,status);
-    }
-
-    public void setMessage(String responseText, Activity activity, String status){
-        //set(responseText, activity, status);
-        setMessageOnly(activity, status);
-    }
-
-    public void setMessage(String responseText, Activity activity, String status, String text){
-        set(responseText, activity, status);
-        setMessageOnly(activity, text);
-    }
-
-    public void setMessage(String responseText, Activity activity, String status, String text, boolean noDialog){
-        setWithCheckDialog(responseText, activity, status, noDialog);
-        setMessageOnly(activity, text);
-    }
-
-    private void setMessageOnly(Activity activity, String text){
-      //  if (!iAmBusy){
-            writeMessage(activity, text);
-            SystemClock.sleep(2000);
-            writeMessage(activity, FINISH_SENDING);
-       // }
+    public void writeMessageWithNoCommand(Activity activity, String text){
+        writeMessage(activity, text);
+        SystemClock.sleep(2000);
+        writeMessage(activity, FINISH_SENDING);
     }
 
 }

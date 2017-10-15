@@ -48,7 +48,7 @@
             app:fab_plusIconColor="@color/white"
             app:fab_icon="@drawable/hand"
             app:fab_size="normal"
-            android:onClick="fabClicked"
+            android:onClick="onFabClicked"
             app:fab_title="@string/generate_hand_one_day" />
 
         <com.getbase.floatingactionbutton.FloatingActionButton
@@ -60,7 +60,7 @@
             app:fab_plusIconColor="@color/white"
             app:fab_icon="@drawable/sunrise"
             app:fab_size="normal"
-            android:onClick="fabClicked"
+            android:onClick="onFabClicked"
             app:fab_title="@string/generate_sunrise_sunset" />
 
         <com.getbase.floatingactionbutton.FloatingActionButton
@@ -72,7 +72,7 @@
             app:fab_plusIconColor="@color/white"
             app:fab_icon="@drawable/excel"
             app:fab_size="normal"
-            android:onClick="fabClicked"
+            android:onClick="onFabClicked"
             app:fab_title="@string/save_schedule_as_file" />
 
         <com.getbase.floatingactionbutton.FloatingActionButton
@@ -84,7 +84,7 @@
             app:fab_plusIconColor="@color/white"
             app:fab_icon="@drawable/download"
             app:fab_size="normal"
-            android:onClick="fabClicked"
+            android:onClick="onFabClicked"
             app:fab_title="@string/load_schedule" />
 
         <com.getbase.floatingactionbutton.FloatingActionButton
@@ -96,7 +96,7 @@
             app:fab_plusIconColor="@color/white"
             app:fab_icon="@drawable/save"
             app:fab_size="normal"
-            android:onClick="fabClicked"
+            android:onClick="onFabClicked"
             app:fab_title="@string/save_schedule_in_autorele" />
 
     </com.getbase.floatingactionbutton.FloatingActionsMenu>

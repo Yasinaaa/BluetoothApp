@@ -1,8 +1,9 @@
-package ru.android.autorele.calendar;
+package ru.android.autorele.calendar.module;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import ru.android.autorele.calendar.Day;
 import ru.android.autorele.calendar.view.CalendarFragment;
 
 /**
@@ -12,6 +13,7 @@ import ru.android.autorele.calendar.view.CalendarFragment;
 public interface CalendarModule {
 
     interface View{
+        void collapseFab();
         void onLoadingScheduleFinished();
         void dataCreated(int[] onList, int[] offList);
     }

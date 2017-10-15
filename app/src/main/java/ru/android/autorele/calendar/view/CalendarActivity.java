@@ -1,15 +1,12 @@
 package ru.android.autorele.calendar.view;
 
 import android.Manifest;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
 import android.view.MotionEvent;
 import android.view.View;
@@ -23,7 +20,7 @@ import butterknife.BindView;
 import ru.android.autorele.R;
 import ru.android.autorele.bluetooth.BluetoothCommands;
 import ru.android.autorele.bluetooth.BluetoothMessage;
-import ru.android.autorele.calendar.CalendarModule;
+import ru.android.autorele.calendar.module.CalendarModule;
 import ru.android.autorele.calendar.Day;
 import ru.android.autorele.calendar.MonthAdapter;
 import ru.android.autorele.calendar.presenter.CalendarPresenter;
@@ -74,7 +71,7 @@ public class CalendarActivity extends LocationActivity
         start();
     }
 
-    public void fabClicked(View v) {
+    public void onFabClicked(View v) {
         switch (v.getId()) {
             case R.id.fab_download_schedule:
                 mFilePresenter.setChooseFileDialog();
@@ -85,30 +82,7 @@ public class CalendarActivity extends LocationActivity
                 break;
 
             case R.id.fab_generate_shedule_hand_one_day:
-
-                if (!mDayToChange.equals("")) {
-                    Intent intent = new Intent(CalendarActivity.this, ChangeChoosedDayActivity.class);
-                    intent.putExtra(ChangeChoosedDayActivity.DAY_LOG,
-                            mDateParser.setZeros(clickedDate.get(Calendar.DAY_OF_MONTH))
-                            + "." + mDateParser.setZeros((clickedDate.get(Calendar.MONTH)+1)));
-                    intent.putExtra(ChangeChoosedDayActivity.ON_LOG, mOnDay);
-                    intent.putExtra(ChangeChoosedDayActivity.OFF_LOG, mOffDay);
-                    startActivityForResult(intent, ChangeChoosedDayActivity.REQUEST_CODE);
-                    mFloatingActionsMenu.collapse();
-                    mFloatingActionsMenu.collapseImmediately();
-
-                } else {
-                    AlertDialog.Builder dialog2 = new AlertDialog.Builder(CalendarActivity.this)
-                            .setTitle("Ошибка")
-                            .setMessage("Вы не выбрали день")
-                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    mFloatingActionsMenu.collapse();
-                                    mFloatingActionsMenu.collapseImmediately();
-                                }
-                            });
-                    dialog2.show();
-                }
+                mCalendarPresenter.changeSelectedDay(mDayToChange, clickedDate, mOnDay, mOffDay);
                 break;
 
             case R.id.fab_load_schedule:
@@ -119,7 +93,6 @@ public class CalendarActivity extends LocationActivity
                 mIsScheduleGeneration = true;
                 String[] data = CacheHelper.getCoordinatesAndTimezone(getApplicationContext());
                 if (data != null){
-
                     mCalendarPresenter.generateSchedule(mStartDate, mFinishDate,
                             Double.parseDouble(data[0]),
                             Double.parseDouble(data[1]),
@@ -131,22 +104,13 @@ public class CalendarActivity extends LocationActivity
         }
     }
 
+    @Override
+    public void collapseFab(){
+        mFloatingActionsMenu.collapse();
+        mFloatingActionsMenu.collapseImmediately();
+    }
+
     public void requestWritePermission() {
-
-            // Check if we have write permission
-       /* int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-        if (permission != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                ) {
-                // We don't have permission so prompt the user
-
-        }
-        ActivityCompat.requestPermissions(
-                this,
-                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
-                REQUEST_WRITE_PERMISSION
-        );*/
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_PERMISSION);
@@ -179,17 +143,13 @@ public class CalendarActivity extends LocationActivity
         mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
 
         mFilePresenter = new FilePresenter(this);
-        mCalendarPresenter = new CalendarPresenter(this, mBluetoothMessage, this, this);
+        mCalendarPresenter = new CalendarPresenter(this, mBluetoothMessage, this);
         mCalendarPresenter.getSchedule();
         mDateParser = new DateParser();
-
-
-        //mFrameLayout.getBackground().setAlpha(0);
 
         mFloatingActionsMenu.setOnFloatingActionsMenuUpdateListener(new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
             @Override
             public void onMenuExpanded() {
-                //mFrameLayout.getBackground().setAlpha(240);
                 mCoordinatorLayout.setOnTouchListener(new View.OnTouchListener() {
                     @Override
                     public boolean onTouch(View v, MotionEvent event) {
@@ -201,7 +161,7 @@ public class CalendarActivity extends LocationActivity
                 mCoordinatorLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        fabClicked(view);
+                        onFabClicked(view);
 
                     }
                 });
@@ -209,17 +169,12 @@ public class CalendarActivity extends LocationActivity
 
             @Override
             public void onMenuCollapsed() {
-               // mFrameLayout.getBackground().setAlpha(0);
             }
         });
 
         scheduleLoading = new ScheduleLoading(this, this);
         mMonthAdapter = new MonthAdapter(getSupportFragmentManager(), getApplicationContext());
-
-
-
     }
-
 
     @Override
     public void setResult() {
@@ -243,114 +198,30 @@ public class CalendarActivity extends LocationActivity
 
     }
 
-    /*@Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        onBackPressed();
-        return true;
-    }*/
-
     @Override
     public void setTag() {
         TAG = "CalendarActivity";
     }
 
-   /* @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_search, menu);
-
-        final MenuItem searchItem = menu.findItem(R.id.action_search);
-        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String date) {
-                CalendarFragment calendarFragment = mMonthAdapter.getItem(mViewPager.getCurrentItem());
-                mCalendarPresenter.searchDay(date, calendarFragment, mViewPager);
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String date) {
-                return false;
-            }
-        });
-
-        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
-            @Override
-            public boolean onClose() {
-                searchView.cancelLongPress();
-                return false;
-            }
-        });
-        return true;
-    }*/
-
 
     @Override
     public void onLoadingScheduleFinished() {
         ArrayList<Day> schedule = mCalendarPresenter.setTable();
-        mFloatingActionsMenu.collapse();
-        mFloatingActionsMenu.collapseImmediately();
+        collapseFab();
 
+        for (int month=0; month< schedule.size(); month++) {
+            Bundle bundle = new Bundle();
+            bundle.putInt(CalendarFragment.MONTH, month);
+            bundle.putIntArray(CalendarFragment.ON_LIST, schedule.get(month).onTime);
+            bundle.putIntArray(CalendarFragment.OFF_LIST, schedule.get(month).offTime);
 
-        if(mMonthAdapter.getCount() > 1){
-
-
-           // for (int month=0; month< schedule.size(); month++) {
-
-                /*CalendarFragment c = mMonthAdapter.mFragmentList.get(month);
-                //mMonthAdapter.getItem(month);
-                if(!Arrays.equals(c.mListOn, schedule.get(month).onTime) &&
-                        !Arrays.equals(c.mListOff, schedule.get(month).offTime)){
-
-                    c.mListOn = schedule.get(month).onTime;
-                    c.mListOff = schedule.get(month).offTime;
-
-                    if (c.mListOn != null && c.mListOff != null){
-                        if(c.mListOn.length == c.mListOff.length){
-
-                            for (int i = 0; i < c.mListOn.length; i++) {
-
-                                View view = c.getTableLayout().getChildAt(i+1);
-                                final TextView on = (TextView) view.findViewById(R.id.tv_on_time);
-                                final TextView off = (TextView) view.findViewById(R.id.tv_off_time);
-
-                                try {
-                                    on.setText(mDateParser.getTime(c.mListOn[i]));
-                                    off.setText(mDateParser.getTime(c.mListOff[i]));
-
-                                }catch (NullPointerException e){
-                                    Log.d("TAG", "i=" + i);
-                                }
-
-                            }
-                        }
-                    }
-                }*/
-
-
-            //}
-
-            //DialogHelper.showSuccessMessage(this, getString(R.string.schedule), getString(R.string.schedule_saved));
-
-        }else {
-
-            for (int month=0; month< schedule.size(); month++) {
-                Bundle bundle = new Bundle();
-                bundle.putInt(CalendarFragment.MONTH, month);
-                bundle.putIntArray(CalendarFragment.ON_LIST, schedule.get(month).onTime);
-                bundle.putIntArray(CalendarFragment.OFF_LIST, schedule.get(month).offTime);
-
-                CalendarFragment calendarFragment = new CalendarFragment();
-                calendarFragment.setArguments(bundle);
-                mMonthAdapter.addFragment(calendarFragment);
-            }
-            mCalendarPresenter.setupViewPager(mTabLayout, mViewPager, mMonthAdapter);
-            mTabLayout.setupWithViewPager(mViewPager);
+            CalendarFragment calendarFragment = new CalendarFragment();
+            calendarFragment.setArguments(bundle);
+            mMonthAdapter.addFragment(calendarFragment);
         }
-
-
+        mCalendarPresenter.setupViewPager(mTabLayout, mViewPager, mMonthAdapter);
+        mTabLayout.setupWithViewPager(mViewPager);
     }
-
 
     @Override
     public void onItemClick(int month, int day, String text, String on, String off) {
@@ -386,11 +257,7 @@ public class CalendarActivity extends LocationActivity
             }catch (RuntimeException e){
 
             }
-
-
-            //mCalendarPresenter.generateSchedule(mDayOfYear, on, off);
         }
-
     }
 
     @Override

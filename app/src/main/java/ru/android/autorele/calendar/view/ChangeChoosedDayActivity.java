@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import butterknife.BindView;
 import ru.android.autorele.R;
+import ru.android.autorele.calendar.module.ChangeChoosedDayModule;
 import ru.android.autorele.calendar.presenter.ChangeChoosedDayPresenter;
 import ru.android.autorele.common.date_time.DateParser;
 import ru.android.autorele.root.RootActivity;
@@ -18,7 +19,8 @@ import ru.android.autorele.root.RootActivity;
  * Created by itisioslab on 03.08.17.
  */
 
-public class ChangeChoosedDayActivity extends RootActivity {
+public class ChangeChoosedDayActivity extends RootActivity
+        implements ChangeChoosedDayModule.View {
 
     public static String DAY_LOG = "DAY";
     public static String ON_LOG = "ON";
@@ -43,8 +45,7 @@ public class ChangeChoosedDayActivity extends RootActivity {
     TextView mTvCurentDay;
 
     private ChangeChoosedDayPresenter mChangeOneDaySchedulePresenter;
-    private String mStatusSunrise = "Восход мин.:";
-    private String mStatusSunset = "Закат мин.:";
+
     private String mDay, mOnTime, mOffTime;
     private DateParser mDateParser;
 
@@ -57,36 +58,38 @@ public class ChangeChoosedDayActivity extends RootActivity {
 
     @Override
     public void init() {
+
         mDay = getIntent().getStringExtra(DAY_LOG);
         mOnTime = getIntent().getStringExtra(ON_LOG);
         mOffTime = getIntent().getStringExtra(OFF_LOG);
         mDateParser = new DateParser();
 
         mTvCurentDay.setText(mDay);
-        mTvSunrise.setText(mOnTime);
-        mTvSunset.setText(mOffTime);
-        mTvSunriseMin.setText(mStatusSunrise + " " + String.valueOf(mDateParser.getNumTime(mOnTime)));
-        mTvSunsetMin.setText(mStatusSunset + " " +  String.valueOf(mDateParser.getNumTime(mOffTime)));
-
-        mChangeOneDaySchedulePresenter = new ChangeChoosedDayPresenter(this);
-        mChangeOneDaySchedulePresenter.setOnClickListenerImageButton(mIbSunrise, mTvSunrise, mTvSunriseMin, mStatusSunrise);
-        mChangeOneDaySchedulePresenter.setOnClickListenerImageButton(mIbSunset, mTvSunset, mTvSunsetMin, mStatusSunset);
-        //mChangeOneDaySchedulePresenter.setNotAvailableDialog(mFabSave);
+        setSunriseTime(mOnTime, String.valueOf(mDateParser.getNumTime(mOnTime)));
+        setSunsetTime(mOffTime, String.valueOf(mDateParser.getNumTime(mOffTime)));
+        mChangeOneDaySchedulePresenter = new ChangeChoosedDayPresenter(this, this);
     }
 
-    int o, t;
     @Override
     public void setClickListeners() {
         mFabSave.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                Intent intent = new Intent();
-                o = mDateParser.getNumTime(mTvSunrise.getText().toString());
-                t = mDateParser.getNumTime(mTvSunset.getText().toString());
-                intent.putExtra(ON_LOG, o);
-                intent.putExtra(OFF_LOG, t);
-                setResult(RESULT_OK, intent);
-                finish();
+            public void onClick(View v) {
+                mChangeOneDaySchedulePresenter.onFabClickListener();
+            }
+        });
+
+        mIbSunrise.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mChangeOneDaySchedulePresenter.setOnClickListenerImageButton(ChangeChoosedDayPresenter.TYPE1);
+            }
+        });
+
+        mIbSunset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mChangeOneDaySchedulePresenter.setOnClickListenerImageButton(ChangeChoosedDayPresenter.TYPE2);
             }
         });
     }
@@ -99,8 +102,28 @@ public class ChangeChoosedDayActivity extends RootActivity {
 
     @Override
     public void setTag() {
-
+        TAG = "ChangeChoosedDayActivity";
     }
 
+    @Override
+    public String getSunriseTimeValue() {
+        return mTvSunrise.getText().toString();
+    }
 
+    @Override
+    public String getSunsetTimeValue() {
+        return mTvSunset.getText().toString();
+    }
+
+    @Override
+    public void setSunriseTime(String timeView, String minView) {
+        mTvSunrise.setText(timeView);
+        mTvSunriseMin.setText(getString(R.string.sunrise_min) + " " + minView);
+    }
+
+    @Override
+    public void setSunsetTime(String timeView, String minView) {
+        mTvSunset.setText(timeView);
+        mTvSunsetMin.setText(getString(R.string.sunset_min)  + " " + minView);
+    }
 }

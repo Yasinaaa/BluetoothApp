@@ -14,15 +14,10 @@ import java.util.Calendar;
 
 public class DateTimeClickListener {
 
-    private DateTimeView mDateTimeView;
-    private DateParser mDateParser;
 
-    public DateTimeClickListener(DateTimeView mDateTimeView, DateParser dateParser) {
-        this.mDateTimeView = mDateTimeView;
-        this.mDateParser = dateParser;
-    }
+    public static void setDateClickListener(final Activity activity, final DateTimeView.TimeAndDate mDateTimeView,
+                                            final DateParser mDateParser) {
 
-    public void setDateClickListener(final Activity activity){
         final Calendar calendar = Calendar.getInstance();
         final DatePickerDialog mDatePicker = new DatePickerDialog(activity, new DatePickerDialog.OnDateSetListener() {
             @Override
@@ -32,7 +27,7 @@ public class DateTimeClickListener {
                 int day = datePicker.getDayOfMonth();
 
                 mDateTimeView.sendDateMessage(String.format("%s-%s-%s", new String[]{
-                                mDateParser.setZeros(day), mDateParser.setZeros(month+1), String.valueOf(year) }),
+                                mDateParser.setZeros(day), mDateParser.setZeros(month + 1), String.valueOf(year)}),
                         year, month, day);
 
             }
@@ -40,7 +35,9 @@ public class DateTimeClickListener {
         mDatePicker.show();
     }
 
-    public void setTimeClickListener(final Activity activity){
+    public static void setTimeClickListener(final Activity activity, final DateTimeView.TimeAndDate mDateTimeView,
+                                            final DateParser mDateParser) {
+
         final Calendar calendar = Calendar.getInstance();
         TimePickerDialog timePickerDialog = new TimePickerDialog(activity, new TimePickerDialog.OnTimeSetListener() {
             @Override
@@ -49,7 +46,27 @@ public class DateTimeClickListener {
                         mDateParser.setZeros(i), mDateParser.setZeros(i1)}), i, i1);
 
             }
-        },calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true);
+        }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true);
         timePickerDialog.show();
+    }
+
+    public static void setTimeClickListener(final String type, final Activity activity,
+                                            final DateTimeView.Time mDateTimeView,
+                                            final DateParser mDateParser) {
+
+        final Calendar calendar = Calendar.getInstance();
+        TimePickerDialog timePickerDialog = new TimePickerDialog(activity, new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker timePicker, int i, int i1) {
+                mDateTimeView.sendTimeMessage(type, String.format("%s:%s", new String[]{
+                        mDateParser.setZeros(i), mDateParser.setZeros(i1)}), setMinutes(i, i1));
+
+            }
+        }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true);
+        timePickerDialog.show();
+    }
+
+    private static String setMinutes(int h, int m){
+        return String.valueOf(h*60 + m);
     }
 }

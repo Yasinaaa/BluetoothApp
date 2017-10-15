@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +11,7 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 
 import ru.android.autorele.R;
-import ru.android.autorele.calendar.CalendarModule;
+import ru.android.autorele.calendar.module.CalendarModule;
 import ru.android.autorele.common.date_time.DateParser;
 
 /**
@@ -21,6 +20,7 @@ import ru.android.autorele.common.date_time.DateParser;
 
 public class CalendarFragment extends Fragment {
 
+    private final String TAG = "CalendarFragment";
     public static final String MONTH = "MONTH";
     public static final String ON_LIST = "ON_LIST";
     public static final String OFF_LIST = "OFF_LIST";
@@ -70,22 +70,15 @@ public class CalendarFragment extends Fragment {
             if(mListOn.length == mListOff.length){
                 for (int i = -1; i < mListOn.length; i++) {
                     if (i == -1){
-                        setView(i + 1, "Выкл", "Вкл");
+                        setView(i + 1, getString(R.string.off), getString(R.string.on));
+
                     }else {
                         setView(i + 1, mDateParser.getTime(mListOn[i]), mDateParser.getTime(mListOff[i]));
-                        if (mDateParser.getTime(mListOn[i]) == null)
-                            Log.d("TAG", (i+1) + " " + mListOn[i] + " " + mListOff[i]);
                     }
-
                 }
                 setView(mListOn.length + 1, null, null);
             }
         }
-    }
-
-    public void reWriteFile(TableLayout t){
-
-
     }
 
     private void setView(int i, String onText, String offText){
@@ -99,8 +92,9 @@ public class CalendarFragment extends Fragment {
 
         if (onText == null && offText == null){
             setLastRow(day, on, off);
-        }else if (onText.equals("Выкл") && offText.equals("Вкл")) {
-            day.setText("День \nмесяца");
+
+        }else if (i == 0) {
+            day.setText(getString(R.string.day_of_month));
             on.setText(onText + "\n");
             off.setText(offText + "\n");
         }else {

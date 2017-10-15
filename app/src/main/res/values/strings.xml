@@ -6,7 +6,7 @@
     <!-- file dialog -->
     <string name="generate_dialog_title">Выберите способ генерации</string>
     <string name="file_mistake">Файл не является корректным</string>
-    <string name="file_saved">Файл загружен</string>
+    <string name="file_loaded">Файл загружен</string>
 
     <!-- dialog -->
     <string name="mistake">Ошибка</string>
@@ -97,5 +97,24 @@
     <string name="timezone">Временная зона</string>
     <string name="set_timezone_by_hand">Ввести временную зону вручную</string>
     <string name="sync">Обновить</string>
+
+    <!-- CalendarActivity dialog -->
+    <string name="not_choosed_day">Вы не выбрали день</string>
+
+    <!-- CalendarFragment -->
+    <string name="day_of_month">День \nмесяца</string>
+
+    <!-- ChangeChoosedDayActivity -->
+    <string name="sunrise_min">Восход мин.:</string>
+    <string name="sunset_min">Закат мин.:</string>
+
+    <!-- FilePresenter -->
+    <string name="choose_excel_file">Выберите Excel файл</string>
+    <string name="load">Загрузить</string>
+
+    <!-- CalendarPresenter -->
+    <string name="writing_schedule_to_file">Запись расписания в файл</string>
+    <string name="file_saved">Файл сохранен</string>
+    <string name="saved_in">Сохранен в</string>
 
 </resources>

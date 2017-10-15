@@ -29,13 +29,12 @@ import ru.android.autorele.utils.DialogHelper;
  * Created by yasina on 22.08.17.
  */
 
-public class MainPresenter implements DateTimeView{
+public class MainPresenter implements DateTimeView.TimeAndDate{
 
     private final String TAG = "MainPresenter";
     private Activity mActivity;
     private Context mContext;
     private BluetoothMessage mBluetoothMessage;
-    private DateTimeClickListener mDateTimeClickListener;
     private DateParser mDateParser;
     private File mFile;
     private String mTable = "";
@@ -47,7 +46,6 @@ public class MainPresenter implements DateTimeView{
         this.mContext = mActivity.getApplicationContext();
         this.mBluetoothMessage = bluetoothMessage;
         mDateParser = new DateParser();
-        mDateTimeClickListener = new DateTimeClickListener(this, mDateParser);
     }
 
     public void setScheduleFilePath(EditText mEtScheduleName){
@@ -62,11 +60,13 @@ public class MainPresenter implements DateTimeView{
 
     public void setDateTimeClickListeners(Button timeBtn, Button dateBtn){
 
+        final DateTimeView.TimeAndDate timeAndDate = this;
+
         dateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 callDialog();
-                mDateTimeClickListener.setDateClickListener(mActivity);
+                DateTimeClickListener.setDateClickListener(mActivity, timeAndDate, mDateParser);
             }
         });
 
@@ -74,7 +74,7 @@ public class MainPresenter implements DateTimeView{
             @Override
             public void onClick(View view) {
                 callDialog();
-                mDateTimeClickListener.setTimeClickListener(mActivity);
+                DateTimeClickListener.setTimeClickListener(mActivity, timeAndDate, mDateParser);
             }
         });
 
@@ -83,13 +83,23 @@ public class MainPresenter implements DateTimeView{
     @Override
     public void sendDateMessage(String thisTextNeedToSetTextView, int year, int month, int day) {
         this.mThisTextNeedToSetTextView = thisTextNeedToSetTextView;
-        mBluetoothMessage.setMessage(mTable, mActivity, BluetoothCommands.SET_DATE, BluetoothCommands.setDate(year, month+1, day), true);
+        setMessage(mTable, mActivity, BluetoothCommands.SET_DATE, BluetoothCommands.setDate(year, month+1, day), true);
     }
 
     @Override
     public void sendTimeMessage(String thisTextNeedToSetTextView, int hour, int min) {
         this.mThisTextNeedToSetTextView = thisTextNeedToSetTextView;
-        mBluetoothMessage.setMessage(mTable, mActivity, BluetoothCommands.SET_TIME, BluetoothCommands.setTime(hour, min), true);
+       setMessage(mTable, mActivity,
+                BluetoothCommands.SET_TIME, BluetoothCommands.setTime(hour, min), true);
+    }
+
+    public void setMessage(String responseText, Activity activity, String status, String text, boolean noDialog){
+        responseText = "";
+        mBluetoothMessage.mStatus = status;
+        if (!noDialog){
+            mBluetoothMessage.mDialog = DialogHelper.showProgressBar(activity, activity.getString(R.string.send_request));
+        }
+        mBluetoothMessage.writeMessageWithNoCommand(activity, text);
     }
 
     public void parseStatus(String status, TextView mTvDate, TextView mTvTime){

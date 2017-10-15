@@ -90,7 +90,7 @@ public class ScheduleLoading {
                 mView.setScheduleTitle(title);
                 dialogBuilder
                         .setTitle(mActivity.getString(R.string.schedule))
-                        .setMessage(mActivity.getString(R.string.file_saved))
+                        .setMessage(mActivity.getString(R.string.file_loaded))
                         .setNegativeButton("Перезагрузить таблицу", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 mView.setResult();
