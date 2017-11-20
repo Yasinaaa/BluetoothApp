@@ -20,9 +20,9 @@ import butterknife.BindView;
 import ru.android.autorele.R;
 import ru.android.autorele.bluetooth.BluetoothCommands;
 import ru.android.autorele.bluetooth.BluetoothMessage;
-import ru.android.autorele.calendar.module.CalendarModule;
 import ru.android.autorele.calendar.Day;
 import ru.android.autorele.calendar.MonthAdapter;
+import ru.android.autorele.calendar.module.CalendarModule;
 import ru.android.autorele.calendar.presenter.CalendarPresenter;
 import ru.android.autorele.calendar.presenter.FilePresenter;
 import ru.android.autorele.common.date_time.DateParser;
@@ -30,6 +30,7 @@ import ru.android.autorele.common.location.LocationActivity;
 import ru.android.autorele.main.helper.ScheduleLoading;
 import ru.android.autorele.utils.ActivityHelper;
 import ru.android.autorele.utils.CacheHelper;
+
 
 /**
  * Created by itisioslab on 03.08.17.
@@ -133,10 +134,12 @@ public class CalendarActivity extends LocationActivity
     public void init(){
 
         mStartDate = Calendar.getInstance();
+        mStartDate.set(Calendar.YEAR, 2016);
         mStartDate.set(Calendar.DAY_OF_MONTH, 1);
         mStartDate.set(Calendar.MONTH, Calendar.JANUARY);
 
         mFinishDate = Calendar.getInstance();
+        mFinishDate.set(Calendar.YEAR, 2016);
         mFinishDate.set(Calendar.DAY_OF_MONTH, 31);
         mFinishDate.set(Calendar.MONTH, Calendar.DECEMBER);
 
@@ -227,6 +230,7 @@ public class CalendarActivity extends LocationActivity
     public void onItemClick(int month, int day, String text, String on, String off) {
 
         clickedDate = mStartDate;
+        clickedDate.set(Calendar.YEAR, 2016);
         clickedDate.set(Calendar.MONTH, month);
         clickedDate.set(Calendar.DAY_OF_MONTH, day+1);
 

@@ -36,6 +36,7 @@ import ru.android.autorele.utils.BluetoothHelper;
 import ru.android.autorele.utils.CacheHelper;
 import ru.android.autorele.utils.DialogHelper;
 
+
 /**
  * Created by yasina on 18.09.17.
  */
@@ -110,7 +111,7 @@ public class SettingsActivity extends LocationActivity
     public void init() {
         mScrollView.fullScroll(View.FOCUS_UP);
         mActivity = this;
-        mDialog = DialogHelper.showProgressBar(this, "Считывание данных");
+        mDialog = DialogHelper.showProgressBar(this, getResources().getString(R.string.read_data));
         mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
         mBluetoothMessage.setBluetoothMessageListener(this);
         setMessage(BluetoothCommands.STATUS);
@@ -178,6 +179,7 @@ public class SettingsActivity extends LocationActivity
                 setMessage(BluetoothCommands.MANUAL_ON);
             }
         });
+        final ChooseDeviceView chooseDeviceView = this;
         mBtnResetController.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -194,10 +196,6 @@ public class SettingsActivity extends LocationActivity
                 mActvLatitude.setText(String.valueOf(mCurrentLatitude));
                 mActvLongitude.setText(String.valueOf(mCurrentLongitude));
                 mActvTimezone.setText(String.valueOf(getTimeZone()));
-                CacheHelper.setCoordinatesAndTimezone(getApplicationContext(), mCurrentLongitude, mCurrentLatitude,
-                        mCbSetCoordinatesByHand.isChecked(),
-                        Integer.parseInt(mActvTimezone.getText().toString()),
-                        mCbSetTimezoneByHand.isChecked());
             }
         });
     }
@@ -223,8 +221,7 @@ public class SettingsActivity extends LocationActivity
                 AlertDialog.Builder passwordDialogBuilder = new AlertDialog.Builder(SettingsActivity.this)
                         .setTitle(getString(R.string.input_password))
                         .setView(dialogView)
-
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        .setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 setMessage(BluetoothCommands.SET_PASSWORD,
                                         BluetoothCommands.setPassword(mPasswordView.getText().toString()));
@@ -232,7 +229,7 @@ public class SettingsActivity extends LocationActivity
                                         ResponseView.SET_PASSWORD);
                             }
                         })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        .setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                             }
                         });
@@ -247,16 +244,14 @@ public class SettingsActivity extends LocationActivity
 
 
                 TextInputLayout textInputLayout = dialogView.findViewById(R.id.til_password);
-                textInputLayout.setHint("Новое название для устройства");
+                textInputLayout.setHint(getResources().getString(R.string.new_name_for_the_device));
                 final EditText mPasswordView = (EditText) dialogView.findViewById(R.id.et_password);
                 mPasswordView.setInputType(InputType.TYPE_CLASS_TEXT);
 
 
                 AlertDialog.Builder passwordDialogBuilder = new AlertDialog.Builder(SettingsActivity.this)
-                        // .setTitle(getString(R.string.input_password))
                         .setView(dialogView)
-
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        .setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 ResponseView.showSnackbar(mRl,
                                         ResponseView.SET_PASSWORD);
@@ -266,7 +261,7 @@ public class SettingsActivity extends LocationActivity
 
                             }
                         })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        .setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                             }
                         });
@@ -295,7 +290,7 @@ public class SettingsActivity extends LocationActivity
         getMenuInflater().inflate(R.menu.main_menu, menu);
 
         final MenuItem searchItem = menu.findItem(R.id.action_settings);
-        searchItem.setTitle("Сохранить");
+        searchItem.setTitle(getResources().getString(R.string.save));
         searchItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
@@ -330,52 +325,38 @@ public class SettingsActivity extends LocationActivity
 
             switch (mStatus) {
                 case BluetoothCommands.SET_PASSWORD:
-                   // mBluetoothMessage.iAmBusy = false;
                     break;
 
                 case BluetoothCommands.SET_NAME:
-                 //   mBluetoothMessage.iAmBusy = false;
                     mTvDeviceTitle.setText(mNewDeviceTitle);
                     BluetoothHelper.saveBluetoothDeviceTitle(getApplicationContext(), mNewDeviceTitle);
                     break;
 
                 case BluetoothCommands.STATUS:
-                 //   mBluetoothMessage.iAmBusy = false;
                     parseStatus(answer);
                     DialogHelper.hideProgressBar(mDialog);
                     break;
 
                 case BluetoothCommands.RESET:
-                    //mTvReset.setText(answer);
-                   // mBluetoothMessage.iAmBusy = false;
-
                     break;
 
                 case BluetoothCommands.ON:
-                   // mBluetoothMessage.iAmBusy = false;
                     setDeviceModeColor(false);
-                    /*ResponseView.showSnackbar(mRl,
-                            ResponseView.ON);*/
                     setMessage(BluetoothCommands.STATUS);
 
                     break;
                 case BluetoothCommands.OFF:
-                   // mBluetoothMessage.iAmBusy = false;
                     setDeviceModeColor(true);
-                    //ResponseView.showSnackbar(mRl, ResponseView.OFF);
-                   // mBluetoothMessage.iAmBusy = false;
                     setMessage(BluetoothCommands.STATUS);
                     break;
 
                 case BluetoothCommands.MANUAL_ON:
-                  //  mBluetoothMessage.iAmBusy = false;
                     setMessage(BluetoothCommands.STATUS);
                     mCbAutoMode.setChecked(false);
                     mCbManualMode.setChecked(true);
                     break;
 
                 case BluetoothCommands.MANUAL_OFF:
-                  //  mBluetoothMessage.iAmBusy = false;
                     setMessage(BluetoothCommands.STATUS);
                     mCbAutoMode.setChecked(true);
                     mCbManualMode.setChecked(false);
@@ -388,15 +369,12 @@ public class SettingsActivity extends LocationActivity
     private void parseStatus(String status){
         String[] parameters = status.replaceAll("\r","").split("\n");
         for(String s: parameters){
-
             if (s.contains("Manual")){
                 setMode(s.split(" ")[1]);
             }else
             if (s.contains("Rele")){
                 setOnOff(s.split(" ")[1]);
-            }/*else if(!s.contains("s") && !s.contains(" ")){
-                getTime(s);
-            }*/
+            }
         }
     }
 

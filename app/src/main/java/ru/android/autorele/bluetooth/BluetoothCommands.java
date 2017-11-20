@@ -17,12 +17,13 @@ public class BluetoothCommands {
     public static final String GET_TIME = "Get Time\r\n";
     public static final String SET_NAME = "Set Name=%s\r\n";
     public static final String SET_PASSWORD = "Set Password=%s\r\n";
-    public static final String SET_DATA = "Set Data\r\n";
+    public static final String SET_DATA = "Set Data\r";
     public static final String DEBUG = "Get AOnOff\r\n";
     public static final String ON = "Rele On\r\n";
     public static final String OFF = "Rele Off\r\n";
     public static final String MANUAL_ON = "Manual On\r\n";
     public static final String MANUAL_OFF = "Manual Off\r\n";
+    public static final String NOT_COMMAND = "ddd\r\n";
 
     public final static int MESSAGE_READ = 2;
     public final static int CONNECTING_STATUS = 99;

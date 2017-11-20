@@ -2,7 +2,6 @@ package ru.android.autorele.calendar.presenter;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -10,7 +9,6 @@ import android.os.Build;
 import android.Manifest;
 import android.util.Log;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;
@@ -19,9 +17,6 @@ import jxl.Workbook;
 import jxl.WorkbookSettings;
 import jxl.read.biff.BiffException;
 import ru.android.autorele.R;
-import ru.android.autorele.bluetooth.BluetoothMessage;
-import ru.android.autorele.common.date_time.DateParser;
-import ru.android.autorele.common.date_time.DateTimeClickListener;
 import ru.android.autorele.main.helper.ScheduleLoading;
 
 import static ru.android.autorele.utils.ActivityHelper.REQUEST_READ_PERMISSION;

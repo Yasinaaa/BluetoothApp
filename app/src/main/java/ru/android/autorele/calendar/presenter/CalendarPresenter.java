@@ -19,7 +19,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -132,7 +131,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
                     for (int j=0; j<underTextArray.length; j++){
                         try {
                             sheet.addCell(new Label(0, i, mDateParser.getDate()));
-                        }catch (java.lang.StringIndexOutOfBoundsException e){
+                        }catch (StringIndexOutOfBoundsException e){
 
                         }
 
@@ -140,7 +139,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
                             sheet.addCell(new Label(1, i, mDateParser.getTime(underTextArray[j].substring(
                                     underTextArray[j].lastIndexOf(",") + 1,
                                     underTextArray[j].length()))));
-                        }catch (java.lang.StringIndexOutOfBoundsException e){
+                        }catch (StringIndexOutOfBoundsException e){
 
                         }
 
@@ -148,7 +147,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
                             sheet.addCell(new Label(2, i, mDateParser.getTime(underTextArray[j].substring(underTextArray[j].
                                             indexOf(",") + 1,
                                     underTextArray[j].lastIndexOf(",")))));
-                        }catch (java.lang.StringIndexOutOfBoundsException e){
+                        }catch (StringIndexOutOfBoundsException e){
 
                         }
                     }
@@ -267,7 +266,9 @@ public class CalendarPresenter implements CalendarModule.Presenter,
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                mDialog = DialogHelper.showProgressBar(mActivity, "Считывание расписания");
+                mDialog = DialogHelper.showProgressBar(mActivity, mActivity.getResources().getString(
+                        R.string.reading_schedule
+                ));
             }
         });
 

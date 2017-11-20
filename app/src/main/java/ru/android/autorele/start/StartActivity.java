@@ -10,6 +10,7 @@ import ru.android.autorele.R;
 import ru.android.autorele.bluetooth.BluetoothStarter;
 import ru.android.autorele.utils.ActivityHelper;
 
+
 /**
  * Created by yasina on 15.09.17.
  */

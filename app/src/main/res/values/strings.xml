@@ -2,11 +2,13 @@
     <!-- app -->
     <string name="app_name">Автореле</string>
     <string name="app_packages">ru.android.bluetooth</string>
+    <string name="settings">Настройки</string>
 
     <!-- file dialog -->
     <string name="generate_dialog_title">Выберите способ генерации</string>
     <string name="file_mistake">Файл не является корректным</string>
     <string name="file_loaded">Файл загружен</string>
+    <string name="reload_table">Перезагрузить таблицу</string>
 
     <!-- dialog -->
     <string name="mistake">Ошибка</string>
@@ -51,8 +53,8 @@
     <string name="save_schedule_as_file">Выгрузить расписание в Excel файл</string>
     <string name="load_schedule">Загрузить расписание</string>
     <string name="save_schedule_in_autorele">Сохранить измененное расписание\n в автореле</string>
-    <string name="loading_schedule">Запись рассписания</string>
-    <string name="schedule_saved">Рассписание было успешно записано в Автореле </string>
+    <string name="loading_schedule">Запись расписания</string>
+    <string name="schedule_saved">Расписание было успешно записано в Автореле </string>
 
     <!-- calendar's months tab -->
     <string name="january">Январь</string>
@@ -116,5 +118,19 @@
     <string name="writing_schedule_to_file">Запись расписания в файл</string>
     <string name="file_saved">Файл сохранен</string>
     <string name="saved_in">Сохранен в</string>
+    <string name="reading_schedule">Считывание расписания</string>
+
+    <!-- LocationActivity -->
+    <string name="location">Местопложение</string>
+    <string name="allow_to_include_location">Разрешите включить ваше местоположение</string>
+
+    <!-- ResponseView -->
+    <string name="controller_is_reset">Контроллер сброшен</string>
+    <string name="password_is_changed">Пароль изменен</string>
+
+    <!-- SettingsActivity -->
+    <string name="read_data">Считывание данных</string>
+    <string name="new_name_for_the_device">Новое название для устройства</string>
+    <string name="save">Сохранить</string>
 
 </resources>

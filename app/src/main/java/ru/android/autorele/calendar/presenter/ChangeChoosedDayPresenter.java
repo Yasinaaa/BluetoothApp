@@ -1,16 +1,7 @@
 package ru.android.autorele.calendar.presenter;
 
 import android.app.Activity;
-import android.app.TimePickerDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.support.design.widget.FloatingActionButton;
-import android.view.View;
-import android.widget.ImageButton;
-import android.widget.TextView;
-import android.widget.TimePicker;
-
-import java.util.Calendar;
 
 import ru.android.autorele.calendar.module.ChangeChoosedDayModule;
 import ru.android.autorele.calendar.view.ChangeChoosedDayActivity;

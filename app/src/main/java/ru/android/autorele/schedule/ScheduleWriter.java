@@ -1,6 +1,5 @@
 package ru.android.autorele.schedule;
 
-import android.app.Activity;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -11,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import ru.android.autorele.bluetooth.BluetoothCommands;
+
 /**
  * Created by yasina on 20.08.17.
  */
@@ -18,10 +19,10 @@ import java.util.List;
 public class ScheduleWriter {
 
     private static final String TAG = "ScheduleWriter";
+    private static final byte[] mSetDataArray = new byte[]{2, 5, (byte)184, (byte)191};
 
-    public static void write(Activity activity, OutputStream mmOutStream, int[] lisOn, int[] listOff) {
+    public static void write(OutputStream mmOutStream, int[] lisOn, int[] listOff) {
         try {
-            byte[] setDataArray = new byte[]{2, 5, (byte)184, (byte)191};
 
             int[] combined = combineBytes(lisOn, listOff);
             List<int[]> numbers = divideTo128ByteElements(combined);
@@ -30,15 +31,15 @@ public class ScheduleWriter {
                 numsToBytesArray.add(getValues(numbers.get(i)));
             }
 
-            mmOutStream.write("Set Data\r".getBytes());
-            mmOutStream.write(setDataArray);
+            mmOutStream.write(BluetoothCommands.SET_DATA.getBytes());
+            mmOutStream.write(mSetDataArray);
 
             for (int i=0; i<numsToBytesArray.size();i++) {
                 SystemClock.sleep(1000);
                 mmOutStream.write(numsToBytesArray.get(i));
             }
             SystemClock.sleep(1000);
-            mmOutStream.write("ddd\r\n".getBytes());
+            mmOutStream.write(BluetoothCommands.NOT_COMMAND.getBytes());
 
         } catch (IOException e) {
             Log.e(TAG, e.getMessage());
@@ -56,7 +57,7 @@ public class ScheduleWriter {
     private static ArrayList<int[]> divideTo128ByteElements(int[] array){
         ArrayList<int[]> elements = new ArrayList<int[]>();
         int num = 64;
-        int count = array.length / num; // 11
+        int count = array.length / num;
         int mod = array.length - num * count;
         int[] temp;
         for (int i=0; i<= count; i++){

@@ -1,6 +1,5 @@
 package ru.android.autorele.calendar.view;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.view.MenuItem;

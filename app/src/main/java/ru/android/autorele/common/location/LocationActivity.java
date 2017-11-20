@@ -26,7 +26,6 @@ import java.util.concurrent.TimeUnit;
 
 import ru.android.autorele.R;
 import ru.android.autorele.root.RootActivity;
-import ru.android.autorele.utils.CacheHelper;
 
 /**
  * Created by yasina on 26.09.17.
@@ -99,9 +98,9 @@ public abstract class LocationActivity extends RootActivity
 
     int c = 0;
     public void updateLocation(){
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                         != PackageManager.PERMISSION_GRANTED){
 
             ActivityCompat.requestPermissions(LocationActivity.this,
@@ -154,7 +153,7 @@ public abstract class LocationActivity extends RootActivity
                             == PackageManager.PERMISSION_GRANTED) {
 
 
-                        updateLocation();
+                        mGoogleApiClient.connect();
                     }
 
                 } else {
@@ -188,8 +187,8 @@ public abstract class LocationActivity extends RootActivity
 
     private void setDialog(){
         AlertDialog.Builder dialog = new AlertDialog.Builder(this)
-                .setTitle("Местопложение")
-                .setMessage("Разрешите включить ваше местоположение")
+                .setTitle(getResources().getString(R.string.location))
+                .setMessage(getResources().getString(R.string.allow_to_include_location))
                 .setPositiveButton(mActivity.getString(R.string.ok), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {

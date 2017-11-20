@@ -11,9 +11,6 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 
-import ru.android.autorele.R;
-import ru.android.autorele.utils.DialogHelper;
-
 /**
  * Created by yasina on 07.08.17.
  */

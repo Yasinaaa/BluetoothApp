@@ -24,6 +24,7 @@ import ru.android.autorele.utils.ActivityHelper;
 import ru.android.autorele.utils.BluetoothHelper;
 import ru.android.autorele.utils.DialogHelper;
 
+
 /**
  * Created by itisioslab on 01.08.17.
  */
@@ -61,7 +62,7 @@ public class ChooseDeviceActivity
         mDeviceAdapter = new DeviceAdapter(mDeviceList, this);
         mRvDevicesList.setAdapter(mDeviceAdapter);
 
-        mBluetoothModule = new BluetoothModule(this, this);
+        mBluetoothModule = BluetoothModule.createBluetoothModule(this, this);
         ActivityHelper.setVisibleLogoIcon(ChooseDeviceActivity.this);
 
         mRvDevicesList.setItemAnimator(new DefaultItemAnimator());
@@ -82,47 +83,6 @@ public class ChooseDeviceActivity
             }
         });
     }
-
-    /*@Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return true;
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_search, menu);
-
-        final MenuItem searchItem = menu.findItem(R.id.action_search);
-        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                if(!newText.isEmpty()){
-                    mDeviceAdapter.getFilter().filter(newText);
-                }else {
-                    mDeviceAdapter.setUsualList();
-
-                }
-
-                return false;
-            }
-        });
-
-        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
-            @Override
-            public boolean onClose() {
-                searchView.cancelLongPress();
-                return false;
-            }
-        });
-        return true;
-    }*/
 
     @Override
     protected void onStop() {
@@ -178,7 +138,6 @@ public class ChooseDeviceActivity
         Log.d(TAG, message);
         DialogHelper.showErrorMessage(mActivity, getString(R.string.device_is_not_on_net));
     }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {

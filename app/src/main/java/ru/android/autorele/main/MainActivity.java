@@ -76,7 +76,7 @@ public class MainActivity extends RootActivity implements MainModule.View,
         // close previous Dialog
         try {
             ChooseDeviceActivity.dialog.cancel();
-        }catch (java.lang.NullPointerException e){
+        }catch (NullPointerException e){
 
         }
 
@@ -85,18 +85,10 @@ public class MainActivity extends RootActivity implements MainModule.View,
         mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
         mBluetoothMessage.setBluetoothMessageListener(this);
 
-
-       /* mBluetoothMessage = BluetoothMessage.createBluetoothMessage();
-        mBluetoothMessage.setBluetoothMessageListener(this);
-        mBluetoothMessage.mStatus = BluetoothCommands.STATUS;
-        mBluetoothMessage.writeMessage(mActivity, BluetoothCommands.STATUS);*/
-
         mMainPresenter = new MainPresenter(mActivity, mBluetoothMessage);
         mMainPresenter.setScheduleFilePath(mEtScheduleName);
         mMainPresenter.callDialog();
         mMainPresenter.sendStatusMessage();
-
-
     }
 
     @Override
@@ -124,7 +116,6 @@ public class MainActivity extends RootActivity implements MainModule.View,
 
                 case BluetoothCommands.STATUS:
 
-
                     mMainPresenter.parseResponse(isFirstOpen, answer, new MainPresenter.ResponseParseView() {
                         @Override
                         public void nextJob(String text) {
@@ -146,7 +137,6 @@ public class MainActivity extends RootActivity implements MainModule.View,
                                 mTvStatus.setText(mTvStatus.getText().toString() + s + "\n");
                             }
 
-                           // mTvStatus.setText(text);
                             mMainPresenter.parseStatus(text, mTvDate, mTvTime);
                             if (isFirstOpen){
                                 mMainPresenter.sendVersionMessage();

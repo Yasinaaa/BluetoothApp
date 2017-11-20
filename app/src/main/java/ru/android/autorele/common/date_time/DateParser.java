@@ -57,7 +57,7 @@ public class DateParser {
                 Log.d(TAG, "time=" + time);
             }
 
-        }catch (java.lang.NumberFormatException e){
+        }catch (NumberFormatException e){
             Log.d(TAG, "time = " + time);
         }
         return null;
@@ -97,7 +97,7 @@ public class DateParser {
                 int min = Integer.parseInt(removeExtraZeros(time.substring(time.indexOf(":") + 1)));
                 return hour * 60 + min;
             }
-        }catch (java.lang.NumberFormatException e){
+        }catch (NumberFormatException e){
             Log.d(TAG, "time = " + time);
         }
         return -999;
@@ -109,7 +109,7 @@ public class DateParser {
             int min = time%60;
             return setZeros(hour) + ":" + setZeros(min);
 
-        }catch (java.lang.NumberFormatException e){
+        }catch (NumberFormatException e){
             Log.d(TAG, "time = " + time);
         }
         return null;

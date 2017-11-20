@@ -25,6 +25,7 @@ import ru.android.autorele.common.date_time.DateTimeView;
 import ru.android.autorele.utils.CacheHelper;
 import ru.android.autorele.utils.DialogHelper;
 
+
 /**
  * Created by yasina on 22.08.17.
  */
@@ -39,7 +40,6 @@ public class MainPresenter implements DateTimeView.TimeAndDate{
     private File mFile;
     private String mTable = "";
     private String mThisTextNeedToSetTextView;
-
 
     public MainPresenter(Activity activity, BluetoothMessage bluetoothMessage) {
         this.mActivity = activity;
@@ -123,12 +123,7 @@ public class MainPresenter implements DateTimeView.TimeAndDate{
             mTvDate.setText(mDateParser.setZeros(calendar.get(Calendar.DAY_OF_MONTH)) + "-" +
                     mDateParser.setZeros((calendar.get(Calendar.MONTH) + 1)) + "-" +
                     mDateParser.setZeros(calendar.get(Calendar.YEAR)));
-            /*
 
-            mTvTime.setText(mDateParser.setZeros(result.getHours()) + ":" +
-                    mDateParser.setZeros(result.getMinutes()) + ":" +
-                    mDateParser.setZeros(result.getSeconds()));*/
-            //mTvDate.setText(" " + allData[0].trim());
             mTvTime.setText(allData[1]);
 
         } catch (ParseException e) {
@@ -146,7 +141,6 @@ public class MainPresenter implements DateTimeView.TimeAndDate{
             if(!isFirstOpen) DialogHelper.hideProgressBar(mBluetoothMessage.mDialog);
             answer = answer.replaceAll("[Notcomand ]", "");
             mTable += answer;
-            //mBluetoothMessage.iAmBusy = false;
             responseView.nextJob(mTable);
 
 
@@ -170,13 +164,13 @@ public class MainPresenter implements DateTimeView.TimeAndDate{
         String[] time = text.split(" ");
         try {
             mTvDate.setText(mTvDate.getText() + time[0]);
-        } catch (java.lang.ArrayIndexOutOfBoundsException e) {
+        } catch (ArrayIndexOutOfBoundsException e) {
 
         }
 
         try {
             mTvTime.setText(mTvTime.getText() + time[1]);
-        } catch (java.lang.ArrayIndexOutOfBoundsException e2) {
+        } catch (ArrayIndexOutOfBoundsException e2) {
 
         }
     }
@@ -184,7 +178,6 @@ public class MainPresenter implements DateTimeView.TimeAndDate{
     public void setTimeDateResponse(String answer, TextView textView){
         textView.setText(mThisTextNeedToSetTextView);
         if (answer.contains("Not") || answer.contains("command")) {
-           // mBluetoothMessage.iAmBusy = false;
             sendStatusMessage();
         }
         mTable = "";
@@ -195,21 +188,16 @@ public class MainPresenter implements DateTimeView.TimeAndDate{
     }
 
     public void sendStatusMessage(){
-        //mBluetoothMessage.setMessage(mTable, mActivity, BluetoothCommands.STATUS);
-
         mBluetoothMessage.mStatus = BluetoothCommands.STATUS;
         mBluetoothMessage.writeMessage(mActivity, BluetoothCommands.STATUS);
         SystemClock.sleep(2000);
-        mBluetoothMessage.writeMessage(mActivity, "dd\r\n");
+        mBluetoothMessage.writeMessage(mActivity, BluetoothCommands.NOT_COMMAND);
         mTable = "";
-
     }
 
     public void sendVersionMessage(){
         mBluetoothMessage.mStatus = BluetoothCommands.VERSION;
         mBluetoothMessage.writeMessage(mActivity, BluetoothCommands.VERSION);
-        //SystemClock.sleep(2000);
-        //mBluetoothMessage.writeMessage(mActivity, "dd\r\n");
         mTable = "";
     }
 }

@@ -128,7 +128,7 @@ public class CalendarFragment extends Fragment {
 
                 } else {
 
-                    view.setBackgroundColor(resource.getColor(R.color.silver));
+                    view.setBackgroundColor(resource.getColor(R.color.grey));
                     if (selectedItem != 999) {
                         mTableLayout.getChildAt(selectedItem).
                                 setBackgroundColor(resource.getColor(R.color.white_overlay));

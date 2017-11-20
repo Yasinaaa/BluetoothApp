@@ -31,12 +31,13 @@ import ru.android.autorele.utils.DialogHelper;
 public class ScheduleLoading {
 
     private final String TAG = "ScheduleLoading";
+    private final int daysOfYear = 366;
     private int[] onNumList;
     private int[] offNumList;
     private DateParser mDateParser;
     private Context mContext;
     private Activity mActivity;
-    private ScheduleLoading.View mView;
+    private View mView;
     private Handler mHandler;
 
     public interface View{
@@ -45,13 +46,13 @@ public class ScheduleLoading {
         void dataCreated(int[] onList, int[] offList);
     }
 
-    public ScheduleLoading(ScheduleLoading.View mView, Activity activity) {
+    public ScheduleLoading(View mView, Activity activity) {
 
         this.mView = mView;
         this.mActivity = activity;
         this.mContext = activity.getApplicationContext();
-        onNumList = new int[366];
-        offNumList = new int[366];
+        onNumList = new int[daysOfYear];
+        offNumList = new int[daysOfYear];
         mDateParser = new DateParser(Calendar.getInstance(), mContext);
 
         mHandler = new Handler(Looper.getMainLooper());
@@ -91,7 +92,7 @@ public class ScheduleLoading {
                 dialogBuilder
                         .setTitle(mActivity.getString(R.string.schedule))
                         .setMessage(mActivity.getString(R.string.file_loaded))
-                        .setNegativeButton("Перезагрузить таблицу", new DialogInterface.OnClickListener() {
+                        .setNegativeButton(mActivity.getString(R.string.reload_table), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 mView.setResult();
                             }
@@ -136,10 +137,6 @@ public class ScheduleLoading {
         }
 
         return isHasMistake;
-    }
-
-    private void showErrorDialog(AlertDialog.Builder dialogBuilder, String text){
-        DialogHelper.showErrorMessage(mActivity, text);
     }
 
     private void showErrorDialog(AlertDialog.Builder dialogBuilder){

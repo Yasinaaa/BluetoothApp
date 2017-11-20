@@ -45,7 +45,7 @@ public class BluetoothModule implements BluetoothStarter.BluetoothView{
     private BluetoothStarter mBluetoothStarter;
     private String mAddress, mName;
 
-    public BluetoothModule(Activity mActivity, ChooseDeviceView view) {
+    private BluetoothModule(Activity mActivity, ChooseDeviceView view) {
         this.mActivity = mActivity;
         this.mContext = mActivity.getBaseContext();
         this.mView = view;
@@ -55,10 +55,11 @@ public class BluetoothModule implements BluetoothStarter.BluetoothView{
     public static BluetoothModule createBluetoothModule(Activity activity, ChooseDeviceView view){
         if (mBluetoothModule == null){
             mBluetoothModule = new BluetoothModule(activity, view);
+        }else {
+            mActivity = activity;
+            mContext = mActivity.getBaseContext();
+            mView = view;
         }
-        mActivity = activity;
-        mContext = mActivity.getBaseContext();
-        mView = view;
         return mBluetoothModule;
     }
 
@@ -120,7 +121,7 @@ public class BluetoothModule implements BluetoothStarter.BluetoothView{
     public void unregister(){
         try {
             mActivity.unregisterReceiver(blReceiver);
-        }catch (java.lang.IllegalArgumentException e){
+        }catch (IllegalArgumentException e){
 
         }
     }
@@ -154,6 +155,8 @@ public class BluetoothModule implements BluetoothStarter.BluetoothView{
             if (info != null){
                 mAddress = info.substring(info.length() - 17);
                 mName = info.substring(0, info.length() - 18);
+            }else {
+
             }
 
             final BluetoothStarter.BluetoothView bluetoothView = this;

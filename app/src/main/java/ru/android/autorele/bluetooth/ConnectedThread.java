@@ -52,7 +52,7 @@ public class ConnectedThread extends Thread {
                         bytes = mmInStream.read(buffer, 0, bytes);
                         mHandler.obtainMessage(BluetoothCommands.MESSAGE_READ, bytes, -1, buffer)
                                 .sendToTarget();
-                    }catch (java.lang.ArrayIndexOutOfBoundsException e){
+                    }catch (ArrayIndexOutOfBoundsException e){
                         Log.d(TAG, e.getMessage());
                     }
                 }
@@ -66,7 +66,7 @@ public class ConnectedThread extends Thread {
 
     public void write(Activity activity, int[] listOn, int[] listOff){
         ScheduleWriter s = new ScheduleWriter();
-        s.write(activity, mmOutStream, listOn, listOff);
+        s.write(mmOutStream, listOn, listOff);
     }
 
     public String writeData(Activity activity, String data) {
