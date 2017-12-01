@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,6 +67,10 @@ public class CalendarFragment extends Fragment {
     }
 
     public void readFile(){
+        if (mCurrentMonth == 11){
+            Log.d(TAG, mListOn[30] + "  365on");
+            Log.d(TAG, mListOff[30] + "  365off");
+        }
         if (mListOn != null && mListOff != null){
             if(mListOn.length == mListOff.length){
                 for (int i = -1; i < mListOn.length; i++) {

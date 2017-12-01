@@ -183,7 +183,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
         if (mTable != null) {
             String[] textArray = mTable.split("\r\n");
 
-            for (int i = 0; i < textArray.length-1; i++) {
+            for (int i = 0; i < textArray.length; i++) {
 
                 String[] underTextArray;
                 if (StringUtils.countMatches(textArray[i], "i") > 1) {
@@ -213,6 +213,9 @@ public class CalendarPresenter implements CalendarModule.Presenter,
                                     underTextArray[j].lastIndexOf(","));
 
                             int idNum = Integer.parseInt(dayStr);
+                            if (idNum == 365){
+                                Log.d("d", onList[idNum] + " " + offList[idNum]);
+                            }
                             onList[idNum] = Integer.parseInt(onNum);
                             offList[idNum] = Integer.parseInt(offNum);
 
@@ -220,6 +223,8 @@ public class CalendarPresenter implements CalendarModule.Presenter,
                             Log.d("d", e.getMessage());
                             DialogHelper.hideProgressBar(mDialog);
                         }
+                    }else {
+                        Log.d("d", underTextArray[j]);
                     }
                 }
             }
@@ -274,7 +279,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
 
         mStatus = BluetoothCommands.GET_TABLE;
         mBluetoothMessage.writeMessage(mActivity,BluetoothCommands.GET_TABLE);
-        SystemClock.sleep(1000);
+        SystemClock.sleep(2000);
         mBluetoothMessage.writeMessage(mActivity,"ddd\r\n");
     }
 
@@ -321,7 +326,7 @@ public class CalendarPresenter implements CalendarModule.Presenter,
 
     @Override
     public void generateSchedule(Calendar startDate, Calendar endDate, double latitude, double longitude, int zone) {
-        Calendar currentDate = Calendar.getInstance();
+        Calendar currentDate = mStartDate;
         double sunRise;
         double sunSet;
         int d = 0;
@@ -348,6 +353,9 @@ public class CalendarPresenter implements CalendarModule.Presenter,
             d++;
 
             startDate.add(Calendar.DAY_OF_YEAR, 1);
+
+        }
+        if (d == 365){
 
         }
         if(onList != null & offList != null){
